@@ -7,13 +7,8 @@ keys/
 .env.*.local
 !.env.example
 
-# n8n runtime data — only the workflow JSON is committed
-n8n_data/database.sqlite*
-n8n_data/*.log
-n8n_data/config
-n8n_data/crash.journal
-n8n_data/storage/
-n8n_data/dex-scanner-workflow-backup-*.json
+# n8n runtime data — workflow backups live in workflows/ not n8n_data/
+n8n_data/
 
 # TimescaleDB data
 timescale_data/
