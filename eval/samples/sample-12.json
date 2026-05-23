@@ -1,0 +1,15 @@
+{
+  "sample": 64800,
+  "timestamp": "18:04:02",
+  "elapsed_s": 47,
+  "total_launches": 5,
+  "interesting": 1,
+  "watch": 0,
+  "skip": 2,
+  "stale": 2,
+  "tokens": [],
+  "analysis": "1. catholic \u2014 INTERESTING \u2014 Strong 5m momentum (+10.59%) and high buy pressure (72%) with an upward micro trend override the falling volume, indicating active accumulation for a quick scalp.Scenarios if INTERESTING \u2014 Aggressive: entry $0.0004424, target $0.0005220 (+18%), stop $0.0003982 (-10%) | Conservative: entry $0.0004203 (-5% dip), target $0.0004833 (+15%), stop $0.0003867 (-8%)2. Butt \u2014 SKIP \u2014 Clear momentum breakdown with a 31% 1h drop, low buy pressure (47%), and extreme volume/liquidity ratio make this a high-risk exit zone.3. Breastcoin \u2014 SKIP \u2014 Confirmed exit signal with falling volume, declining micro price, and a severe 31% 1h drop combined with critically low liquidity ($11.8k) for safe scalping.",
+  "card_symbols": [
+    "catholic"
+  ]
+}

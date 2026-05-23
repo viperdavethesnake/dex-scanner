@@ -1,0 +1,29 @@
+# API keys and secrets
+keys/
+.env
+*.env
+.env.*
+.env.local
+.env.*.local
+
+# n8n runtime data — only the workflow JSON is committed
+n8n_data/database.sqlite*
+n8n_data/*.log
+n8n_data/config
+n8n_data/crash.journal
+n8n_data/storage/
+n8n_data/dex-scanner-workflow-backup-*.json
+
+# TimescaleDB data
+timescale_data/
+
+# LiteLLM config (contains master_key)
+litellm_data/
+
+# Claude Code session data
+.claude/
+
+# Misc
+*.bak
+venv/
+analysis/figures/

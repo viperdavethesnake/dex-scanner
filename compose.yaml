@@ -1,0 +1,133 @@
+services:
+
+  llamacpp:
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda
+    container_name: dex-llamacpp
+    restart: unless-stopped
+    environment:
+      - CUDA_VISIBLE_DEVICES=1
+    command: >
+      --model /models/gguf/custom/Qwen_Qwen3.6-35B-A3B-Q6_K.gguf
+      --host 0.0.0.0
+      --port 8080
+      --ctx-size 65536
+      --n-gpu-layers 999
+      --jinja
+      --flash-attn off
+      --cache-type-k q8_0
+    volumes:
+      - source: /space/docker/containers/ai-models
+        target: /models
+        type: bind
+        read_only: true
+    devices:
+      - source: nvidia.com/gpu=all
+        target: nvidia.com/gpu=all
+        permissions: rwm
+    networks:
+      macvlan_net:
+        ipv4_address: 192.168.33.231
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://localhost:8080/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    container_name: dex-timescale
+    restart: unless-stopped
+    network_mode: service:llamacpp
+    depends_on:
+      llamacpp:
+        condition: service_healthy
+    environment:
+      - POSTGRES_DB=dex_signals
+      - POSTGRES_USER=dex
+      - POSTGRES_PASSWORD=dexsignals
+    volumes:
+      - source: ./timescale_data
+        target: /var/lib/postgresql/data
+        type: bind
+      - source: ./init.sql
+        target: /docker-entrypoint-initdb.d/init.sql
+        type: bind
+        read_only: true
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: dex-n8n
+    restart: unless-stopped
+    network_mode: service:llamacpp
+    depends_on:
+      llamacpp:
+        condition: service_healthy
+      timescaledb:
+        condition: service_started
+    environment:
+      - N8N_HOST=192.168.33.231
+      - WEBHOOK_URL=http://192.168.33.231:5678
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - N8N_API_KEY=dex-n8n-key
+      - GENERIC_TIMEZONE=America/New_York
+      - N8N_RUNNERS_ENABLED=true
+      - N8N_SECURE_COOKIE=false
+    volumes:
+      - source: ./n8n_data
+        target: /home/node/.n8n
+        type: bind
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:5678/healthz || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  dex-collector-db:
+    image: timescale/timescaledb:latest-pg16
+    container_name: dex-collector-db
+    restart: unless-stopped
+    networks:
+      - dex-collector-net
+    ports:
+      - "5434:5432"
+    environment:
+      - POSTGRES_DB=collector_signals
+      - POSTGRES_USER=collector
+      - POSTGRES_PASSWORD=collector
+    volumes:
+      - source: ./collector_data
+        target: /var/lib/postgresql/data
+        type: bind
+      - source: ./collector/init.sql
+        target: /docker-entrypoint-initdb.d/init.sql
+        type: bind
+        read_only: true
+
+  dex-collector:
+    build:
+      context: ./collector
+    container_name: dex-collector
+    restart: unless-stopped
+    networks:
+      - dex-collector-net
+    depends_on:
+      - dex-collector-db
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=dex-collector-db
+      - DB_PORT=5432
+      - DB_NAME=collector_signals
+      - DB_USER=collector
+      - DB_PASS=collector
+      - POLL_INTERVAL=300
+      - BIRDEYE_API_KEY=${BIRDEYE_API_KEY}
+
+networks:
+  macvlan_net:
+    external: true
+  dex-collector-net:
+    driver: bridge

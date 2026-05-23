@@ -1,0 +1,357 @@
+{
+    "updatedAt": "2026-05-03T07:59:38.246Z",
+    "createdAt": "2026-05-03T07:58:10.574Z",
+    "id": "GwTtxU5MgTEoeqHK",
+    "name": "DEX Status",
+    "description": null,
+    "active": true,
+    "isArchived": false,
+    "nodes": [
+        {
+            "id": "status-webhook",
+            "name": "Status Webhook",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2,
+            "position": [
+                240,
+                300
+            ],
+            "webhookId": "dex-status",
+            "parameters": {
+                "path": "dex-status",
+                "httpMethod": "GET",
+                "responseMode": "responseNode"
+            }
+        },
+        {
+            "id": "status-db",
+            "name": "Fetch Status Data",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                460,
+                300
+            ],
+            "credentials": {
+                "postgres": {
+                    "id": "XYzW7KIajqvbnqbT",
+                    "name": "DEX TimescaleDB"
+                }
+            },
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "\nSELECT\n  (SELECT COALESCE(json_agg(s ORDER BY s.scanned_at DESC), '[]'::json)\n   FROM (SELECT scanned_at, trigger_type, total_launches, sent_to_llm,\n                stale_count, interesting_count, watch_count, skip_count\n         FROM scan_summary ORDER BY scanned_at DESC LIMIT 48) s) AS scans,\n  (SELECT COALESCE(json_agg(t ORDER BY t.scanned_at DESC), '[]'::json)\n   FROM (SELECT scanned_at, symbol, chain, rating, age_minutes,\n                price_usd, vl_ratio, vol_trend, micro_trend, buy_pct_5m,\n                flags, reasoning,\n                entry_price, target_price, stop_price,\n                price_at_5m, price_at_15m, price_at_30m,\n                target_hit, stop_hit\n         FROM token_signals ORDER BY scanned_at DESC LIMIT 200) t) AS signals,\n  (SELECT COUNT(*) FROM scan_summary  WHERE scanned_at > NOW() - INTERVAL '24 hours') AS scans_today,\n  (SELECT COUNT(*) FROM token_signals WHERE scanned_at > NOW() - INTERVAL '24 hours') AS signals_today,\n  (SELECT COUNT(*) FROM token_signals WHERE rating = 'INTERESTING' AND scanned_at > NOW() - INTERVAL '24 hours') AS interesting_today,\n  (SELECT COUNT(*) FROM scan_summary) AS total_scans\n",
+                "options": {}
+            }
+        },
+        {
+            "id": "status-autochk",
+            "name": "Check Auto-Scanner",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                680,
+                300
+            ],
+            "credentials": {
+                "httpHeaderAuth": {
+                    "id": "OlrQE8mMD3u9KZ2e",
+                    "name": "n8n API Key"
+                }
+            },
+            "parameters": {
+                "method": "GET",
+                "url": "http://localhost:5678/api/v1/workflows/svREuu5gTMgumndn",
+                "options": {},
+                "authentication": "predefinedCredentialType",
+                "nodeCredentialType": "httpHeaderAuth"
+            }
+        },
+        {
+            "id": "status-build",
+            "name": "Build Status HTML",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                900,
+                300
+            ],
+            "parameters": {
+                "jsCode": "\nconst dbRow   = $('Fetch Status Data').first().json;\nconst scans   = typeof dbRow.scans   === 'string' ? JSON.parse(dbRow.scans)   : (dbRow.scans   || []);\nconst signals = typeof dbRow.signals === 'string' ? JSON.parse(dbRow.signals) : (dbRow.signals || []);\nconst scansToday       = parseInt(dbRow.scans_today)       || 0;\nconst signalsToday     = parseInt(dbRow.signals_today)     || 0;\nconst interestingToday = parseInt(dbRow.interesting_today) || 0;\nconst totalScans       = parseInt(dbRow.total_scans)       || 0;\nconst autoActive       = $input.first().json.active;\n\nconst ts = new Date().toLocaleString('en-US', { timeZone: 'America/New_York', hour12: false });\n\nfunction fmt(v, digits) {\n  if (v == null) return '<span class=\"dim\">\u2014</span>';\n  const n = parseFloat(v);\n  if (isNaN(n)) return '<span class=\"dim\">\u2014</span>';\n  return n.toFixed(digits);\n}\nfunction pct(now, then) {\n  if (now == null || then == null) return '<span class=\"dim\">\u2014</span>';\n  const p = ((parseFloat(now) - parseFloat(then)) / parseFloat(then)) * 100;\n  if (isNaN(p)) return '<span class=\"dim\">\u2014</span>';\n  const s = (p >= 0 ? '+' : '') + p.toFixed(1) + '%';\n  return `<span class=\"${p >= 0 ? 'pos' : 'neg'}\">${s}</span>`;\n}\nfunction timeStr(iso) {\n  return new Date(iso).toLocaleTimeString('en-US', {\n    timeZone: 'America/New_York', hour12: false, hour:'2-digit', minute:'2-digit'\n  });\n}\nfunction badge(cls, text) {\n  return `<span class=\"badge badge-${cls}\">${text}</span>`;\n}\n\nconst scanRows = scans.map(s => {\n  const src = s.trigger_type === 'auto' ? badge('auto','auto') : badge('manual','manual');\n  const inter = s.interesting_count > 0 ? `<span class=\"interesting\">${s.interesting_count}</span>` : `<span class=\"dim\">0</span>`;\n  const watch = s.watch_count > 0       ? `<span class=\"watch\">${s.watch_count}</span>`             : `<span class=\"dim\">0</span>`;\n  const staleP = s.total_launches > 0 ? Math.round(s.stale_count / s.total_launches * 100) : 0;\n  return `<tr>\n    <td>${timeStr(s.scanned_at)}</td><td>${src}</td>\n    <td>${s.total_launches ?? '\u2014'}</td><td>${s.sent_to_llm ?? '\u2014'}</td>\n    <td>${s.stale_count ?? '\u2014'} <span class=\"dim\">(${staleP}%)</span></td>\n    <td>${inter}</td><td>${watch}</td><td><span class=\"dim\">${s.skip_count ?? '\u2014'}</span></td>\n  </tr>`;\n}).join('');\n\nconst sigRows = signals.map(t => {\n  const rat    = badge(t.rating.toLowerCase(), t.rating);\n  const vlCls  = (parseFloat(t.vl_ratio) > 12 || parseFloat(t.vl_ratio) < 0.3) ? 'neg' : '';\n  const out5   = t.price_at_5m  != null ? pct(t.price_at_5m,  t.price_usd) : '<span class=\"dim\">\u2026</span>';\n  const out15  = t.price_at_15m != null ? pct(t.price_at_15m, t.price_usd) : '<span class=\"dim\">\u2026</span>';\n  const out30  = t.price_at_30m != null ? pct(t.price_at_30m, t.price_usd) : '<span class=\"dim\">\u2026</span>';\n  const micro  = {up:'<span class=\"pos\">up</span>',down:'<span class=\"neg\">down</span>',\n                  fading:'<span class=\"neg\">fading</span>',recovering:'<span class=\"pos\">recovering</span>'}[t.micro_trend]\n               || `<span class=\"dim\">${t.micro_trend||'\u2014'}</span>`;\n  const volTr  = {rising:'<span class=\"pos\">rising</span>',falling:'<span class=\"neg\">falling</span>'}[t.vol_trend]\n               || `<span class=\"dim\">${t.vol_trend||'\u2014'}</span>`;\n  let tgtBadge = '', stpBadge = '';\n  if (t.rating === 'INTERESTING') {\n    tgtBadge = t.target_hit === true ? badge('hit','\u2713 target') : t.target_hit === false ? badge('miss','\u2717 target') : '<span class=\"dim\">?</span>';\n    stpBadge = t.stop_hit  === true ? badge('stopped','\u2717 stop') : t.stop_hit  === false ? badge('safe','\u2713 held')   : '<span class=\"dim\">?</span>';\n  }\n  return `<tr>\n    <td>${timeStr(t.scanned_at)}</td>\n    <td><strong>${t.symbol||'\u2014'}</strong></td>\n    <td><span class=\"dim\">${t.chain||''}</span></td>\n    <td>${rat}</td><td>${t.age_minutes??'\u2014'}m</td>\n    <td>${fmt(t.price_usd,8)}</td>\n    <td><span class=\"${vlCls}\">${fmt(t.vl_ratio,1)}\u00d7</span></td>\n    <td>${volTr}</td><td>${micro}</td><td>${fmt(t.buy_pct_5m,0)}%</td>\n    <td>${out5}</td><td>${out15}</td><td>${out30}</td>\n    <td>${tgtBadge}</td><td>${stpBadge}</td>\n    <td style=\"max-width:260px;font-size:0.75em;color:#888;white-space:normal\">${t.reasoning||''}</td>\n  </tr>`;\n}).join('');\n\nconst autoState = autoActive\n  ? '<span class=\"auto-on\">\u25cf RUNNING</span>'\n  : '<span class=\"auto-off\">\u25cb STOPPED</span>';\n\nconst html = `<!DOCTYPE html><html><head><meta charset=\"utf-8\">\n<meta http-equiv=\"refresh\" content=\"60\">\n<title>DEX Scanner \u2014 Status</title>\n<style>\n*{box-sizing:border-box}\nbody{background:#0d0d0d;color:#e0e0e0;font-family:'SF Mono',Consolas,monospace;margin:0;padding:16px;font-size:13px}\nh2{color:#fff;margin:0 0 4px;font-size:1.1em;font-weight:600}\n.header{background:#141414;border:1px solid #2a2a2a;border-radius:8px;padding:14px 18px;margin-bottom:18px}\n.meta{font-size:0.75em;color:#444;margin-top:2px}\n.stat-row{display:flex;gap:28px;margin-top:12px;flex-wrap:wrap}\n.stat .val{font-size:1.5em;font-weight:700;color:#fff;line-height:1.1}\n.stat .lbl{font-size:0.7em;color:#555;text-transform:uppercase;letter-spacing:.5px}\n.auto-row{margin-top:10px;font-size:0.8em}\n.auto-on{color:#00e676}.auto-off{color:#ef5350}\n.interesting{color:#00e676}.watch{color:#ffab40}.dim{color:#444}\n.pos{color:#00e676}.neg{color:#ef5350}\n.section{font-size:0.7em;color:#555;text-transform:uppercase;letter-spacing:1px;margin:0 0 6px}\ntable{width:100%;border-collapse:collapse;margin-bottom:28px;font-size:0.78em}\nth{background:#141414;color:#555;text-align:left;padding:5px 8px;border-bottom:1px solid #222;font-weight:500;white-space:nowrap}\ntd{padding:4px 8px;border-bottom:1px solid #181818;vertical-align:top;white-space:nowrap}\ntr:hover td{background:#181818}\n.badge{display:inline-block;padding:1px 5px;border-radius:3px;font-size:0.72em;font-weight:700;white-space:nowrap}\n.badge-interesting{background:#00e67618;color:#00e676;border:1px solid #00e67644}\n.badge-watch{background:#ffab4018;color:#ffab40;border:1px solid #ffab4044}\n.badge-auto{background:#2196f318;color:#64b5f6;border:1px solid #2196f344}\n.badge-manual{background:#33333318;color:#555;border:1px solid #33333344}\n.badge-hit{background:#00e67618;color:#00e676;border:1px solid #00e67644}\n.badge-miss{background:#ef535018;color:#ef5350;border:1px solid #ef535044}\n.badge-stopped{background:#ef535018;color:#ef5350;border:1px solid #ef535044}\n.badge-safe{background:#00e67618;color:#00e676;border:1px solid #00e67644}\n.flag{font-size:0.7em;color:#ff9800}\na{color:#64b5f6;text-decoration:none}a:hover{text-decoration:underline}\n</style></head><body>\n<div class=\"header\">\n  <h2>DEX Scanner \u2014 Status</h2>\n  <div class=\"meta\">${ts} ET &nbsp;\u00b7&nbsp; auto-refreshes every 60s</div>\n  <div class=\"stat-row\">\n    <div class=\"stat\"><div class=\"val\">${totalScans}</div><div class=\"lbl\">total scans</div></div>\n    <div class=\"stat\"><div class=\"val\">${scansToday}</div><div class=\"lbl\">scans today</div></div>\n    <div class=\"stat\"><div class=\"val\">${signalsToday}</div><div class=\"lbl\">signals today</div></div>\n    <div class=\"stat\"><div class=\"val interesting\">${interestingToday}</div><div class=\"lbl\">interesting today</div></div>\n  </div>\n  <div class=\"auto-row\">Auto-scanner: ${autoState} &nbsp;\u00b7&nbsp;\n    <a href=\"/webhook/dex-scan-control?action=start\">start</a> /\n    <a href=\"/webhook/dex-scan-control?action=stop\">stop</a>\n  </div>\n</div>\n<p class=\"section\">Scan History (last 48)</p>\n<table>\n  <tr><th>Time</th><th>Src</th><th>Total</th><th>LLM</th><th>Stale</th><th>INTER</th><th>WATCH</th><th>SKIP</th></tr>\n  ${scanRows || '<tr><td colspan=\"8\" style=\"color:#444;text-align:center;padding:12px\">No scans yet</td></tr>'}\n</table>\n<p class=\"section\">Signal Log \u2014 WATCH &amp; INTERESTING (last 200)</p>\n<table>\n  <tr><th>Time</th><th>Symbol</th><th>Chain</th><th>Rating</th><th>Age</th><th>Price</th><th>V/L</th><th>Vol</th><th>Micro</th><th>Buy%</th><th>+5m</th><th>+15m</th><th>+30m</th><th>Target</th><th>Stop</th><th>Reasoning</th></tr>\n  ${sigRows || '<tr><td colspan=\"16\" style=\"color:#444;text-align:center;padding:12px\">No signals yet</td></tr>'}\n</table>\n</body></html>`;\nreturn [{ json: { html } }];\n"
+            }
+        },
+        {
+            "id": "status-respond",
+            "name": "Send Status Response",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1.1,
+            "position": [
+                1120,
+                300
+            ],
+            "parameters": {
+                "respondWith": "text",
+                "responseBody": "={{ $json.html }}",
+                "options": {
+                    "responseHeaders": {
+                        "entries": [
+                            {
+                                "name": "Content-Type",
+                                "value": "text/html; charset=utf-8"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    ],
+    "connections": {
+        "Status Webhook": {
+            "main": [
+                [
+                    {
+                        "node": "Fetch Status Data",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Fetch Status Data": {
+            "main": [
+                [
+                    {
+                        "node": "Check Auto-Scanner",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Check Auto-Scanner": {
+            "main": [
+                [
+                    {
+                        "node": "Build Status HTML",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Build Status HTML": {
+            "main": [
+                [
+                    {
+                        "node": "Send Status Response",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "staticData": null,
+    "meta": null,
+    "pinData": null,
+    "versionId": "5d3b0e0c-77ae-4ff9-ba1a-bcf4048f9def",
+    "activeVersionId": "5d3b0e0c-77ae-4ff9-ba1a-bcf4048f9def",
+    "versionCounter": 11,
+    "triggerCount": 1,
+    "shared": [
+        {
+            "updatedAt": "2026-05-03T07:58:10.575Z",
+            "createdAt": "2026-05-03T07:58:10.575Z",
+            "role": "workflow:owner",
+            "workflowId": "GwTtxU5MgTEoeqHK",
+            "projectId": "hVEENOfO4Pv55sSG",
+            "project": {
+                "updatedAt": "2026-04-25T21:53:53.357Z",
+                "createdAt": "2026-04-07T04:43:40.211Z",
+                "id": "hVEENOfO4Pv55sSG",
+                "name": "David Barley <microbarley@icloud.com>",
+                "type": "personal",
+                "icon": null,
+                "description": null,
+                "creatorId": "09d63983-7baf-41ca-b8c7-7f2322a225fa"
+            }
+        }
+    ],
+    "tags": [],
+    "activeVersion": {
+        "updatedAt": "2026-05-03T07:59:38.247Z",
+        "createdAt": "2026-05-03T07:59:38.247Z",
+        "versionId": "5d3b0e0c-77ae-4ff9-ba1a-bcf4048f9def",
+        "workflowId": "GwTtxU5MgTEoeqHK",
+        "nodes": [
+            {
+                "id": "status-webhook",
+                "name": "Status Webhook",
+                "type": "n8n-nodes-base.webhook",
+                "typeVersion": 2,
+                "position": [
+                    240,
+                    300
+                ],
+                "webhookId": "dex-status",
+                "parameters": {
+                    "path": "dex-status",
+                    "httpMethod": "GET",
+                    "responseMode": "responseNode"
+                }
+            },
+            {
+                "id": "status-db",
+                "name": "Fetch Status Data",
+                "type": "n8n-nodes-base.postgres",
+                "typeVersion": 2.5,
+                "position": [
+                    460,
+                    300
+                ],
+                "credentials": {
+                    "postgres": {
+                        "id": "XYzW7KIajqvbnqbT",
+                        "name": "DEX TimescaleDB"
+                    }
+                },
+                "parameters": {
+                    "operation": "executeQuery",
+                    "query": "\nSELECT\n  (SELECT COALESCE(json_agg(s ORDER BY s.scanned_at DESC), '[]'::json)\n   FROM (SELECT scanned_at, trigger_type, total_launches, sent_to_llm,\n                stale_count, interesting_count, watch_count, skip_count\n         FROM scan_summary ORDER BY scanned_at DESC LIMIT 48) s) AS scans,\n  (SELECT COALESCE(json_agg(t ORDER BY t.scanned_at DESC), '[]'::json)\n   FROM (SELECT scanned_at, symbol, chain, rating, age_minutes,\n                price_usd, vl_ratio, vol_trend, micro_trend, buy_pct_5m,\n                flags, reasoning,\n                entry_price, target_price, stop_price,\n                price_at_5m, price_at_15m, price_at_30m,\n                target_hit, stop_hit\n         FROM token_signals ORDER BY scanned_at DESC LIMIT 200) t) AS signals,\n  (SELECT COUNT(*) FROM scan_summary  WHERE scanned_at > NOW() - INTERVAL '24 hours') AS scans_today,\n  (SELECT COUNT(*) FROM token_signals WHERE scanned_at > NOW() - INTERVAL '24 hours') AS signals_today,\n  (SELECT COUNT(*) FROM token_signals WHERE rating = 'INTERESTING' AND scanned_at > NOW() - INTERVAL '24 hours') AS interesting_today,\n  (SELECT COUNT(*) FROM scan_summary) AS total_scans\n",
+                    "options": {}
+                }
+            },
+            {
+                "id": "status-autochk",
+                "name": "Check Auto-Scanner",
+                "type": "n8n-nodes-base.httpRequest",
+                "typeVersion": 4.2,
+                "position": [
+                    680,
+                    300
+                ],
+                "credentials": {
+                    "httpHeaderAuth": {
+                        "id": "OlrQE8mMD3u9KZ2e",
+                        "name": "n8n API Key"
+                    }
+                },
+                "parameters": {
+                    "method": "GET",
+                    "url": "http://localhost:5678/api/v1/workflows/svREuu5gTMgumndn",
+                    "options": {},
+                    "authentication": "predefinedCredentialType",
+                    "nodeCredentialType": "httpHeaderAuth"
+                }
+            },
+            {
+                "id": "status-build",
+                "name": "Build Status HTML",
+                "type": "n8n-nodes-base.code",
+                "typeVersion": 2,
+                "position": [
+                    900,
+                    300
+                ],
+                "parameters": {
+                    "jsCode": "\nconst dbRow   = $('Fetch Status Data').first().json;\nconst scans   = typeof dbRow.scans   === 'string' ? JSON.parse(dbRow.scans)   : (dbRow.scans   || []);\nconst signals = typeof dbRow.signals === 'string' ? JSON.parse(dbRow.signals) : (dbRow.signals || []);\nconst scansToday       = parseInt(dbRow.scans_today)       || 0;\nconst signalsToday     = parseInt(dbRow.signals_today)     || 0;\nconst interestingToday = parseInt(dbRow.interesting_today) || 0;\nconst totalScans       = parseInt(dbRow.total_scans)       || 0;\nconst autoActive       = $input.first().json.active;\n\nconst ts = new Date().toLocaleString('en-US', { timeZone: 'America/New_York', hour12: false });\n\nfunction fmt(v, digits) {\n  if (v == null) return '<span class=\"dim\">\u2014</span>';\n  const n = parseFloat(v);\n  if (isNaN(n)) return '<span class=\"dim\">\u2014</span>';\n  return n.toFixed(digits);\n}\nfunction pct(now, then) {\n  if (now == null || then == null) return '<span class=\"dim\">\u2014</span>';\n  const p = ((parseFloat(now) - parseFloat(then)) / parseFloat(then)) * 100;\n  if (isNaN(p)) return '<span class=\"dim\">\u2014</span>';\n  const s = (p >= 0 ? '+' : '') + p.toFixed(1) + '%';\n  return `<span class=\"${p >= 0 ? 'pos' : 'neg'}\">${s}</span>`;\n}\nfunction timeStr(iso) {\n  return new Date(iso).toLocaleTimeString('en-US', {\n    timeZone: 'America/New_York', hour12: false, hour:'2-digit', minute:'2-digit'\n  });\n}\nfunction badge(cls, text) {\n  return `<span class=\"badge badge-${cls}\">${text}</span>`;\n}\n\nconst scanRows = scans.map(s => {\n  const src = s.trigger_type === 'auto' ? badge('auto','auto') : badge('manual','manual');\n  const inter = s.interesting_count > 0 ? `<span class=\"interesting\">${s.interesting_count}</span>` : `<span class=\"dim\">0</span>`;\n  const watch = s.watch_count > 0       ? `<span class=\"watch\">${s.watch_count}</span>`             : `<span class=\"dim\">0</span>`;\n  const staleP = s.total_launches > 0 ? Math.round(s.stale_count / s.total_launches * 100) : 0;\n  return `<tr>\n    <td>${timeStr(s.scanned_at)}</td><td>${src}</td>\n    <td>${s.total_launches ?? '\u2014'}</td><td>${s.sent_to_llm ?? '\u2014'}</td>\n    <td>${s.stale_count ?? '\u2014'} <span class=\"dim\">(${staleP}%)</span></td>\n    <td>${inter}</td><td>${watch}</td><td><span class=\"dim\">${s.skip_count ?? '\u2014'}</span></td>\n  </tr>`;\n}).join('');\n\nconst sigRows = signals.map(t => {\n  const rat    = badge(t.rating.toLowerCase(), t.rating);\n  const vlCls  = (parseFloat(t.vl_ratio) > 12 || parseFloat(t.vl_ratio) < 0.3) ? 'neg' : '';\n  const out5   = t.price_at_5m  != null ? pct(t.price_at_5m,  t.price_usd) : '<span class=\"dim\">\u2026</span>';\n  const out15  = t.price_at_15m != null ? pct(t.price_at_15m, t.price_usd) : '<span class=\"dim\">\u2026</span>';\n  const out30  = t.price_at_30m != null ? pct(t.price_at_30m, t.price_usd) : '<span class=\"dim\">\u2026</span>';\n  const micro  = {up:'<span class=\"pos\">up</span>',down:'<span class=\"neg\">down</span>',\n                  fading:'<span class=\"neg\">fading</span>',recovering:'<span class=\"pos\">recovering</span>'}[t.micro_trend]\n               || `<span class=\"dim\">${t.micro_trend||'\u2014'}</span>`;\n  const volTr  = {rising:'<span class=\"pos\">rising</span>',falling:'<span class=\"neg\">falling</span>'}[t.vol_trend]\n               || `<span class=\"dim\">${t.vol_trend||'\u2014'}</span>`;\n  let tgtBadge = '', stpBadge = '';\n  if (t.rating === 'INTERESTING') {\n    tgtBadge = t.target_hit === true ? badge('hit','\u2713 target') : t.target_hit === false ? badge('miss','\u2717 target') : '<span class=\"dim\">?</span>';\n    stpBadge = t.stop_hit  === true ? badge('stopped','\u2717 stop') : t.stop_hit  === false ? badge('safe','\u2713 held')   : '<span class=\"dim\">?</span>';\n  }\n  return `<tr>\n    <td>${timeStr(t.scanned_at)}</td>\n    <td><strong>${t.symbol||'\u2014'}</strong></td>\n    <td><span class=\"dim\">${t.chain||''}</span></td>\n    <td>${rat}</td><td>${t.age_minutes??'\u2014'}m</td>\n    <td>${fmt(t.price_usd,8)}</td>\n    <td><span class=\"${vlCls}\">${fmt(t.vl_ratio,1)}\u00d7</span></td>\n    <td>${volTr}</td><td>${micro}</td><td>${fmt(t.buy_pct_5m,0)}%</td>\n    <td>${out5}</td><td>${out15}</td><td>${out30}</td>\n    <td>${tgtBadge}</td><td>${stpBadge}</td>\n    <td style=\"max-width:260px;font-size:0.75em;color:#888;white-space:normal\">${t.reasoning||''}</td>\n  </tr>`;\n}).join('');\n\nconst autoState = autoActive\n  ? '<span class=\"auto-on\">\u25cf RUNNING</span>'\n  : '<span class=\"auto-off\">\u25cb STOPPED</span>';\n\nconst html = `<!DOCTYPE html><html><head><meta charset=\"utf-8\">\n<meta http-equiv=\"refresh\" content=\"60\">\n<title>DEX Scanner \u2014 Status</title>\n<style>\n*{box-sizing:border-box}\nbody{background:#0d0d0d;color:#e0e0e0;font-family:'SF Mono',Consolas,monospace;margin:0;padding:16px;font-size:13px}\nh2{color:#fff;margin:0 0 4px;font-size:1.1em;font-weight:600}\n.header{background:#141414;border:1px solid #2a2a2a;border-radius:8px;padding:14px 18px;margin-bottom:18px}\n.meta{font-size:0.75em;color:#444;margin-top:2px}\n.stat-row{display:flex;gap:28px;margin-top:12px;flex-wrap:wrap}\n.stat .val{font-size:1.5em;font-weight:700;color:#fff;line-height:1.1}\n.stat .lbl{font-size:0.7em;color:#555;text-transform:uppercase;letter-spacing:.5px}\n.auto-row{margin-top:10px;font-size:0.8em}\n.auto-on{color:#00e676}.auto-off{color:#ef5350}\n.interesting{color:#00e676}.watch{color:#ffab40}.dim{color:#444}\n.pos{color:#00e676}.neg{color:#ef5350}\n.section{font-size:0.7em;color:#555;text-transform:uppercase;letter-spacing:1px;margin:0 0 6px}\ntable{width:100%;border-collapse:collapse;margin-bottom:28px;font-size:0.78em}\nth{background:#141414;color:#555;text-align:left;padding:5px 8px;border-bottom:1px solid #222;font-weight:500;white-space:nowrap}\ntd{padding:4px 8px;border-bottom:1px solid #181818;vertical-align:top;white-space:nowrap}\ntr:hover td{background:#181818}\n.badge{display:inline-block;padding:1px 5px;border-radius:3px;font-size:0.72em;font-weight:700;white-space:nowrap}\n.badge-interesting{background:#00e67618;color:#00e676;border:1px solid #00e67644}\n.badge-watch{background:#ffab4018;color:#ffab40;border:1px solid #ffab4044}\n.badge-auto{background:#2196f318;color:#64b5f6;border:1px solid #2196f344}\n.badge-manual{background:#33333318;color:#555;border:1px solid #33333344}\n.badge-hit{background:#00e67618;color:#00e676;border:1px solid #00e67644}\n.badge-miss{background:#ef535018;color:#ef5350;border:1px solid #ef535044}\n.badge-stopped{background:#ef535018;color:#ef5350;border:1px solid #ef535044}\n.badge-safe{background:#00e67618;color:#00e676;border:1px solid #00e67644}\n.flag{font-size:0.7em;color:#ff9800}\na{color:#64b5f6;text-decoration:none}a:hover{text-decoration:underline}\n</style></head><body>\n<div class=\"header\">\n  <h2>DEX Scanner \u2014 Status</h2>\n  <div class=\"meta\">${ts} ET &nbsp;\u00b7&nbsp; auto-refreshes every 60s</div>\n  <div class=\"stat-row\">\n    <div class=\"stat\"><div class=\"val\">${totalScans}</div><div class=\"lbl\">total scans</div></div>\n    <div class=\"stat\"><div class=\"val\">${scansToday}</div><div class=\"lbl\">scans today</div></div>\n    <div class=\"stat\"><div class=\"val\">${signalsToday}</div><div class=\"lbl\">signals today</div></div>\n    <div class=\"stat\"><div class=\"val interesting\">${interestingToday}</div><div class=\"lbl\">interesting today</div></div>\n  </div>\n  <div class=\"auto-row\">Auto-scanner: ${autoState} &nbsp;\u00b7&nbsp;\n    <a href=\"/webhook/dex-scan-control?action=start\">start</a> /\n    <a href=\"/webhook/dex-scan-control?action=stop\">stop</a>\n  </div>\n</div>\n<p class=\"section\">Scan History (last 48)</p>\n<table>\n  <tr><th>Time</th><th>Src</th><th>Total</th><th>LLM</th><th>Stale</th><th>INTER</th><th>WATCH</th><th>SKIP</th></tr>\n  ${scanRows || '<tr><td colspan=\"8\" style=\"color:#444;text-align:center;padding:12px\">No scans yet</td></tr>'}\n</table>\n<p class=\"section\">Signal Log \u2014 WATCH &amp; INTERESTING (last 200)</p>\n<table>\n  <tr><th>Time</th><th>Symbol</th><th>Chain</th><th>Rating</th><th>Age</th><th>Price</th><th>V/L</th><th>Vol</th><th>Micro</th><th>Buy%</th><th>+5m</th><th>+15m</th><th>+30m</th><th>Target</th><th>Stop</th><th>Reasoning</th></tr>\n  ${sigRows || '<tr><td colspan=\"16\" style=\"color:#444;text-align:center;padding:12px\">No signals yet</td></tr>'}\n</table>\n</body></html>`;\nreturn [{ json: { html } }];\n"
+                }
+            },
+            {
+                "id": "status-respond",
+                "name": "Send Status Response",
+                "type": "n8n-nodes-base.respondToWebhook",
+                "typeVersion": 1.1,
+                "position": [
+                    1120,
+                    300
+                ],
+                "parameters": {
+                    "respondWith": "text",
+                    "responseBody": "={{ $json.html }}",
+                    "options": {
+                        "responseHeaders": {
+                            "entries": [
+                                {
+                                    "name": "Content-Type",
+                                    "value": "text/html; charset=utf-8"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        ],
+        "connections": {
+            "Status Webhook": {
+                "main": [
+                    [
+                        {
+                            "node": "Fetch Status Data",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            },
+            "Fetch Status Data": {
+                "main": [
+                    [
+                        {
+                            "node": "Check Auto-Scanner",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            },
+            "Check Auto-Scanner": {
+                "main": [
+                    [
+                        {
+                            "node": "Build Status HTML",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            },
+            "Build Status HTML": {
+                "main": [
+                    [
+                        {
+                            "node": "Send Status Response",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            }
+        },
+        "authors": "David Barley",
+        "name": null,
+        "description": null,
+        "autosaved": false,
+        "workflowPublishHistory": [
+            {
+                "createdAt": "2026-05-03T07:59:38.266Z",
+                "id": 84,
+                "workflowId": "GwTtxU5MgTEoeqHK",
+                "versionId": "5d3b0e0c-77ae-4ff9-ba1a-bcf4048f9def",
+                "event": "activated",
+                "userId": "09d63983-7baf-41ca-b8c7-7f2322a225fa"
+            },
+            {
+                "createdAt": "2026-05-03T07:59:38.263Z",
+                "id": 83,
+                "workflowId": "GwTtxU5MgTEoeqHK",
+                "versionId": "5d3b0e0c-77ae-4ff9-ba1a-bcf4048f9def",
+                "event": "deactivated",
+                "userId": "09d63983-7baf-41ca-b8c7-7f2322a225fa"
+            }
+        ]
+    }
+}

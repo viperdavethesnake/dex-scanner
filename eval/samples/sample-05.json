@@ -1,0 +1,32 @@
+{
+  "sample": 61200,
+  "timestamp": "17:24:18",
+  "elapsed_s": 40,
+  "total_launches": 6,
+  "interesting": 0,
+  "watch": 2,
+  "skip": 1,
+  "stale": 3,
+  "tokens": [
+    {
+      "symbol": "CATHOLIC",
+      "rating": "WATCH",
+      "reasoning": "Rising volume and 59% buy pressure support a scalp, but fading micro and an 8.86% 5m pullback after a massive run indicate short-term distribution that may stabilize."
+    },
+    {
+      "symbol": "BUTT",
+      "rating": "WATCH",
+      "reasoning": "The extreme volume-to-liquidity multiple is the only structural red flag, but strong buy pressure and flat volume suggest a potential cooldown bounce in the next few candles."
+    },
+    {
+      "symbol": "MOGCOIN",
+      "rating": "SKIP",
+      "reasoning": "Falling volume combined with a declining micro and a 20% 1-hour drop confirms a clear momentum breakdown and exit signal."
+    }
+  ],
+  "analysis": "1. CATHOLIC \u2014 WATCH \u2014 Rising volume and 59% buy pressure support a scalp, but fading micro and an 8.86% 5m pullback after a massive run indicate short-term distribution that may stabilize.2. BUTT \u2014 WATCH \u2014 The extreme volume-to-liquidity multiple is the only structural red flag, but strong buy pressure and flat volume suggest a potential cooldown bounce in the next few candles.3. MOGCOIN \u2014 SKIP \u2014 Falling volume combined with a declining micro and a 20% 1-hour drop confirms a clear momentum breakdown and exit signal.",
+  "card_symbols": [
+    "catholic",
+    "Butt"
+  ]
+}

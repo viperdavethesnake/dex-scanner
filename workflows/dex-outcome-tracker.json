@@ -1,0 +1,445 @@
+{
+    "updatedAt": "2026-05-11T03:37:15.294Z",
+    "createdAt": "2026-05-03T07:42:10.567Z",
+    "id": "3lSEjGrScilFstmS",
+    "name": "DEX Outcome Tracker",
+    "description": null,
+    "active": true,
+    "isArchived": false,
+    "nodes": [
+        {
+            "id": "ot-sched",
+            "name": "Schedule Trigger",
+            "type": "n8n-nodes-base.scheduleTrigger",
+            "typeVersion": 1.2,
+            "position": [
+                240,
+                300
+            ],
+            "parameters": {
+                "rule": {
+                    "interval": [
+                        {
+                            "field": "minutes",
+                            "minutesInterval": 5
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "id": "ot-query",
+            "name": "Fetch Pending Outcomes",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                460,
+                300
+            ],
+            "credentials": {
+                "postgres": {
+                    "id": "XYzW7KIajqvbnqbT",
+                    "name": "DEX TimescaleDB"
+                }
+            },
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "SELECT address, pair_address, symbol, chain, scanned_at::text as scanned_at,\n       price_usd, target_price, stop_price,\n       CASE WHEN price_at_5m IS NULL  AND scanned_at < now() - interval '5 minutes'  THEN '5m'\n            WHEN price_at_15m IS NULL AND scanned_at < now() - interval '15 minutes' THEN '15m'\n            WHEN price_at_30m IS NULL AND scanned_at < now() - interval '30 minutes' THEN '30m'\n            ELSE NULL END as backfill_window\nFROM token_signals\nWHERE price_at_30m IS NULL\n  AND scanned_at > now() - interval '48 hours'\n  AND pair_address IS NOT NULL\nORDER BY\n  (price_at_5m IS NULL)::int ASC,   -- 0 = has 5m (needs 15m/30m), 1 = needs 5m; prioritise 15m/30m first\n  scanned_at DESC                    -- newest first within each group (live DEX data more likely)\nLIMIT 50",
+                "options": {}
+            }
+        },
+        {
+            "id": "ot-filter",
+            "name": "Skip If No Pending",
+            "type": "n8n-nodes-base.filter",
+            "typeVersion": 2,
+            "position": [
+                680,
+                300
+            ],
+            "parameters": {
+                "conditions": {
+                    "options": {
+                        "caseSensitive": true,
+                        "leftValue": "",
+                        "typeValidation": "strict"
+                    },
+                    "conditions": [
+                        {
+                            "leftValue": "={{ $json.backfill_window }}",
+                            "rightValue": "",
+                            "operator": {
+                                "type": "string",
+                                "operation": "notEmpty"
+                            }
+                        }
+                    ],
+                    "combinator": "and"
+                }
+            }
+        },
+        {
+            "id": "ot-fetch",
+            "name": "Fetch Current Price",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                900,
+                300
+            ],
+            "parameters": {
+                "method": "GET",
+                "url": "=https://api.dexscreener.com/latest/dex/pairs/{{ $json.chain }}/{{ $json.pair_address }}",
+                "options": {
+                    "timeout": 10000
+                },
+                "response": {
+                    "response": {
+                        "responseFormat": "json"
+                    }
+                }
+            },
+            "onError": "continueRegularOutput"
+        },
+        {
+            "id": "ot-update",
+            "name": "Update Outcome",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                1340,
+                300
+            ],
+            "credentials": {
+                "postgres": {
+                    "id": "XYzW7KIajqvbnqbT",
+                    "name": "DEX TimescaleDB"
+                }
+            },
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "\nUPDATE token_signals SET\n  price_at_5m  = CASE WHEN '{{ $json.win }}' = '5m'  AND price_at_5m  IS NULL THEN {{ $json.cur_price }}::numeric ELSE price_at_5m  END,\n  price_at_15m = CASE WHEN '{{ $json.win }}' = '15m' AND price_at_15m IS NULL THEN {{ $json.cur_price }}::numeric ELSE price_at_15m END,\n  price_at_30m = CASE WHEN '{{ $json.win }}' = '30m' AND price_at_30m IS NULL THEN {{ $json.cur_price }}::numeric ELSE price_at_30m END,\n  target_hit   = COALESCE(target_hit, {{ $json.target_hit !== null ? $json.target_hit : 'NULL' }}::boolean),\n  stop_hit     = COALESCE(stop_hit,   {{ $json.stop_hit   !== null ? $json.stop_hit   : 'NULL' }}::boolean)\nWHERE scanned_at = '{{ $json.scanned_at }}'::timestamptz\n  AND address   = '{{ $json.address }}'\n",
+                "options": {}
+            }
+        },
+        {
+            "id": "ot-prep",
+            "name": "Prep Update Data",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1120,
+                300
+            ],
+            "parameters": {
+                "jsCode": "\nconst db  = $('Fetch Pending Outcomes').item.json;\nconst dex = $input.first().json;\n\nconst pair     = dex.pairs && dex.pairs[0];\nconst curPrice = pair ? parseFloat(pair.priceUsd) : null;\nif (!curPrice || isNaN(curPrice)) return [];\n\nconst win         = db.backfill_window;\nconst targetPrice = db.target_price != null ? parseFloat(db.target_price) : null;\nconst stopPrice   = db.stop_price   != null ? parseFloat(db.stop_price)   : null;\n\n// Compute outcome flags (only set if we have a target/stop and this is the 5m window \u2014 first fill)\nconst targetHit = (targetPrice != null && curPrice >= targetPrice) ? true : null;\nconst stopHit   = (stopPrice   != null && curPrice <= stopPrice)   ? true : null;\n\nreturn [{ json: {\n  scanned_at:  db.scanned_at,\n  address:     db.address,\n  win,\n  cur_price:   curPrice,\n  target_hit:  targetHit,\n  stop_hit:    stopHit\n}}];\n"
+            }
+        }
+    ],
+    "connections": {
+        "Schedule Trigger": {
+            "main": [
+                [
+                    {
+                        "node": "Fetch Pending Outcomes",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Fetch Pending Outcomes": {
+            "main": [
+                [
+                    {
+                        "node": "Skip If No Pending",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Skip If No Pending": {
+            "main": [
+                [
+                    {
+                        "node": "Fetch Current Price",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Fetch Current Price": {
+            "main": [
+                [
+                    {
+                        "node": "Prep Update Data",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Prep Update Data": {
+            "main": [
+                [
+                    {
+                        "node": "Update Outcome",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "staticData": {
+        "node:Schedule Trigger": {
+            "recurrenceRules": []
+        }
+    },
+    "meta": null,
+    "pinData": null,
+    "versionId": "7c1251b7-ae76-4666-8314-ec4d5189ad40",
+    "activeVersionId": "7c1251b7-ae76-4666-8314-ec4d5189ad40",
+    "versionCounter": 21,
+    "triggerCount": 1,
+    "shared": [
+        {
+            "updatedAt": "2026-05-03T07:42:10.569Z",
+            "createdAt": "2026-05-03T07:42:10.569Z",
+            "role": "workflow:owner",
+            "workflowId": "3lSEjGrScilFstmS",
+            "projectId": "hVEENOfO4Pv55sSG",
+            "project": {
+                "updatedAt": "2026-04-25T21:53:53.357Z",
+                "createdAt": "2026-04-07T04:43:40.211Z",
+                "id": "hVEENOfO4Pv55sSG",
+                "name": "David Barley <microbarley@icloud.com>",
+                "type": "personal",
+                "icon": null,
+                "description": null,
+                "creatorId": "09d63983-7baf-41ca-b8c7-7f2322a225fa"
+            }
+        }
+    ],
+    "tags": [],
+    "activeVersion": {
+        "updatedAt": "2026-05-11T03:37:15.294Z",
+        "createdAt": "2026-05-11T03:37:15.294Z",
+        "versionId": "7c1251b7-ae76-4666-8314-ec4d5189ad40",
+        "workflowId": "3lSEjGrScilFstmS",
+        "nodes": [
+            {
+                "id": "ot-sched",
+                "name": "Schedule Trigger",
+                "type": "n8n-nodes-base.scheduleTrigger",
+                "typeVersion": 1.2,
+                "position": [
+                    240,
+                    300
+                ],
+                "parameters": {
+                    "rule": {
+                        "interval": [
+                            {
+                                "field": "minutes",
+                                "minutesInterval": 5
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "id": "ot-query",
+                "name": "Fetch Pending Outcomes",
+                "type": "n8n-nodes-base.postgres",
+                "typeVersion": 2.5,
+                "position": [
+                    460,
+                    300
+                ],
+                "credentials": {
+                    "postgres": {
+                        "id": "XYzW7KIajqvbnqbT",
+                        "name": "DEX TimescaleDB"
+                    }
+                },
+                "parameters": {
+                    "operation": "executeQuery",
+                    "query": "SELECT address, pair_address, symbol, chain, scanned_at::text as scanned_at,\n       price_usd, target_price, stop_price,\n       CASE WHEN price_at_5m IS NULL  AND scanned_at < now() - interval '5 minutes'  THEN '5m'\n            WHEN price_at_15m IS NULL AND scanned_at < now() - interval '15 minutes' THEN '15m'\n            WHEN price_at_30m IS NULL AND scanned_at < now() - interval '30 minutes' THEN '30m'\n            ELSE NULL END as backfill_window\nFROM token_signals\nWHERE price_at_30m IS NULL\n  AND scanned_at > now() - interval '48 hours'\n  AND pair_address IS NOT NULL\nORDER BY\n  (price_at_5m IS NULL)::int ASC,   -- 0 = has 5m (needs 15m/30m), 1 = needs 5m; prioritise 15m/30m first\n  scanned_at DESC                    -- newest first within each group (live DEX data more likely)\nLIMIT 50",
+                    "options": {}
+                }
+            },
+            {
+                "id": "ot-filter",
+                "name": "Skip If No Pending",
+                "type": "n8n-nodes-base.filter",
+                "typeVersion": 2,
+                "position": [
+                    680,
+                    300
+                ],
+                "parameters": {
+                    "conditions": {
+                        "options": {
+                            "caseSensitive": true,
+                            "leftValue": "",
+                            "typeValidation": "strict"
+                        },
+                        "conditions": [
+                            {
+                                "leftValue": "={{ $json.backfill_window }}",
+                                "rightValue": "",
+                                "operator": {
+                                    "type": "string",
+                                    "operation": "notEmpty"
+                                }
+                            }
+                        ],
+                        "combinator": "and"
+                    }
+                }
+            },
+            {
+                "id": "ot-fetch",
+                "name": "Fetch Current Price",
+                "type": "n8n-nodes-base.httpRequest",
+                "typeVersion": 4.2,
+                "position": [
+                    900,
+                    300
+                ],
+                "parameters": {
+                    "method": "GET",
+                    "url": "=https://api.dexscreener.com/latest/dex/pairs/{{ $json.chain }}/{{ $json.pair_address }}",
+                    "options": {
+                        "timeout": 10000
+                    },
+                    "response": {
+                        "response": {
+                            "responseFormat": "json"
+                        }
+                    }
+                },
+                "onError": "continueRegularOutput"
+            },
+            {
+                "id": "ot-update",
+                "name": "Update Outcome",
+                "type": "n8n-nodes-base.postgres",
+                "typeVersion": 2.5,
+                "position": [
+                    1340,
+                    300
+                ],
+                "credentials": {
+                    "postgres": {
+                        "id": "XYzW7KIajqvbnqbT",
+                        "name": "DEX TimescaleDB"
+                    }
+                },
+                "parameters": {
+                    "operation": "executeQuery",
+                    "query": "\nUPDATE token_signals SET\n  price_at_5m  = CASE WHEN '{{ $json.win }}' = '5m'  AND price_at_5m  IS NULL THEN {{ $json.cur_price }}::numeric ELSE price_at_5m  END,\n  price_at_15m = CASE WHEN '{{ $json.win }}' = '15m' AND price_at_15m IS NULL THEN {{ $json.cur_price }}::numeric ELSE price_at_15m END,\n  price_at_30m = CASE WHEN '{{ $json.win }}' = '30m' AND price_at_30m IS NULL THEN {{ $json.cur_price }}::numeric ELSE price_at_30m END,\n  target_hit   = COALESCE(target_hit, {{ $json.target_hit !== null ? $json.target_hit : 'NULL' }}::boolean),\n  stop_hit     = COALESCE(stop_hit,   {{ $json.stop_hit   !== null ? $json.stop_hit   : 'NULL' }}::boolean)\nWHERE scanned_at = '{{ $json.scanned_at }}'::timestamptz\n  AND address   = '{{ $json.address }}'\n",
+                    "options": {}
+                }
+            },
+            {
+                "id": "ot-prep",
+                "name": "Prep Update Data",
+                "type": "n8n-nodes-base.code",
+                "typeVersion": 2,
+                "position": [
+                    1120,
+                    300
+                ],
+                "parameters": {
+                    "jsCode": "\nconst db  = $('Fetch Pending Outcomes').item.json;\nconst dex = $input.first().json;\n\nconst pair     = dex.pairs && dex.pairs[0];\nconst curPrice = pair ? parseFloat(pair.priceUsd) : null;\nif (!curPrice || isNaN(curPrice)) return [];\n\nconst win         = db.backfill_window;\nconst targetPrice = db.target_price != null ? parseFloat(db.target_price) : null;\nconst stopPrice   = db.stop_price   != null ? parseFloat(db.stop_price)   : null;\n\n// Compute outcome flags (only set if we have a target/stop and this is the 5m window \u2014 first fill)\nconst targetHit = (targetPrice != null && curPrice >= targetPrice) ? true : null;\nconst stopHit   = (stopPrice   != null && curPrice <= stopPrice)   ? true : null;\n\nreturn [{ json: {\n  scanned_at:  db.scanned_at,\n  address:     db.address,\n  win,\n  cur_price:   curPrice,\n  target_hit:  targetHit,\n  stop_hit:    stopHit\n}}];\n"
+                }
+            }
+        ],
+        "connections": {
+            "Schedule Trigger": {
+                "main": [
+                    [
+                        {
+                            "node": "Fetch Pending Outcomes",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            },
+            "Fetch Pending Outcomes": {
+                "main": [
+                    [
+                        {
+                            "node": "Skip If No Pending",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            },
+            "Skip If No Pending": {
+                "main": [
+                    [
+                        {
+                            "node": "Fetch Current Price",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            },
+            "Fetch Current Price": {
+                "main": [
+                    [
+                        {
+                            "node": "Prep Update Data",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            },
+            "Prep Update Data": {
+                "main": [
+                    [
+                        {
+                            "node": "Update Outcome",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            }
+        },
+        "authors": "David Barley",
+        "name": null,
+        "description": null,
+        "autosaved": false,
+        "workflowPublishHistory": [
+            {
+                "createdAt": "2026-05-11T03:37:15.307Z",
+                "id": 125,
+                "workflowId": "3lSEjGrScilFstmS",
+                "versionId": "7c1251b7-ae76-4666-8314-ec4d5189ad40",
+                "event": "activated",
+                "userId": "09d63983-7baf-41ca-b8c7-7f2322a225fa"
+            },
+            {
+                "createdAt": "2026-05-11T03:37:15.304Z",
+                "id": 124,
+                "workflowId": "3lSEjGrScilFstmS",
+                "versionId": "7c1251b7-ae76-4666-8314-ec4d5189ad40",
+                "event": "deactivated",
+                "userId": "09d63983-7baf-41ca-b8c7-7f2322a225fa"
+            }
+        ]
+    }
+}

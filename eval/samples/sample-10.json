@@ -1,0 +1,36 @@
+{
+  "sample": 61200,
+  "timestamp": "17:53:04",
+  "elapsed_s": 29,
+  "total_launches": 9,
+  "interesting": 0,
+  "watch": 1,
+  "skip": 3,
+  "stale": 5,
+  "tokens": [
+    {
+      "symbol": "CATHOLIC",
+      "rating": "SKIP",
+      "reasoning": "Two clear signal failures with falling volume and fading micro momentum indicate an exit pattern rather than a scalp opportunity."
+    },
+    {
+      "symbol": "BUTT",
+      "rating": "SKIP",
+      "reasoning": "Dual signal failures including severely overextended volume/liquidity ratio and sub-52% buy pressure point to unsustainable momentum and high risk of immediate reversal."
+    },
+    {
+      "symbol": "BUTTCRACK",
+      "rating": "WATCH",
+      "reasoning": "Single volume/liquidity ratio overshoot is a soft failure that often normalizes quickly, while strong buy pressure and upward micro momentum suggest a viable 5\u201310 minute scalp setup."
+    },
+    {
+      "symbol": "BREASTCOIN",
+      "rating": "SKIP",
+      "reasoning": "Two signal failures including a significant one-hour drawdown and overextended volume/liquidity ratio confirm broken momentum and poor risk/reward for scalping."
+    }
+  ],
+  "analysis": "1. CATHOLIC \u2014 SKIP \u2014 Two clear signal failures with falling volume and fading micro momentum indicate an exit pattern rather than a scalp opportunity.2. BUTT \u2014 SKIP \u2014 Dual signal failures including severely overextended volume/liquidity ratio and sub-52% buy pressure point to unsustainable momentum and high risk of immediate reversal.3. BUTTCRACK \u2014 WATCH \u2014 Single volume/liquidity ratio overshoot is a soft failure that often normalizes quickly, while strong buy pressure and upward micro momentum suggest a viable 5\u201310 minute scalp setup.4. BREASTCOIN \u2014 SKIP \u2014 Two signal failures including a significant one-hour drawdown and overextended volume/liquidity ratio confirm broken momentum and poor risk/reward for scalping.",
+  "card_symbols": [
+    "buttcrack"
+  ]
+}

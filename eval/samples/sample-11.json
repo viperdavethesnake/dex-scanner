@@ -1,0 +1,13 @@
+{
+  "sample": 61200,
+  "timestamp": "17:58:33",
+  "elapsed_s": 29,
+  "total_launches": 8,
+  "interesting": 0,
+  "watch": 0,
+  "skip": 4,
+  "stale": 4,
+  "tokens": [],
+  "analysis": "1. catholic \u2014 SKIP \u2014 Volume is collapsing while price momentum fades and buy pressure sits well below the 52% threshold, indicating clear distribution.2. Butt \u2014 SKIP \u2014 Buy pressure remains below the 52% requirement and the volume/liquidity ratio is excessively stretched, signaling unsustainable momentum.3. buttcrack \u2014 SKIP \u2014 Both volume and micro price action are declining while the V/L ratio is out of range, confirming a clear exit signal.4. Breastcoin \u2014 SKIP \u2014 The token shows a significant 1-hour drawdown alongside an overstretched volume/liquidity ratio, indicating broken momentum and high downside risk.",
+  "card_symbols": []
+}

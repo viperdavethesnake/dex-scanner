@@ -1,0 +1,225 @@
+{
+    "updatedAt": "2026-05-03T07:53:56.061Z",
+    "createdAt": "2026-05-03T07:41:43.219Z",
+    "id": "2MFJc5cEvhQZNDlc",
+    "name": "DEX Scan Control",
+    "description": null,
+    "active": true,
+    "isArchived": false,
+    "nodes": [
+        {
+            "id": "ctrl-webhook",
+            "name": "Control Webhook",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2,
+            "position": [
+                240,
+                300
+            ],
+            "webhookId": "dex-scan-ctrl",
+            "parameters": {
+                "path": "dex-scan-control",
+                "httpMethod": "GET",
+                "responseMode": "responseNode"
+            }
+        },
+        {
+            "id": "ctrl-action",
+            "name": "Toggle Auto-Scanner",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                460,
+                300
+            ],
+            "credentials": {
+                "httpHeaderAuth": {
+                    "id": "OlrQE8mMD3u9KZ2e",
+                    "name": "n8n API Key"
+                }
+            },
+            "parameters": {
+                "method": "POST",
+                "url": "=http://localhost:5678/api/v1/workflows/svREuu5gTMgumndn/{{ $json.query.action === 'start' ? 'activate' : 'deactivate' }}",
+                "options": {},
+                "authentication": "predefinedCredentialType",
+                "nodeCredentialType": "httpHeaderAuth"
+            }
+        },
+        {
+            "id": "ctrl-respond",
+            "name": "Respond",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1,
+            "position": [
+                680,
+                300
+            ],
+            "parameters": {
+                "respondWith": "text",
+                "responseBody": "={{ $('Control Webhook').first().json.query.action === 'start' ? 'Auto-scanner STARTED \u2014 running every 5 minutes' : 'Auto-scanner STOPPED' }}"
+            }
+        }
+    ],
+    "connections": {
+        "Control Webhook": {
+            "main": [
+                [
+                    {
+                        "node": "Toggle Auto-Scanner",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Toggle Auto-Scanner": {
+            "main": [
+                [
+                    {
+                        "node": "Respond",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "staticData": null,
+    "meta": null,
+    "pinData": null,
+    "versionId": "42eefbe4-58f6-4150-917a-97acafdcb286",
+    "activeVersionId": "42eefbe4-58f6-4150-917a-97acafdcb286",
+    "versionCounter": 11,
+    "triggerCount": 1,
+    "shared": [
+        {
+            "updatedAt": "2026-05-03T07:41:43.220Z",
+            "createdAt": "2026-05-03T07:41:43.220Z",
+            "role": "workflow:owner",
+            "workflowId": "2MFJc5cEvhQZNDlc",
+            "projectId": "hVEENOfO4Pv55sSG",
+            "project": {
+                "updatedAt": "2026-04-25T21:53:53.357Z",
+                "createdAt": "2026-04-07T04:43:40.211Z",
+                "id": "hVEENOfO4Pv55sSG",
+                "name": "David Barley <microbarley@icloud.com>",
+                "type": "personal",
+                "icon": null,
+                "description": null,
+                "creatorId": "09d63983-7baf-41ca-b8c7-7f2322a225fa"
+            }
+        }
+    ],
+    "tags": [],
+    "activeVersion": {
+        "updatedAt": "2026-05-03T07:53:56.062Z",
+        "createdAt": "2026-05-03T07:53:56.062Z",
+        "versionId": "42eefbe4-58f6-4150-917a-97acafdcb286",
+        "workflowId": "2MFJc5cEvhQZNDlc",
+        "nodes": [
+            {
+                "id": "ctrl-webhook",
+                "name": "Control Webhook",
+                "type": "n8n-nodes-base.webhook",
+                "typeVersion": 2,
+                "position": [
+                    240,
+                    300
+                ],
+                "webhookId": "dex-scan-ctrl",
+                "parameters": {
+                    "path": "dex-scan-control",
+                    "httpMethod": "GET",
+                    "responseMode": "responseNode"
+                }
+            },
+            {
+                "id": "ctrl-action",
+                "name": "Toggle Auto-Scanner",
+                "type": "n8n-nodes-base.httpRequest",
+                "typeVersion": 4.2,
+                "position": [
+                    460,
+                    300
+                ],
+                "credentials": {
+                    "httpHeaderAuth": {
+                        "id": "OlrQE8mMD3u9KZ2e",
+                        "name": "n8n API Key"
+                    }
+                },
+                "parameters": {
+                    "method": "POST",
+                    "url": "=http://localhost:5678/api/v1/workflows/svREuu5gTMgumndn/{{ $json.query.action === 'start' ? 'activate' : 'deactivate' }}",
+                    "options": {},
+                    "authentication": "predefinedCredentialType",
+                    "nodeCredentialType": "httpHeaderAuth"
+                }
+            },
+            {
+                "id": "ctrl-respond",
+                "name": "Respond",
+                "type": "n8n-nodes-base.respondToWebhook",
+                "typeVersion": 1,
+                "position": [
+                    680,
+                    300
+                ],
+                "parameters": {
+                    "respondWith": "text",
+                    "responseBody": "={{ $('Control Webhook').first().json.query.action === 'start' ? 'Auto-scanner STARTED \u2014 running every 5 minutes' : 'Auto-scanner STOPPED' }}"
+                }
+            }
+        ],
+        "connections": {
+            "Control Webhook": {
+                "main": [
+                    [
+                        {
+                            "node": "Toggle Auto-Scanner",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            },
+            "Toggle Auto-Scanner": {
+                "main": [
+                    [
+                        {
+                            "node": "Respond",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            }
+        },
+        "authors": "David Barley",
+        "name": null,
+        "description": null,
+        "autosaved": false,
+        "workflowPublishHistory": [
+            {
+                "createdAt": "2026-05-03T07:53:56.085Z",
+                "id": 78,
+                "workflowId": "2MFJc5cEvhQZNDlc",
+                "versionId": "42eefbe4-58f6-4150-917a-97acafdcb286",
+                "event": "activated",
+                "userId": "09d63983-7baf-41ca-b8c7-7f2322a225fa"
+            },
+            {
+                "createdAt": "2026-05-03T07:53:56.081Z",
+                "id": 77,
+                "workflowId": "2MFJc5cEvhQZNDlc",
+                "versionId": "42eefbe4-58f6-4150-917a-97acafdcb286",
+                "event": "deactivated",
+                "userId": "09d63983-7baf-41ca-b8c7-7f2322a225fa"
+            }
+        ]
+    }
+}

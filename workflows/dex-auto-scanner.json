@@ -1,0 +1,241 @@
+{
+    "updatedAt": "2026-05-03T07:40:54.421Z",
+    "createdAt": "2026-05-03T07:40:54.421Z",
+    "id": "svREuu5gTMgumndn",
+    "name": "DEX Auto-Scanner",
+    "description": null,
+    "active": true,
+    "isArchived": false,
+    "nodes": [
+        {
+            "id": "sched-trigger",
+            "name": "Schedule Trigger",
+            "type": "n8n-nodes-base.scheduleTrigger",
+            "typeVersion": 1.2,
+            "position": [
+                240,
+                300
+            ],
+            "parameters": {
+                "rule": {
+                    "interval": [
+                        {
+                            "field": "minutes",
+                            "minutesInterval": 5
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "id": "call-scanner",
+            "name": "Trigger DEX Scan",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                460,
+                300
+            ],
+            "parameters": {
+                "method": "GET",
+                "url": "http://localhost:5678/webhook/dex-scan?source=auto",
+                "options": {
+                    "timeout": 180000
+                },
+                "response": {
+                    "response": {
+                        "responseFormat": "text"
+                    }
+                }
+            }
+        }
+    ],
+    "connections": {
+        "Schedule Trigger": {
+            "main": [
+                [
+                    {
+                        "node": "Trigger DEX Scan",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "staticData": {
+        "node:Schedule Trigger": {
+            "recurrenceRules": []
+        }
+    },
+    "meta": null,
+    "pinData": null,
+    "versionId": "aa8ba206-e133-4f6a-80e0-b2e9d8b45b1d",
+    "activeVersionId": "aa8ba206-e133-4f6a-80e0-b2e9d8b45b1d",
+    "versionCounter": 20,
+    "triggerCount": 1,
+    "shared": [
+        {
+            "updatedAt": "2026-05-03T07:40:54.423Z",
+            "createdAt": "2026-05-03T07:40:54.423Z",
+            "role": "workflow:owner",
+            "workflowId": "svREuu5gTMgumndn",
+            "projectId": "hVEENOfO4Pv55sSG",
+            "project": {
+                "updatedAt": "2026-04-25T21:53:53.357Z",
+                "createdAt": "2026-04-07T04:43:40.211Z",
+                "id": "hVEENOfO4Pv55sSG",
+                "name": "David Barley <microbarley@icloud.com>",
+                "type": "personal",
+                "icon": null,
+                "description": null,
+                "creatorId": "09d63983-7baf-41ca-b8c7-7f2322a225fa"
+            }
+        }
+    ],
+    "tags": [],
+    "activeVersion": {
+        "updatedAt": "2026-05-03T07:40:54.423Z",
+        "createdAt": "2026-05-03T07:40:54.423Z",
+        "versionId": "aa8ba206-e133-4f6a-80e0-b2e9d8b45b1d",
+        "workflowId": "svREuu5gTMgumndn",
+        "nodes": [
+            {
+                "id": "sched-trigger",
+                "name": "Schedule Trigger",
+                "type": "n8n-nodes-base.scheduleTrigger",
+                "typeVersion": 1.2,
+                "position": [
+                    240,
+                    300
+                ],
+                "parameters": {
+                    "rule": {
+                        "interval": [
+                            {
+                                "field": "minutes",
+                                "minutesInterval": 5
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "id": "call-scanner",
+                "name": "Trigger DEX Scan",
+                "type": "n8n-nodes-base.httpRequest",
+                "typeVersion": 4.2,
+                "position": [
+                    460,
+                    300
+                ],
+                "parameters": {
+                    "method": "GET",
+                    "url": "http://localhost:5678/webhook/dex-scan?source=auto",
+                    "options": {
+                        "timeout": 180000
+                    },
+                    "response": {
+                        "response": {
+                            "responseFormat": "text"
+                        }
+                    }
+                }
+            }
+        ],
+        "connections": {
+            "Schedule Trigger": {
+                "main": [
+                    [
+                        {
+                            "node": "Trigger DEX Scan",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            }
+        },
+        "authors": "David Barley",
+        "name": null,
+        "description": null,
+        "autosaved": false,
+        "workflowPublishHistory": [
+            {
+                "createdAt": "2026-05-03T07:53:58.243Z",
+                "id": 79,
+                "workflowId": "svREuu5gTMgumndn",
+                "versionId": "aa8ba206-e133-4f6a-80e0-b2e9d8b45b1d",
+                "event": "activated",
+                "userId": "09d63983-7baf-41ca-b8c7-7f2322a225fa"
+            },
+            {
+                "createdAt": "2026-05-03T07:54:20.264Z",
+                "id": 81,
+                "workflowId": "svREuu5gTMgumndn",
+                "versionId": "aa8ba206-e133-4f6a-80e0-b2e9d8b45b1d",
+                "event": "activated",
+                "userId": "09d63983-7baf-41ca-b8c7-7f2322a225fa"
+            },
+            {
+                "createdAt": "2026-05-10T06:11:00.749Z",
+                "id": 115,
+                "workflowId": "svREuu5gTMgumndn",
+                "versionId": "aa8ba206-e133-4f6a-80e0-b2e9d8b45b1d",
+                "event": "activated",
+                "userId": "09d63983-7baf-41ca-b8c7-7f2322a225fa"
+            },
+            {
+                "createdAt": "2026-05-10T19:39:35.456Z",
+                "id": 117,
+                "workflowId": "svREuu5gTMgumndn",
+                "versionId": "aa8ba206-e133-4f6a-80e0-b2e9d8b45b1d",
+                "event": "activated",
+                "userId": "09d63983-7baf-41ca-b8c7-7f2322a225fa"
+            },
+            {
+                "createdAt": "2026-05-10T20:54:04.090Z",
+                "id": 119,
+                "workflowId": "svREuu5gTMgumndn",
+                "versionId": "aa8ba206-e133-4f6a-80e0-b2e9d8b45b1d",
+                "event": "activated",
+                "userId": "09d63983-7baf-41ca-b8c7-7f2322a225fa"
+            },
+            {
+                "createdAt": "2026-05-03T07:54:01.083Z",
+                "id": 80,
+                "workflowId": "svREuu5gTMgumndn",
+                "versionId": "aa8ba206-e133-4f6a-80e0-b2e9d8b45b1d",
+                "event": "deactivated",
+                "userId": "09d63983-7baf-41ca-b8c7-7f2322a225fa"
+            },
+            {
+                "createdAt": "2026-05-10T06:11:00.743Z",
+                "id": 114,
+                "workflowId": "svREuu5gTMgumndn",
+                "versionId": "aa8ba206-e133-4f6a-80e0-b2e9d8b45b1d",
+                "event": "deactivated",
+                "userId": "09d63983-7baf-41ca-b8c7-7f2322a225fa"
+            },
+            {
+                "createdAt": "2026-05-10T19:24:22.368Z",
+                "id": 116,
+                "workflowId": "svREuu5gTMgumndn",
+                "versionId": "aa8ba206-e133-4f6a-80e0-b2e9d8b45b1d",
+                "event": "deactivated",
+                "userId": "09d63983-7baf-41ca-b8c7-7f2322a225fa"
+            },
+            {
+                "createdAt": "2026-05-10T20:17:20.004Z",
+                "id": 118,
+                "workflowId": "svREuu5gTMgumndn",
+                "versionId": "aa8ba206-e133-4f6a-80e0-b2e9d8b45b1d",
+                "event": "deactivated",
+                "userId": "09d63983-7baf-41ca-b8c7-7f2322a225fa"
+            }
+        ]
+    }
+}
