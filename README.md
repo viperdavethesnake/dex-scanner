@@ -72,11 +72,11 @@ Key results on 2.5 days of out-of-sample validation:
 | File | Contents |
 |---|---|
 | `README.md` | This file — project overview |
-| `THESIS.md` | Trading strategy — what we're doing and why |
-| `ML-FINDINGS.md` | Data analysis and ML model findings |
-| `ROADMAP.md` | What needs to be built next |
-| `DEX-SCANNER.md` | Technical reference — pipeline, filters, signals, APIs |
-| `RESUME.md` | Internal session notes — stack state, next steps |
+| `docs/THESIS.md` | Trading strategy — what we're doing and why |
+| `docs/ML-FINDINGS.md` | Data analysis and ML model findings |
+| `docs/ROADMAP.md` | What needs to be built next |
+| `docs/PIPELINE.md` | Technical reference — pipeline, filters, signals, APIs |
+| `docs/RESUME.md` | Internal session notes — stack state, next steps |
 
 ---
 

@@ -87,7 +87,7 @@ docker compose restart
 - **Workflow ID:** `bZ7P0LR4SML0MUv6`
 - **n8n UI:** `http://192.168.33.231:5678`
 - **Backup:** `workflows/dex-scanner-workflow.json` (all workflows in `workflows/`)
-- **Docs:** `DEX-SCANNER.md`
+- **Docs:** `docs/PIPELINE.md`
 
 ### Updating the workflow via API
 
@@ -111,7 +111,7 @@ curl -s -X PUT http://192.168.33.231:5678/api/v1/workflows/bZ7P0LR4SML0MUv6 \
 n8n UI → workflow menu → Download
 ```
 
-Overwrite `n8n_data/dex-scanner-workflow.json`.
+Overwrite the appropriate file in `workflows/`.
 
 ---
 
@@ -135,7 +135,7 @@ Reset password directly in the SQLite database if needed.
 
 ## Workflow pipeline
 
-Full pipeline details, filter thresholds, signal computation formulas, and safety API specs are in **`DEX-SCANNER.md`**. Summary:
+Full pipeline details, filter thresholds, signal computation formulas, and safety API specs are in **`docs/PIPELINE.md`**. Summary:
 
 ```
 Webhook GET → DexScreener profiles → Filter Base/Solana → Fetch pair data
