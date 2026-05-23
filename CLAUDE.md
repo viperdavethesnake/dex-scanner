@@ -157,4 +157,23 @@ Webhook GET → DexScreener profiles → Filter Base/Solana → Fetch pair data
 
 ---
 
+## Secret handling
+
+**Never hardcode API keys in workflow JSON files or any committed file.**
+
+| Secret | Where it lives | How it reaches runtime |
+|---|---|---|
+| `BIRDEYE_API_KEY` | `.env` (gitignored) | compose `env_file: .env` → container env |
+| `N8N_JWT` | `.env` (gitignored) | read by Claude Code during session only |
+| Birdeye API credential | n8n encrypted credential store (SQLite, not in git) | n8n HTTP Request node credential reference |
+
+**Rules:**
+- All secrets live in `.env` (gitignored). See `.env.example` for the full contract.
+- n8n workflow JSON files must use credential store references (`credentials.httpHeaderAuth.id`), never raw key values in `headerParameters`.
+- A `gitleaks` pre-commit hook is installed — it will block any commit containing detected secrets. If you get a false positive, add the pattern to `.gitleaksignore`, do not disable the hook.
+- When updating workflows via the n8n API, always pull the current workflow first, patch in-memory, and PUT back. Never reconstruct from scratch — credential references are stored in node data and must be preserved.
+- If a key is ever found hardcoded in a committed file: rotate immediately, strip from working tree, commit the strip, then clean git history with `git filter-repo`.
+
+---
+
 ## Do not use the advisor() tool in this project.

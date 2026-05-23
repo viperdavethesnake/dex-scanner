@@ -1,6 +1,6 @@
 # DEX Scanner — Resume
 
-**Last updated:** 2026-05-17 (end of session)
+**Last updated:** 2026-05-23 (end of session)
 
 ---
 
@@ -290,3 +290,25 @@ GROUP BY 1, 2 ORDER BY 1, 2;
 ## Status page
 
 `http://192.168.33.231:5678/webhook/dex-status` — scan history + signal log, auto-refreshes 60s.
+
+---
+
+## Repo history purge (2026-05-23)
+
+**What happened:** Birdeye API key `129b43ea...` was hardcoded in `workflows/dex-birdeye-enricher.json` and `workflows/dex-deep-dive-workflow.json` and committed to the public GitHub repo. Discovered and rotated immediately.
+
+**What was done:**
+1. Key revoked at bds.birdeye.so — new key in `.env` (gitignored)
+2. New key stored in n8n credential store (`Birdeye API`, ID `LWcHDmU166QRmUAv`) — workflow JSONs now reference it by ID, no raw value in any file
+3. Full git history purged via orphan branch — repo now has a single clean initial commit (`98ebfd5`)
+4. All old tags deleted from remote (`v1.0`, `v1.0-pre-major-changes`, `v6-filter-baseline`, `v9-ml-baseline`)
+5. `gitleaks` pre-commit hook installed — blocks future secret commits
+6. `.env.example` added documenting the secret contract
+7. CLAUDE.md updated with secret-handling rules
+
+**Backups (on host, not in repo):**
+- `~/dex-scanner-backup-20260523-011254.tar.gz` — working tree snapshot
+- `~/dex-scanner-remote-mirror-20260523-011307.git` — full old history mirror
+- `~/dex-scanner-audit-logs/PHASE1-PREFLIGHT-REPORT-20260523.md` — full pre-purge audit
+
+**Birdeye Solana 400s:** Separate issue — `token_overview` for Solana returns `"Compute units usage limit exceeded"` on current plan. Base calls work fine. Needs plan-tier investigation or endpoint substitution.
