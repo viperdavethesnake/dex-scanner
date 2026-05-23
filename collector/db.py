@@ -19,10 +19,35 @@ INSERT INTO raw_signals (
     volume_5m, volume_1h, volume_6h,
     price_ch_5m, price_ch_1h, price_ch_6h,
     buys_1h, sells_1h, buys_5m, sells_5m,
-    vl_ratio, vol_trend, vol_trend_pct, micro_trend, buy_pct_5m, buy_pct_1h
+    vl_ratio, vol_trend, vol_trend_pct, micro_trend, buy_pct_5m, buy_pct_1h,
+    unique_traders_1h, net_inflow_usd, birdeye_enriched
 ) VALUES %s
 ON CONFLICT (token_address, pair_address, scanned_at) DO NOTHING
 """
+
+LOG_BIRDEYE_SQL = """
+INSERT INTO birdeye_calls
+    (called_at, endpoint, chain, address, http_status, cu_consumed, response_ms, error_message)
+VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+"""
+
+# Migration statements run at every collector startup (all idempotent)
+_MIGRATE_STMTS = [
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS unique_traders_1h INT",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS net_inflow_usd NUMERIC(14,2)",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS birdeye_enriched BOOLEAN DEFAULT FALSE",
+    """CREATE TABLE IF NOT EXISTS birdeye_calls (
+        called_at      TIMESTAMPTZ NOT NULL,
+        endpoint       TEXT        NOT NULL,
+        chain          TEXT        NOT NULL,
+        address        TEXT,
+        http_status    INT,
+        cu_consumed    INT,
+        response_ms    INT,
+        error_message  TEXT
+    )""",
+    "SELECT create_hypertable('birdeye_calls', 'called_at', if_not_exists => TRUE)",
+]
 
 PENDING_SQL = """
 SELECT id, scanned_at, chain, pair_address, price_usd
@@ -39,6 +64,33 @@ SET price_at_5m = %s,
     outcome_pct = CASE WHEN %s > 0 THEN (%s - price_usd) / price_usd * 100 ELSE NULL END
 WHERE id = %s AND scanned_at = %s
 """
+
+
+def migrate(conn) -> None:
+    """Apply idempotent schema migrations. Call once at startup before the poll loop."""
+    with conn.cursor() as cur:
+        for stmt in _MIGRATE_STMTS:
+            cur.execute(stmt)
+    conn.commit()
+    log.info("migrate: schema up to date")
+
+
+def log_birdeye_call(conn, called_at, chain: str, address: str,
+                     http_status, cu_consumed, response_ms, error_message) -> None:
+    """Insert one row into birdeye_calls. Never raises."""
+    try:
+        with conn.cursor() as cur:
+            cur.execute(LOG_BIRDEYE_SQL, (
+                called_at, "/defi/token_overview", chain, address,
+                http_status, cu_consumed, response_ms, error_message,
+            ))
+        conn.commit()
+    except Exception as e:
+        log.warning("birdeye: failed to log call for %s: %s", address[:8] if address else "?", e)
+        try:
+            conn.rollback()
+        except Exception:
+            pass
 
 
 def connect(retries=10, delay=5):
@@ -83,6 +135,7 @@ def bulk_insert(conn, tokens: List[Token], scanned_at: datetime) -> int:
             t.buys_1h, t.sells_1h, t.buys_5m, t.sells_5m,
             t.vl_ratio, t.vol_trend, t.vol_trend_pct, t.micro_trend,
             t.buy_pct_5m, t.buy_pct_1h,
+            t.unique_traders_1h, t.net_inflow_usd, t.birdeye_enriched,
         ))
     with conn.cursor() as cur:
         psycopg2.extras.execute_values(cur, INSERT_SQL, rows)

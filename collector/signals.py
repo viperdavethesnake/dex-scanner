@@ -40,6 +40,11 @@ class Token:
     buy_pct_5m: Optional[float] = None
     buy_pct_1h: Optional[float] = None
 
+    # Birdeye enrichment (Base-only, optional)
+    unique_traders_1h: Optional[int] = None
+    net_inflow_usd: Optional[float] = None
+    birdeye_enriched: bool = False
+
 
 def _safe_float(v, default=0.0):
     try:

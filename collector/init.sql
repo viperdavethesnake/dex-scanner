@@ -42,3 +42,22 @@ SELECT create_hypertable('raw_signals', 'scanned_at', if_not_exists => TRUE);
 CREATE INDEX IF NOT EXISTS idx_rs_token_time  ON raw_signals (token_address, scanned_at DESC);
 CREATE INDEX IF NOT EXISTS idx_rs_pending     ON raw_signals (scanned_at DESC) WHERE price_at_5m IS NULL;
 CREATE UNIQUE INDEX IF NOT EXISTS idx_rs_dedup ON raw_signals (token_address, pair_address, scanned_at);
+
+-- Birdeye enrichment columns (added 2026-05-23)
+-- Migration also runs at collector startup via db.migrate() — these are idempotent.
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS unique_traders_1h  INT;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS net_inflow_usd     NUMERIC(14,2);
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS birdeye_enriched   BOOLEAN DEFAULT FALSE;
+
+-- Audit log for every Birdeye API call (success or failure)
+CREATE TABLE IF NOT EXISTS birdeye_calls (
+    called_at      TIMESTAMPTZ NOT NULL,
+    endpoint       TEXT        NOT NULL,
+    chain          TEXT        NOT NULL,
+    address        TEXT,
+    http_status    INT,
+    cu_consumed    INT,
+    response_ms    INT,
+    error_message  TEXT
+);
+SELECT create_hypertable('birdeye_calls', 'called_at', if_not_exists => TRUE);

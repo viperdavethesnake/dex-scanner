@@ -4,9 +4,10 @@ import requests
 
 log = logging.getLogger(__name__)
 
-PROFILES_URL = "https://api.dexscreener.com/token-profiles/latest/v1"
-PAIRS_URL    = "https://api.dexscreener.com/latest/dex/tokens/{address}"
-PRICE_URL    = "https://api.dexscreener.com/latest/dex/pairs/{chain}/{pair_address}"
+PROFILES_URL          = "https://api.dexscreener.com/token-profiles/latest/v1"
+PAIRS_URL             = "https://api.dexscreener.com/latest/dex/tokens/{address}"
+PRICE_URL             = "https://api.dexscreener.com/latest/dex/pairs/{chain}/{pair_address}"
+BIRDEYE_OVERVIEW_URL  = "https://public-api.birdeye.so/defi/token_overview"
 
 SUPPORTED_CHAINS = {"base", "solana"}
 MIN_LIQUIDITY    = 1_000
@@ -80,3 +81,85 @@ def fetch_current_price(chain, pair_address):
         return None
     price = pairs[0].get("priceUsd")
     return float(price) if price else None
+
+
+def fetch_birdeye_overview(address: str, api_key: str, timeout: int = 5) -> dict:
+    """
+    Call Birdeye /defi/token_overview for a Base token.
+
+    Returns a result dict with all fields needed for log_birdeye_call() and
+    Token enrichment. Never raises — all errors are captured in error_message.
+
+    Keys:
+        address, http_status, cu_consumed, response_ms,
+        unique_traders_1h, net_inflow_usd, error_message
+    """
+    result = {
+        "address":           address,
+        "http_status":       None,
+        "cu_consumed":       None,
+        "response_ms":       None,
+        "unique_traders_1h": None,
+        "net_inflow_usd":    None,
+        "error_message":     None,
+    }
+    t0 = time.monotonic()
+    try:
+        r = requests.get(
+            BIRDEYE_OVERVIEW_URL,
+            params={"address": address},
+            headers={"X-API-KEY": api_key, "x-chain": "base"},
+            timeout=timeout,
+        )
+        result["response_ms"] = int((time.monotonic() - t0) * 1000)
+        result["http_status"] = r.status_code
+
+        # CU header — not always present on Standard tier
+        cu_str = r.headers.get("x-ratelimit-remaining-cu", "")
+        if cu_str.isdigit():
+            result["cu_consumed"] = int(cu_str)
+
+        if r.status_code == 200:
+            try:
+                body = r.json()
+            except Exception:
+                result["error_message"] = "json_parse_error"
+                return result
+
+            if not body.get("success"):
+                msg = str(body.get("message", ""))[:120]
+                result["error_message"] = f"success=false: {msg}"
+                return result
+
+            data = body.get("data") or {}
+            raw_traders = data.get("uniqueWallet1h")
+            raw_buy     = data.get("vBuy1hUSD")
+            raw_sell    = data.get("vSell1hUSD")
+
+            if raw_traders is not None:
+                try:
+                    result["unique_traders_1h"] = int(raw_traders)
+                except (TypeError, ValueError):
+                    pass
+
+            if raw_buy is not None and raw_sell is not None:
+                try:
+                    result["net_inflow_usd"] = round(float(raw_buy) - float(raw_sell), 2)
+                except (TypeError, ValueError):
+                    pass
+
+        else:
+            try:
+                body = r.json()
+                result["error_message"] = str(body.get("message", r.text))[:120]
+            except Exception:
+                result["error_message"] = r.text[:120]
+
+    except requests.Timeout:
+        result["response_ms"] = int((time.monotonic() - t0) * 1000)
+        result["error_message"] = "timeout"
+    except Exception as e:
+        result["response_ms"] = int((time.monotonic() - t0) * 1000)
+        result["error_message"] = str(e)[:120]
+
+    return result

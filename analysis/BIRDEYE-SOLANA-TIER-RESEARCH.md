@@ -110,6 +110,35 @@ Rationale:
 3. The right trigger for upgrading to Lite is: **Base auto-trading is live and profitable.** At that point the research cost of $39/month is covered by trading returns and Solana enrichment becomes useful for model training ahead of a Solana trader.
 4. The `COLLECTOR_BIRDEYE_ENRICHMENT=false` feature flag means enrichment can be turned on immediately after tier upgrade without a code deploy.
 
-**Contingency:** If the Standard tier turns out to be the CU exhaustion issue (not an access gate), run a quick test at the start of next month by setting `ENRICHMENT=true`, `SAMPLE_RATE=0.05`, and watching `birdeye_calls` for a single day. If Solana returns 200, we get it for free.
+**Contingency:** If the Standard tier turns out to be the CU exhaustion issue (not an access gate), run a quick test at the start of next month by setting `ENRICHMENT=true`, `SAMPLE_RATE=0.05`, and watching `birdeye_calls` for a single day. If Solana returns 200, we get it for free. **A scheduled test script will run automatically on the billing reset date — see Section 6.**
 
 **Do not upgrade until:** Base auto-trading is generating profit OR the ML model reaches the 0.62 AUC gate in ROADMAP.md Phase 1 and Solana training data becomes the next bottleneck.
+
+---
+
+## Section 6 — Reset Test Scheduled (Addition 2)
+
+### Billing reset date
+
+New Birdeye API key issued: **2026-05-23**. Birdeye Standard (free) billing cycles typically reset monthly. Two likely reset dates:
+- **2026-06-01** — if Birdeye uses calendar-month resets
+- **2026-06-23** — if Birdeye resets on key-issuance anniversary
+
+Test scheduled for **2026-06-24 09:00 UTC** — fires the day after either possible reset date, ensuring a fresh CU budget regardless of which cycle applies.
+
+### Test script
+
+`analysis/birdeye_solana_test.py` — reads `BIRDEYE_API_KEY` from `.env`, calls `/defi/token_overview` for SOL and BONK with `x-chain: solana`, reports HTTP status and response body. Exits 0 if both return 200, exits 1 otherwise. Result written to `analysis/SOLANA-RESET-TEST-<date>.md`.
+
+### Cron schedule
+
+A user-level cron entry runs the test on 2026-06-24 at 09:00 UTC:
+```
+0 9 24 6 * cd /space/docker/containers/dex-scanner && /usr/bin/python3 analysis/birdeye_solana_test.py >> analysis/SOLANA-RESET-TEST-20260624.md 2>&1
+```
+
+### Interpretation of results
+
+- **Both 200:** Solana was CU-exhaustion, not tier-gated. Enable Solana in collector at SAMPLE_RATE=0.02 without upgrading plan.
+- **Still 400:** Solana is tier-gated behind Lite ($39/month). Upgrade when Base auto-trading is profitable.
+- **Result file:** `analysis/SOLANA-RESET-TEST-20260624.md` (created by cron on June 24)

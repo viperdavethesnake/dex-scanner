@@ -1,6 +1,6 @@
 # DEX Scanner — Resume
 
-**Last updated:** 2026-05-23 (end of session)
+**Last updated:** 2026-05-23 (session 2 — Birdeye enrichment implementation)
 
 ---
 
@@ -290,6 +290,35 @@ GROUP BY 1, 2 ORDER BY 1, 2;
 ## Status page
 
 `http://192.168.33.231:5678/webhook/dex-status` — scan history + signal log, auto-refreshes 60s.
+
+---
+
+## Collector Birdeye enrichment (implemented 2026-05-23)
+
+`unique_traders_1h` and `net_inflow_usd` are now collected at insert time for Base tokens.
+
+**Feature flag (off by default):** Set `COLLECTOR_BIRDEYE_ENRICHMENT=true` in `.env` to activate.  
+**Sample rate:** 2% of Base tokens per cycle (`COLLECTOR_BIRDEYE_SAMPLE_RATE=0.02`).  
+**CU budget:** ~11,700 CU/month for collector + ~9,175 for scanner enricher ≈ 20,875 total vs 30,000 limit.
+
+**To enable after deploy:**
+```bash
+# Edit .env — set COLLECTOR_BIRDEYE_ENRICHMENT=true
+docker compose restart dex-collector
+
+# First-hour validation:
+docker exec dex-collector-db psql -U collector -d collector_signals -c "
+SELECT chain, http_status, COUNT(*), ROUND(AVG(response_ms)::numeric, 0) avg_ms
+FROM birdeye_calls
+WHERE called_at > NOW() - INTERVAL '1 hour'
+GROUP BY 1, 2;"
+```
+Expected: 100% `base`, >95% HTTP 200, avg_ms < 500.
+
+**Increase sample rate** from 0.02 → 0.03 only after verifying actual scanner-enricher CU on bds.birdeye.so dashboard is below 8,000 CU/month.
+
+**Solana reset test:** Cron fires 2026-06-24 09:00 UTC → `analysis/SOLANA-RESET-TEST-20260624.md`.  
+If both SOL + BONK return HTTP 200, Solana was CU-exhaustion not tier-gated. Enable Solana enrichment free.
 
 ---
 

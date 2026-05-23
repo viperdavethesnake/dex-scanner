@@ -1,5 +1,5 @@
 # Collector Birdeye Enrichment — Design Proposal
-**Status:** Awaiting approval  
+**Status:** Approved — implementing  
 **Date:** 2026-05-23  
 **Scope:** Add `unique_traders_1h` and `net_inflow_usd` to `raw_signals` at insert time, Base chain only.
 
@@ -181,19 +181,48 @@ Expected: 100% `base`, >95% HTTP 200, `cu_consumed` single digits (if header is 
 
 ---
 
-## 7. CU budget warning
+## 7. CU budget — measured and recomputed (Addition 1)
 
-**Standard free tier: 30,000 CU/month = ~1,200 token_overview calls/month.**
+**Standard free tier: 30,000 CU/month. Budget is SHARED between the scanner n8n enricher and the new collector enrichment.**
 
-At `SAMPLE_RATE=0.2` with observed Base volume (~778 rows/day):
-- ~156 Birdeye calls/day × 25 CU = **3,900 CU/day**
-- Monthly: **~117,000 CU** — **4× the free tier**
+### Scanner enricher CU consumption (measured 2026-05-23)
 
-**Recommendation:** Start with `SAMPLE_RATE=0.05` (1-in-20) until a paid Birdeye tier is active:
-- ~39 calls/day × 25 CU = 975 CU/day → **~29,250 CU/month** (just under free tier)
-- The `birdeye_calls` table will show real consumption after day 1; adjust from there.
+Queried n8n `execution_entity` table (SQLite) directly — n8n was down, GPU occupied.
 
-The design docs use `0.2` as the documented default (matching NEXT-STEPS), but the `.env.example` will recommend starting at `0.05` with a comment explaining why.
+| Duration bucket | Executions (this month) | Interpretation |
+|---|---|---|
+| 0–50ms | 1,486 | No Birdeye call (DB query, no pending tokens) |
+| 50–150ms | 116 | No Birdeye call (slightly slower DB query) |
+| 150–600ms | 1,956 | Mostly slow DB queries on growing TimescaleDB |
+| 600ms–1s | 280 | ~30% are real Birdeye calls (~84 calls) |
+| 1s–5s | 34 | Real Birdeye calls, avg ~2 per execution (~68 calls) |
+| >5s | 43 | Real Birdeye calls, avg ~5 per execution (~215 calls) |
+
+**Estimated scanner enricher calls this month: ~367**  
+**Estimated scanner enricher CU consumption: ~367 × 25 = ~9,175 CU**
+
+Note: This is an estimate from execution duration. Birdeye API does not expose monthly CU consumed in response headers. Exact figure requires checking bds.birdeye.so dashboard. **Verify before adjusting sample rate upward.**
+
+### Available collector budget
+
+| Item | CU |
+|---|---|
+| Standard monthly allotment | 30,000 |
+| Scanner enricher (estimated) | −9,175 |
+| **Available for collector** | **~20,825** |
+
+**~20,825 CU available < 25,000 threshold → sample rate reduced from 0.05 to 0.02.**
+
+### Projected collector CU at SAMPLE_RATE=0.02
+
+- Base rows/day: ~779, × 0.02 = ~15.6 calls/day
+- Monthly: ~468 calls × 25 CU = **~11,700 CU/month**
+- Total (scanner + collector): ~9,175 + ~11,700 = **~20,875 CU/month** (well within 30,000) ✅
+- Headroom: ~9,125 CU/month (~30% buffer)
+
+At SAMPLE_RATE=0.03: ~17,550 CU collector + ~9,175 scanner = ~26,725 CU — fits but leaves only ~3,275 CU margin. Too thin given estimate uncertainty.
+
+**Final default: `COLLECTOR_BIRDEYE_SAMPLE_RATE=0.02`**. Increase to 0.03 after the actual dashboard CU figure is confirmed below 8,000.
 
 ---
 
