@@ -5,6 +5,7 @@ keys/
 .env.*
 .env.local
 .env.*.local
+!.env.example
 
 # n8n runtime data — only the workflow JSON is committed
 n8n_data/database.sqlite*
