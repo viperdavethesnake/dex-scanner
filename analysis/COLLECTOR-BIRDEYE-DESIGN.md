@@ -1,7 +1,15 @@
 # Collector Birdeye Enrichment — Design Proposal
-**Status:** Approved — implementing  
+**Status:** Implemented and validated ✅  
 **Date:** 2026-05-23  
 **Scope:** Add `unique_traders_1h` and `net_inflow_usd` to `raw_signals` at insert time, Base chain only.
+
+### Validation results (2026-05-23, ~13:00–17:00 UTC)
+
+- 5 calls, 100% HTTP 200, 0 failures
+- avg response time: **826ms** (target was <500ms — Standard tier is slower; 5s timeout has headroom, not a problem)
+- CU header (`x-ratelimit-remaining-cu`) not returned on Standard tier — CU tracking is dashboard-only
+- `birdeye_enriched=true` rows confirmed in `raw_signals` with real `unique_traders_1h` + `net_inflow_usd` values
+- Feature currently **ENABLED** in `.env` (`COLLECTOR_BIRDEYE_ENRICHMENT=true`)
 
 ---
 

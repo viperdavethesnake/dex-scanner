@@ -263,15 +263,37 @@ GROUP BY 1, 2 ORDER BY 1, 2;
 
 ## Next session
 
-- Continue collecting data — collector has 19,639 signals (May 17–23), well past targets
-- Let Phase 9 filters accumulate data to validate improvement (target: 500+ post-Phase-9 Solana signals with 5m)
-- Remaining candidates (need net_inflow_usd from Birdeye — not in collector):
-  1. **Base hard pre-filter: net_inflow_usd < $5k → drop** — 9% win rate, -13.3% avg (needs scanner data)
-  2. **LLM prompt: flag Base rising vol_trend prominently** — +7.22% avg vs +3.53% overall
-- Cancelled candidates (data disproved or not worth it):
-  - ~~Solana buy_pct_5m > 75%~~ — 75–85% is fine (+2.31%, 43.5% win); only >85% is bad (n=61, too small)
-  - ~~Age floor 15→20m~~ — Base 15–20m is +18.82%, 64.9% win (best bucket — do NOT filter it)
-- Check conviction sizing calibration once Phase 7 signals have 5m outcomes
+### Stack state at close of session (2026-05-23)
+
+| Service | Status |
+|---------|--------|
+| `dex-collector-db` | running, port 5434 |
+| `dex-collector` | running, Birdeye enrichment **ENABLED** at rate=0.02 |
+| `dex-llamacpp` | stopped (GPU free) |
+| `dex-timescale` | stopped |
+| `dex-n8n` | stopped |
+
+### Pending work
+
+**Data accumulation (no action needed — just let it run):**
+- Collector Birdeye enrichment is live. Each Base token sampled gets `unique_traders_1h` + `net_inflow_usd`.
+- Let Phase 9 filters accumulate data (target: 500+ post-Phase-9 Solana signals with 5m outcomes).
+- Check bds.birdeye.so dashboard for actual monthly CU — if scanner enricher is <8,000 CU, bump `COLLECTOR_BIRDEYE_SAMPLE_RATE` to 0.03.
+
+**Solana reset test:**
+- Cron fires 2026-06-24 09:00 UTC automatically. Check `analysis/SOLANA-RESET-TEST-20260624.md` after that date.
+
+**Filter candidates (needs accumulated enriched data first):**
+1. **Base pre-filter: net_inflow_usd < $5k → drop** — 9% win, -13.3% avg (needs collector Birdeye data to grow before re-analysis)
+2. **LLM prompt: flag Base rising vol_trend prominently** — +7.22% avg vs +3.53% overall
+
+**Cancelled candidates (data disproved):**
+- ~~Solana buy_pct_5m > 75%~~ — only >85% is bad (n=61, too small)
+- ~~Age floor 15→20m~~ — Base 15–20m is +18.82%, 64.9% win (best bucket, do NOT filter)
+
+**When Base auto-trading goes live:**
+- Upgrade Birdeye to Lite ($39/month) → enables Solana enrichment + removes 826ms Standard tier latency.
+- Bump `COLLECTOR_BIRDEYE_SAMPLE_RATE` to 0.2 at Lite tier (1.5M CU vs 30k limit disappears).
 
 ---
 
@@ -293,32 +315,63 @@ GROUP BY 1, 2 ORDER BY 1, 2;
 
 ---
 
-## Collector Birdeye enrichment (implemented 2026-05-23)
+## Collector Birdeye enrichment (implemented + validated 2026-05-23)
 
-`unique_traders_1h` and `net_inflow_usd` are now collected at insert time for Base tokens.
+`unique_traders_1h` and `net_inflow_usd` collected at insert time for Base tokens.
 
-**Feature flag (off by default):** Set `COLLECTOR_BIRDEYE_ENRICHMENT=true` in `.env` to activate.  
-**Sample rate:** 2% of Base tokens per cycle (`COLLECTOR_BIRDEYE_SAMPLE_RATE=0.02`).  
-**CU budget:** ~11,700 CU/month for collector + ~9,175 for scanner enricher ≈ 20,875 total vs 30,000 limit.
+**Current state: ENABLED** (`COLLECTOR_BIRDEYE_ENRICHMENT=true` in `.env`)  
+**Sample rate:** 2% (`COLLECTOR_BIRDEYE_SAMPLE_RATE=0.02`)  
+**CU budget:** ~11,700 collector + ~9,175 scanner enricher ≈ 20,875/month vs 30,000 limit.
 
-**To enable after deploy:**
+### First-hour validation results (2026-05-23 ~13:00–17:00 UTC)
+
+| Metric | Result | Target | Status |
+|---|---|---|---|
+| Chain | 100% base | 100% base | ✅ |
+| HTTP 200 rate | 5/5 = 100% | >95% | ✅ |
+| Failures | 0 | 0 | ✅ |
+| avg response time | **826ms** | <500ms | ⚠️ note |
+| CU header | not returned | — | Standard tier doesn't send it |
+
+**826ms note:** Standard tier Birdeye runs slower than hoped but well within the 5s timeout. Not actionable — no failures, no risk.
+
+**Sample counts (5 calls over ~42 cycles):** ~12% of cycles produce a call — matches math for 2% rate with 5–6 Base tokens per cycle.
+
+### Sample enriched rows
+
+| Symbol | unique_traders_1h | net_inflow_usd |
+|---|---|---|
+| CLUSTER | 712 | +$24,746 |
+| GITBOOK | 214 | +$15,874 |
+| lntentFi | 92 | −$2,901 |
+| DEXTER | 0 | $0 |
+| AT | 98 | +$424 |
+
+### Validation query
+
 ```bash
-# Edit .env — set COLLECTOR_BIRDEYE_ENRICHMENT=true
-docker compose restart dex-collector
-
-# First-hour validation:
 docker exec dex-collector-db psql -U collector -d collector_signals -c "
-SELECT chain, http_status, COUNT(*), ROUND(AVG(response_ms)::numeric, 0) avg_ms
-FROM birdeye_calls
-WHERE called_at > NOW() - INTERVAL '1 hour'
-GROUP BY 1, 2;"
+SELECT chain, http_status, COUNT(*) calls,
+       ROUND(AVG(response_ms)::numeric, 0) avg_ms, MAX(called_at)::time last_call
+FROM birdeye_calls GROUP BY 1, 2;"
 ```
-Expected: 100% `base`, >95% HTTP 200, avg_ms < 500.
 
-**Increase sample rate** from 0.02 → 0.03 only after verifying actual scanner-enricher CU on bds.birdeye.so dashboard is below 8,000 CU/month.
+### To disable / rollback
 
-**Solana reset test:** Cron fires 2026-06-24 09:00 UTC → `analysis/SOLANA-RESET-TEST-20260624.md`.  
-If both SOL + BONK return HTTP 200, Solana was CU-exhaustion not tier-gated. Enable Solana enrichment free.
+```bash
+# In .env: COLLECTOR_BIRDEYE_ENRICHMENT=false
+docker compose up -d --no-deps dex-collector
+```
+No data loss — existing enriched rows kept, new rows insert with NULL Birdeye fields.
+
+### Increase sample rate
+
+From 0.02 → 0.03 only after verifying scanner-enricher CU on bds.birdeye.so is below 8,000/month.
+
+### Solana reset test
+
+Cron fires **2026-06-24 09:00 UTC** → `analysis/SOLANA-RESET-TEST-20260624.md`.  
+If both SOL + BONK return HTTP 200, Solana was CU-exhaustion not tier-gated — enable Solana enrichment free.
 
 ---
 
