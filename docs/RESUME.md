@@ -263,7 +263,7 @@ GROUP BY 1, 2 ORDER BY 1, 2;
 
 ## Next session
 
-### Stack state at close of session (2026-05-23)
+### Stack state at close (2026-05-24)
 
 | Service | Status |
 |---------|--------|
@@ -273,27 +273,40 @@ GROUP BY 1, 2 ORDER BY 1, 2;
 | `dex-timescale` | stopped |
 | `dex-n8n` | stopped |
 
+### Birdeye enrichment health (after ~18h live)
+
+| Status | Calls | Notes |
+|--------|-------|-------|
+| HTTP 200 | 11 | 816ms avg — good |
+| HTTP 429 | 2 | Two Base tokens sampled same cycle, no inter-call sleep — rare, deferred |
+| Timeout | 1 | Occasional Standard tier slowness — within acceptable range |
+
+14 enriched rows in `raw_signals` so far. Letting it accumulate — **no action needed**.
+
+Known minor issue: no sleep between back-to-back Birdeye calls within a cycle. At 2% rate this is rare. Fix when/if 429 rate becomes meaningful.
+
 ### Pending work
 
-**Data accumulation (no action needed — just let it run):**
-- Collector Birdeye enrichment is live. Each Base token sampled gets `unique_traders_1h` + `net_inflow_usd`.
-- Let Phase 9 filters accumulate data (target: 500+ post-Phase-9 Solana signals with 5m outcomes).
-- Check bds.birdeye.so dashboard for actual monthly CU — if scanner enricher is <8,000 CU, bump `COLLECTOR_BIRDEYE_SAMPLE_RATE` to 0.03.
+**Data accumulation — just let it run:**
+- Collector Birdeye enrichment accumulating `unique_traders_1h` + `net_inflow_usd` on Base tokens.
+- Phase 9 filters need more outcomes (target: 500+ post-Phase-9 Solana signals with 5m).
+- Check bds.birdeye.so dashboard for actual monthly CU. If scanner enricher actual is <8,000 CU, bump `COLLECTOR_BIRDEYE_SAMPLE_RATE` to 0.03.
 
-**Solana reset test:**
-- Cron fires 2026-06-24 09:00 UTC automatically. Check `analysis/SOLANA-RESET-TEST-20260624.md` after that date.
+**Solana reset test — automatic:**
+- Cron fires 2026-06-24 09:00 UTC → `analysis/SOLANA-RESET-TEST-20260624.md`.
+- No action until then.
 
-**Filter candidates (needs accumulated enriched data first):**
-1. **Base pre-filter: net_inflow_usd < $5k → drop** — 9% win, -13.3% avg (needs collector Birdeye data to grow before re-analysis)
-2. **LLM prompt: flag Base rising vol_trend prominently** — +7.22% avg vs +3.53% overall
+**Filter candidates — needs more enriched data first:**
+1. **Base pre-filter: net_inflow_usd < $5k → drop** — 9% win, -13.3% avg. Re-run analysis once collector has ~1,000 enriched Base rows.
+2. **LLM prompt: flag Base rising vol_trend** — +7.22% avg vs +3.53% overall. Low-effort prompt tweak when scanner is back up.
 
-**Cancelled candidates (data disproved):**
-- ~~Solana buy_pct_5m > 75%~~ — only >85% is bad (n=61, too small)
-- ~~Age floor 15→20m~~ — Base 15–20m is +18.82%, 64.9% win (best bucket, do NOT filter)
+**Cancelled (data disproved):**
+- ~~Solana buy_pct_5m > 75%~~ — only >85% is bad (n=61, too small to act on)
+- ~~Age floor 15→20m~~ — Base 15–20m is +18.82%, 64.9% win, do NOT filter
 
 **When Base auto-trading goes live:**
-- Upgrade Birdeye to Lite ($39/month) → enables Solana enrichment + removes 826ms Standard tier latency.
-- Bump `COLLECTOR_BIRDEYE_SAMPLE_RATE` to 0.2 at Lite tier (1.5M CU vs 30k limit disappears).
+- Upgrade Birdeye to Lite ($39/month) → Solana enrichment + faster responses.
+- Bump `COLLECTOR_BIRDEYE_SAMPLE_RATE` to 0.2 (1.5M CU limit vs current 30k).
 
 ---
 
