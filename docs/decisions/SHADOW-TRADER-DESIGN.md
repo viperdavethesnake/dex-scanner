@@ -1,8 +1,8 @@
 # Shadow Trader — Phase 2 Design
 
 **Issued:** 2026-05-25  
-**Status:** At gate — awaiting user approval before Phase 3 (implementation)  
-**Decisions incorporated from user review of investigation open questions: Q1–Q7 + A–E**
+**Status:** Approved — Phase 3 implementation ready to begin  
+**Decisions incorporated from user review of investigation open questions: Q1–Q7 + A–E + prereq Q&A**
 
 ---
 
@@ -16,9 +16,9 @@ Before a single line of trader code is written, these must exist:
 | P2 | `ZEROX_API_KEY` obtained from `dashboard.0x.org` (free) | User | Quote module |
 | P3 | `ALCHEMY_BASE_URL` obtained from `dashboard.alchemy.com` (free) | User | Aerodrome/Uniswap fallback |
 | P4 | `JUPITER_API_KEY` obtained from `developers.jup.ag` (free, Solana-deferred but wire it now) | User | Jupiter module (stubbed) |
-| P5 | `./trader_data/` directory created on host (TimescaleDB volume mount) | Phase 3 step | DB init |
+| P5 | `./trader_data/` directory created on host (TimescaleDB volume mount) | Phase 3 commit (auto-created by implementation step) | DB init |
 
-P1 is the only one that requires a code change (to `analysis/export_model.py`). P2–P4 are API key registrations. All five must be complete before `docker compose up` succeeds on the trader group.
+P1 is complete (export_model.py written and run; artifacts confirmed). P2–P4 API keys are obtained and in `.env`. P5 is created in the Phase 3 implementation commit. All five are satisfied before `docker compose up` is attempted on the trader group.
 
 ---
 
@@ -154,6 +154,7 @@ CREATE TABLE IF NOT EXISTS trades (
     signal_ts           TIMESTAMPTZ      NOT NULL,   -- raw_signals.scanned_at
     signal_price_usd    NUMERIC(30,12),              -- DexScreener price at signal time
     conviction_score    REAL             NOT NULL,   -- LightGBM p(win)
+    conviction_band     TEXT,                        -- 'shadow_only'(0.65–0.70) | 'live_eligible'(>=0.70); enables post-hoc threshold analysis
     model_version       TEXT,                        -- metadata.json trained_at
     signal_features     JSONB,                       -- full feature dict at decision time
     collector_signal_id BIGINT,                      -- raw_signals.id for traceability
@@ -351,7 +352,9 @@ The model files live in `analysis/models/` on the host and are bind-mounted read
 analysis/models/           (host, gitignored)
   lgbm_base.txt            LightGBM native booster (model.booster_.save_model())
   feature_list.json        ["chain","dex","age_minutes",...] — ordered
-  metadata.json            {"threshold":0.65,"train_cutoff":"...","val_auc":0.61,"trained_at":"..."}
+  metadata.json            {"threshold":0.70,"train_cutoff":"2026-05-23","val_auc":0.6208,"trained_at":"..."}
+                           -- threshold is the ML-FINDINGS.md canonical (0.70).
+                           -- Scorer uses env vars (CONVICTION_THRESHOLD_SHADOW / LIVE) to override at runtime.
 ```
 
 The gitignore entry for `/analysis/models/` prevents model blobs from being committed. `analysis/models/.gitkeep` keeps the directory tracked.
@@ -665,11 +668,25 @@ All limits are env-var configurable. Conservative defaults for shadow mode.
 | Daily loss cap | $50 | `DAILY_LOSS_CAP_USD` | 25% of min wallet size |
 | Hourly trade rate limit | 20 | `MAX_TRADES_PER_HOUR` | Prevent runaway on data anomaly |
 | Re-entry lockout | 30min | `REENTRY_LOCKOUT_MINUTES` | Matches ROADMAP constraint |
-| Conviction threshold | 0.65 | `CONVICTION_THRESHOLD` | Backtest optimum |
+| Conviction threshold — shadow floor | 0.65 | `CONVICTION_THRESHOLD_SHADOW` | Shadow mode entry; accumulates data faster for ≥200-trade gate |
+| Conviction threshold — live canonical | 0.70 | `CONVICTION_THRESHOLD_LIVE` | ML-FINDINGS.md optimum (55% win, 2.50x PF); used in live mode only |
 | Quote drift rejection | 3% | `QUOTE_DRIFT_MAX_PCT` | Signal too stale |
 | Slippage rejection | 500 bps | `SLIPPAGE_REJECT_BPS` | Book too thin |
 | Kill switch | false | DB (`trader_state`) | SQL toggle, polled each cycle |
 | Position hold | 300s | `POSITION_HOLD_SECONDS` | 5-min window |
+
+**Two-threshold logic:** In shadow mode, `SHADOW_MODE=true` activates using `CONVICTION_THRESHOLD_SHADOW` as the entry floor (0.65). All trades in the 0.65–0.70 range are tagged `conviction_band='shadow_only'`; trades at ≥0.70 are tagged `conviction_band='live_eligible'`. This lets post-hoc queries separate the two cohorts and confirm whether the live threshold (0.70) still meets the ML-FINDINGS targets before the shadow→live transition. The `conviction_band` column is set on every inserted `trades` row.
+
+```python
+threshold = float(os.environ.get(
+    "CONVICTION_THRESHOLD_SHADOW" if SHADOW_MODE else "CONVICTION_THRESHOLD_LIVE",
+    "0.65" if SHADOW_MODE else "0.70"
+))
+live_threshold = float(os.environ.get("CONVICTION_THRESHOLD_LIVE", "0.70"))
+
+# At INSERT time:
+conviction_band = "live_eligible" if score >= live_threshold else "shadow_only"
+```
 
 ### 9.1 Kill switch — DB flag, polled each cycle
 
@@ -810,11 +827,17 @@ FROM trades GROUP BY status ORDER BY COUNT(*) DESC;
 -- Signal pipeline health
 SELECT
   COUNT(*)                        AS signals_processed,
-  COUNT(*) FILTER (WHERE conviction_score >= 0.65) AS above_threshold,
+  COUNT(*) FILTER (WHERE conviction_score >= 0.65) AS above_shadow_threshold,
+  COUNT(*) FILTER (WHERE conviction_score >= 0.70) AS above_live_threshold,
   COUNT(*) FILTER (WHERE status = 'simulated')     AS simulated_fills,
   COUNT(*) FILTER (WHERE status = 'skipped')       AS skipped,
   COUNT(*) FILTER (WHERE status = 'exited')        AS completed
 FROM trades WHERE created_at > NOW() - INTERVAL '24 hours';
+
+-- Conviction band breakdown (shadow_only vs live_eligible)
+SELECT conviction_band, COUNT(*), ROUND(AVG(net_pct)::numeric,2) AS avg_net_pct
+FROM trades WHERE status = 'exited'
+GROUP BY conviction_band ORDER BY conviction_band;
 
 -- Quote coverage
 SELECT quote_source, COUNT(*), AVG(quote_latency_ms), AVG(quote_slippage_bps)
@@ -955,8 +978,11 @@ The following is empirical data from 7 days of collector data answering: *how of
       - TRADE_SIZE_USD=10.0
       - MAX_POSITIONS=3
       - DAILY_LOSS_CAP_USD=50.0
-      - CONVICTION_THRESHOLD=0.65
+      - CONVICTION_THRESHOLD_SHADOW=0.65
+      - CONVICTION_THRESHOLD_LIVE=0.70
       - POSITION_HOLD_SECONDS=300
+      - ETH_USD_PRICE_URL=https://api.coinbase.com/v2/prices/ETH-USD/spot
+      - ETH_USD_CACHE_SECONDS=600
       - QUOTE_DRIFT_MAX_PCT=3.0
       - SLIPPAGE_REJECT_BPS=500
       - SECURITY_FAIL_OPEN=true
@@ -1027,7 +1053,7 @@ No blocking open questions remain for Phase 3. The following are logged for awar
 | # | Topic | Status |
 |---|---|---|
 | OQ1 | GoPlus API rate limits not confirmed | Non-blocking. Free tier is documented as "no limit" for token security. If throttled, the 1h cache means cold calls are rare. Revisit if throttle errors appear. |
-| OQ2 | 0x `taker` address requirement in shadow mode | The sentinel `0x000...001` address may cause 0x to return `issues.balance` warnings. These should be ignored in shadow mode. Confirm empirically in Phase 4 smoke test. |
+| OQ2 | 0x `taker` address requirement in shadow mode | **Confirmed.** API key verified — 0x returns HTTP 400 with `"User address must be greater than 0x000000000000000000000000000000000000ffff"` when sentinel `0x000...001` is used. Auth is valid; this is a param validation rejection. In shadow mode: sentinel is intentional, `issues.balance` warnings are expected and should be silently ignored. Empirically confirmed in prereq verification pass (2026-05-25). |
 | OQ3 | Aerodrome pool discovery | Design assumes volatile pool for all new tokens. Some tokens may have stable pools or no pool at all. The `getAmountsOut` revert on no pool is handled by catching the exception and returning `None`. |
-| OQ4 | Gas price for cost_pct calculation | Gas cost in USD requires current ETH price. Proposal: cache ETH/USD price from a free public feed (e.g., Coinbase public API, no key required) every 10 minutes. Alternatively, use a fixed $3000 estimate in shadow mode. |
-| OQ5 | `analysis/check_0x_coverage.py` script | Called out in §12 but not implemented in Phase 3. Add to Phase 3 scope or defer to Phase 4 pre-work. |
+| OQ4 | Gas price for cost_pct calculation | **Resolved.** Use Coinbase public API: `https://api.coinbase.com/v2/prices/ETH-USD/spot` (free, no key, 600s cache, $3000 hardcoded fallback). Implemented as `eth_price.py` module. Env vars: `ETH_USD_PRICE_URL`, `ETH_USD_CACHE_SECONDS=600`. |
+| OQ5 | `analysis/check_0x_coverage.py` script | **Deferred to Phase 4.** Run manually after 48h of shadow data accumulates. §12 estimate (10–25% Aerodrome fallback rate) is sufficient for Phase 3; real empirical rate from `SELECT quote_source, COUNT(*) FROM trades GROUP BY 1` replaces it in Phase 4 pre-work. |
