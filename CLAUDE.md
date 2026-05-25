@@ -176,4 +176,12 @@ Webhook GET → DexScreener profiles → Filter Base/Solana → Fetch pair data
 
 ---
 
+## Prompt lifecycle
+
+Files in `prompts/` are active instructions for Claude Code sessions. Delete a prompt file after its work is fully committed — it is then redundant with git history. If a prompt drives multi-phase work (e.g., a shadow trader build spanning Phase 3–5), keep it until all phases are complete.
+
+Decision records live in `docs/decisions/` and are retained permanently. They are institutional memory, not session artifacts.
+
+---
+
 ## Do not use the advisor() tool in this project.
