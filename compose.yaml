@@ -126,8 +126,86 @@ services:
       - POLL_INTERVAL=300
       - BIRDEYE_API_KEY=${BIRDEYE_API_KEY}
 
+  dex-trader-db:
+    image: timescale/timescaledb:latest-pg16
+    container_name: dex-trader-db
+    restart: unless-stopped
+    networks:
+      - dex-trader-net
+    ports:
+      - "5435:5432"
+    environment:
+      - POSTGRES_DB=trader
+      - POSTGRES_USER=trader
+      - POSTGRES_PASSWORD=trader
+    volumes:
+      - source: ./trader_data
+        target: /var/lib/postgresql/data
+        type: bind
+      - source: ./dex-trader/init.sql
+        target: /docker-entrypoint-initdb.d/init.sql
+        type: bind
+        read_only: true
+
+  dex-trader:
+    build:
+      context: ./dex-trader
+    container_name: dex-trader
+    restart: unless-stopped
+    networks:
+      - dex-trader-net
+      - dex-collector-net
+    depends_on:
+      - dex-trader-db
+      - dex-collector-db
+    env_file:
+      - .env
+    environment:
+      - SHADOW_MODE=true
+      - TRADER_DB_HOST=dex-trader-db
+      - TRADER_DB_PORT=5432
+      - TRADER_DB_NAME=trader
+      - TRADER_DB_USER=trader
+      - TRADER_DB_PASS=trader
+      - COLLECTOR_DB_HOST=dex-collector-db
+      - COLLECTOR_DB_PORT=5432
+      - COLLECTOR_DB_NAME=collector_signals
+      - COLLECTOR_DB_USER=collector
+      - COLLECTOR_DB_PASS=collector
+      - MODEL_PATH=/models/lgbm_base.txt
+      - FEATURES_PATH=/models/feature_list.json
+      - METADATA_PATH=/models/metadata.json
+      - POLL_INTERVAL=5
+      - TRADE_SIZE_USD=10.0
+      - MAX_POSITIONS=3
+      - DAILY_LOSS_CAP_USD=50.0
+      - MAX_TRADES_PER_HOUR=20
+      - REENTRY_LOCKOUT_MINUTES=30
+      - CONVICTION_THRESHOLD_SHADOW=0.65
+      - CONVICTION_THRESHOLD_LIVE=0.70
+      - POSITION_HOLD_SECONDS=300
+      - QUOTE_DRIFT_MAX_PCT=3.0
+      - SLIPPAGE_REJECT_BPS=500
+      - SECURITY_FAIL_OPEN=true
+      - ETH_USD_PRICE_URL=https://api.coinbase.com/v2/prices/ETH-USD/spot
+      - ETH_USD_CACHE_SECONDS=600
+      - HEALTH_PORT=8090
+    volumes:
+      - source: ./analysis/models
+        target: /models
+        type: bind
+        read_only: true
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://localhost:8090/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
 networks:
   macvlan_net:
     external: true
   dex-collector-net:
+    driver: bridge
+  dex-trader-net:
     driver: bridge

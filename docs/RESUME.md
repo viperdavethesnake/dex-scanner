@@ -285,14 +285,75 @@ GROUP BY 1, 2 ORDER BY 1, 2;
 
 Known minor issue: no sleep between back-to-back Birdeye calls within a cycle. At 2% rate this is rare. Fix when/if 429 rate becomes meaningful.
 
-### Track 2 — Shadow trader (in progress)
+### Track 2 — Shadow trader (Phase 3 scaffolded — pending user review)
 
-- Design approved 2026-05-25 → `docs/decisions/SHADOW-TRADER-DESIGN.md`
-- **Prereqs before Phase 3 implementation:**
-  - P1: `analysis/export_model.py` — write and run to produce `analysis/models/lgbm_base.txt` + companions (**in progress this session**)
-  - P2–P4: ZEROX / ALCHEMY / JUPITER API keys — user provides
-  - P5: `./trader_data/` directory — create before first `docker compose up` on trader group
-- Phase 3 (implementation) pending user go/no-go after prereqs are confirmed
+**Phase 3 implementation is complete. dex-trader NOT started yet — user reviews code first.**
+
+#### Files created (2026-05-25)
+```
+dex-trader/
+  main.py          Main loop — ingests raw_signals, scores, quotes, records P&L
+  db.py            DB connections (trader + collector), idempotent migrate()
+  signals.py       hard_filter() — Phase 9 scanner replica
+  scorer.py        LightGBM load, hot-reload on mtime, score(), conviction_band()
+  security.py      GoPlus + Honeypot.is, 1h in-memory cache, fail-open in shadow
+  eth_price.py     Coinbase ETH/USD, 600s cache, $3000 fallback
+  simulator.py     compute_entry(), compute_exit() with backtest comparison
+  risk.py          Position limit, daily loss cap, re-entry lock, kill switch poll
+  aggregators/
+    __init__.py    get_quote() dispatcher (0x → Aerodrome → Uniswap V3)
+    types.py       Quote dataclass
+    zerox.py       0x Swap API v2 (ephemeral taker, liquidityAvailable guard)
+    aerodrome.py   Aerodrome Router on-chain (single-hop then two-hop)
+    uniswap.py     Uniswap V3 QuoterV2 (fee tiers 1%, 0.3%, 0.05%)
+    jupiter.py     Stub — raises NotImplementedError (Solana Phase 5+)
+  init.sql         trader_db schema (trades, trader_state, signal_watermark)
+  requirements.txt
+  Dockerfile
+```
+
+#### compose.yaml changes
+- `dex-trader-db` service added (TimescaleDB, port 5435, `dex-trader-net`)
+- `dex-trader` service added (builds from `./dex-trader/`, dual-network: trader + collector)
+- `dex-trader-net` bridge network added
+- `./trader_data/` created and gitignored (TimescaleDB volume mount)
+
+#### Key design decisions implemented
+- **Ephemeral taker**: `Account.create()` per process start — sentinel 0x000...001 confirmed returning HTTP 400; abandoned
+- **Two-threshold**: `CONVICTION_THRESHOLD_SHADOW=0.65` (entry floor) + `CONVICTION_THRESHOLD_LIVE=0.70` (band classifier); `conviction_band` column on every trade row
+- **ETH/USD**: Coinbase public API, 600s cache, $3000 fallback
+- **Exit P&L**: aggregator exit quote as canonical; DexScreener as parallel truth (stored in `exit_price_usd`)
+
+#### To start (after user review)
+```bash
+# DB only first — verify schema applies cleanly
+docker compose up -d dex-trader-db
+docker exec dex-trader-db psql -U trader -d trader -c "\dt"
+
+# Then trader (when user gives go-ahead)
+docker compose up -d dex-trader
+docker logs dex-trader -f
+```
+
+#### Kill switch (emergency stop)
+```bash
+docker exec dex-trader-db psql -U trader -d trader \
+  -c "UPDATE trader_state SET value='true' WHERE key='kill_switch';"
+```
+
+#### Phase 4 checkpoint queries (after ≥200 trades exited)
+```sql
+-- conviction_band breakdown
+SELECT conviction_band, COUNT(*), ROUND(AVG(net_pct)::numeric,2) avg_net
+FROM trades WHERE status='exited' GROUP BY conviction_band;
+
+-- quote source coverage
+SELECT quote_source, COUNT(*) FROM trades WHERE fill_ts IS NOT NULL GROUP BY 1;
+
+-- cost delta vs backtest assumption
+SELECT ROUND(AVG(cost_pct)::numeric,2) real_cost, ROUND(AVG(cost_delta_pct)::numeric,2) delta
+FROM trades WHERE status='exited';
+```
 
 ### Pending work
 

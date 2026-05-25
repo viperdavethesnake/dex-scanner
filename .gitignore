@@ -31,3 +31,6 @@ analysis/models/*.json
 
 # Collector data volume
 collector_data/
+
+# Trader data volume
+trader_data/

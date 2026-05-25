@@ -533,7 +533,14 @@ if not SHADOW_MODE:
     wallet = Account.from_key(os.environ["TRADER_WALLET_PRIVATE_KEY"])
     taker_address = wallet.address
 else:
-    taker_address = "0x0000000000000000000000000000000000000001"  # sentinel
+    # Ephemeral keypair — address only, key never persisted or used for signing.
+    # 0x requires a real-looking taker; sentinel addresses (< 0x...ffff) return HTTP 400.
+    # Verified 2026-05-25: sentinel 0x000...001 returns 400 "User address must be
+    # greater than 0x000000000000000000000000000000000000ffff".
+    from eth_account import Account
+    ephemeral = Account.create()
+    taker_address = ephemeral.address
+    log.info("shadow mode: using ephemeral taker address %s", taker_address)
 ```
 
 **For Solana (deferred to Phase 5+):** `solders` keypair from a JSON file (`SOLANA_KEYPAIR_PATH`). Same principle — keypair file is loaded in live mode only; shadow mode uses a sentinel pubkey.
@@ -1053,7 +1060,7 @@ No blocking open questions remain for Phase 3. The following are logged for awar
 | # | Topic | Status |
 |---|---|---|
 | OQ1 | GoPlus API rate limits not confirmed | Non-blocking. Free tier is documented as "no limit" for token security. If throttled, the 1h cache means cold calls are rare. Revisit if throttle errors appear. |
-| OQ2 | 0x `taker` address requirement in shadow mode | **Confirmed.** API key verified — 0x returns HTTP 400 with `"User address must be greater than 0x000000000000000000000000000000000000ffff"` when sentinel `0x000...001` is used. Auth is valid; this is a param validation rejection. In shadow mode: sentinel is intentional, `issues.balance` warnings are expected and should be silently ignored. Empirically confirmed in prereq verification pass (2026-05-25). |
+| OQ2 | 0x `taker` address requirement in shadow mode | **Resolved.** Sentinel `0x000...001` returns HTTP 400 — sentinel approach abandoned. §6.1 updated to use `Account.create()` ephemeral keypair per cycle. Address-only: key is never stored, persisted, or used for signing. 0x gets a valid-looking taker address and returns 200. |
 | OQ3 | Aerodrome pool discovery | Design assumes volatile pool for all new tokens. Some tokens may have stable pools or no pool at all. The `getAmountsOut` revert on no pool is handled by catching the exception and returning `None`. |
 | OQ4 | Gas price for cost_pct calculation | **Resolved.** Use Coinbase public API: `https://api.coinbase.com/v2/prices/ETH-USD/spot` (free, no key, 600s cache, $3000 hardcoded fallback). Implemented as `eth_price.py` module. Env vars: `ETH_USD_PRICE_URL`, `ETH_USD_CACHE_SECONDS=600`. |
 | OQ5 | `analysis/check_0x_coverage.py` script | **Deferred to Phase 4.** Run manually after 48h of shadow data accumulates. §12 estimate (10–25% Aerodrome fallback rate) is sufficient for Phase 3; real empirical rate from `SELECT quote_source, COUNT(*) FROM trades GROUP BY 1` replaces it in Phase 4 pre-work. |

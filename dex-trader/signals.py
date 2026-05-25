@@ -1,0 +1,37 @@
+"""Hard filters — scanner replica.
+
+KEEP IN SYNC WITH: n8n workflow "Safety Filter" node (dex-scanner-workflow.json)
+Filter version: Phase 9 (2026-05-23)
+"""
+
+BASE_VL_CEILING    = 8.0
+SOLANA_VL_CEILING  = 4.0
+AGE_MIN_MINUTES    = 15
+AGE_MAX_MINUTES    = 90
+
+# micro_trend values excluded by chain
+EXCLUDED_MICRO = {
+    "base":   {"down", "recovering"},
+    "solana": {"down", "recovering", "flat"},
+}
+
+
+def hard_filter(signal: dict) -> tuple[bool, str]:
+    """Returns (passes, reason). reason is '' when passes=True."""
+    age   = signal.get("age_minutes") or 0
+    vl    = signal.get("vl_ratio")    or 0.0
+    micro = signal.get("micro_trend") or ""
+    chain = signal.get("chain")       or ""
+
+    if not (AGE_MIN_MINUTES <= age <= AGE_MAX_MINUTES):
+        return False, f"age_out_of_window:{age:.0f}m"
+
+    vl_ceil = BASE_VL_CEILING if chain == "base" else SOLANA_VL_CEILING
+    if vl > vl_ceil:
+        return False, f"vl_too_high:{vl:.1f}>{vl_ceil}"
+
+    excluded = EXCLUDED_MICRO.get(chain, set())
+    if micro in excluded:
+        return False, f"micro_excluded:{micro}"
+
+    return True, ""

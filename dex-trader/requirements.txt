@@ -1,0 +1,7 @@
+lightgbm>=4.3
+numpy>=1.26
+pandas>=2.1
+psycopg2-binary>=2.9
+web3>=7.0
+eth-account>=0.9
+requests>=2.31
