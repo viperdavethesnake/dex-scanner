@@ -1,6 +1,6 @@
 # DEX Scanner — Resume
 
-**Last updated:** 2026-05-25 (session 3 — shadow trader Phase 3 live)
+**Last updated:** 2026-05-25 (session 3 close — shadow trader running, status confirmed)
 
 ---
 
@@ -43,10 +43,10 @@ docker compose stop dex-collector dex-collector-db
 
 | Service | Status | Notes |
 |---------|--------|-------|
-| `dex-collector-db` | **running** | Bridge network, port 5434 |
-| `dex-collector` | **running** | Polling every 5 min, GPU-independent |
-| `dex-trader-db` | **running** | Bridge network, port 5435 |
-| `dex-trader` | **running** | Shadow mode, threshold=0.65, polling 5s |
+| `dex-collector-db` | **running** | Up 2 days, port 5434 |
+| `dex-collector` | **running** | Up 46 hr, polling every 5 min |
+| `dex-trader-db` | **running** | Up 2 hr, port 5435 |
+| `dex-trader` | **running** | Up 11 min, shadow mode, 0 restarts, healthy |
 | `dex-llamacpp` | stopped | GPU free |
 | `dex-timescale` | stopped | |
 | `dex-n8n` | stopped | Auto-scanner was stopped before shutdown |
@@ -317,27 +317,22 @@ GROUP BY 1, 2 ORDER BY 1, 2;
 | `dex-collector-db` | **running** | port 5434 |
 | `dex-collector` | **running** | Birdeye enrichment ENABLED at rate=0.02 |
 | `dex-trader-db` | **running** | port 5435 |
-| `dex-trader` | **running** | Shadow mode, threshold=0.65, **LIVE since ~08:31 UTC** |
+| `dex-trader` | **running** | Shadow mode, threshold=0.65, **LIVE since ~08:31 UTC**, 0 restarts |
 | `dex-llamacpp` | stopped | GPU free |
 | `dex-timescale` | stopped | |
 | `dex-n8n` | stopped | |
 
-### Shadow trader health (first start — 2026-05-25 08:31 UTC)
+### Shadow trader health (status check ~08:42 UTC)
 
-Startup sequence verified clean:
+```json
+{"status": "ok", "open_positions": 0, "last_signal_ts": "2026-05-25T08:38:00Z",
+ "model_version": "2026-05-25T08:19:42Z", "shadow_mode": true}
+```
 
-```
-shadow mode: ephemeral taker_address=0xD9389e719ba3631A58A3776ce2E7Cd1C2bA3C9e3
-DEX Trader — shadow_mode=True threshold=0.65
-health: http://0.0.0.0:8090/health
-db: connected to dex-trader-db:5432/trader  (migration complete)
-db: connected to dex-collector-db:5432/collector_signals
-web3: connected=True rpc=https://base-mainnet.g.alchemy.com
-model loaded: version=2026-05-25T08:19:42Z auc=0.620 threshold=0.65 (shadow mode) n_features=34
-risk: restored 0 open positions, 0 re-entry locks
-startup complete — entering loop (poll_interval=5s)
-ingest: 6 new signals | watermark=28908
-```
+- `kill_switch = false`, `shadow_mode = true`
+- Watermark: 28908 → 28959 (51 signals ingested in ~11 min, all filtered — normal)
+- `trades` table: 0 rows — no signal has cleared threshold + risk gates yet; loop is healthy
+- Loop cadence: ingest lines every ~5 min, no errors
 
 Health endpoint: `docker exec dex-trader curl -s http://localhost:8090/health`
 
