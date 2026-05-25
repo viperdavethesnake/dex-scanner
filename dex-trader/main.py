@@ -20,6 +20,7 @@ import sys
 import threading
 import time
 from datetime import datetime, timedelta, timezone
+from decimal import Decimal
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Optional
 
@@ -303,12 +304,20 @@ def _process_signal(signal: dict, scorer: Scorer, trader_conn, w3,
     if score < THRESHOLD:
         return
 
-    # Build JSON-safe feature snapshot (NaN/Inf → None for JSONB storage)
-    signal_features = {
-        k: (None if isinstance(v, float) and not math.isfinite(v) else v)
-        for k, v in enriched.items()
-        if not isinstance(v, (dict, list))
-    }
+    # Build JSON-safe feature snapshot for JSONB storage.
+    # Coerce: float NaN/Inf → None, Decimal → float, datetime → ISO str.
+    # (psycopg2 returns NUMERIC as Decimal and timestamps as datetime objects.)
+    signal_features: dict = {}
+    for _k, _v in enriched.items():
+        if isinstance(_v, (dict, list)):
+            continue
+        if isinstance(_v, float) and not math.isfinite(_v):
+            _v = None
+        elif isinstance(_v, Decimal):
+            _v = float(_v)
+        elif isinstance(_v, datetime):
+            _v = _v.isoformat()
+        signal_features[_k] = _v
 
     band = Scorer.conviction_band(score)
     liq  = (signal.get("liquidity_usd") or 0) / 1000
