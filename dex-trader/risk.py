@@ -99,7 +99,7 @@ def check_kill_switch(conn) -> bool:
 def check_entry_allowed(token_address: str, conn) -> Tuple[bool, str]:
     """
     Returns (allowed, reason). reason='' when allowed=True.
-    Increments the hourly counter only on success (allowed=True).
+    Does NOT modify state — caller must call record_entry() after a confirmed fill.
     """
     global _trades_this_hour, _hour_window_start
 
@@ -141,5 +141,10 @@ def check_entry_allowed(token_address: str, conn) -> Tuple[bool, str]:
     if daily_pnl <= -DAILY_LOSS_CAP_USD:
         return False, f"daily_loss_cap:${daily_pnl:.2f}<=-${DAILY_LOSS_CAP_USD:.0f}"
 
-    _trades_this_hour += 1
     return True, ""
+
+
+def record_entry() -> None:
+    """Increment the hourly trade counter. Call only after a confirmed simulated fill."""
+    global _trades_this_hour
+    _trades_this_hour += 1

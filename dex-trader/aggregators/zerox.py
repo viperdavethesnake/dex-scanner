@@ -19,6 +19,7 @@ import requests
 
 from .types import Quote
 from eth_price import get_eth_usd
+from token_decimals import get_decimals
 
 log = logging.getLogger(__name__)
 
@@ -31,7 +32,8 @@ USDC_DECIMALS = 6
 
 
 def quote(token_address: str, sell_usd: float, taker_address: str,
-          direction: str = "buy", fill_price_usd: float = None) -> Optional[Quote]:
+          direction: str = "buy", fill_price_usd: float = None,
+          w3=None) -> Optional[Quote]:
     """
     direction='buy':  USDC → token (entry). sell_usd = USDC amount.
     direction='sell': token → USDC (exit).  sell_usd ≈ position USD value.
@@ -59,11 +61,12 @@ def quote(token_address: str, sell_usd: float, taker_address: str,
         }
     else:
         # Sell direction: token → USDC
-        # Compute approximate token amount from fill_price if available.
+        # Compute approximate token amount using on-chain decimals.
         if fill_price_usd and fill_price_usd > 0:
-            token_amount = int(sell_usd / fill_price_usd * 1e18)
+            tok_dec = get_decimals(token_address, w3)
+            token_amount = int(sell_usd / fill_price_usd * 10 ** tok_dec)
         else:
-            token_amount = int(sell_usd * 1e12)  # rough fallback for ~$0.001 tokens
+            token_amount = int(sell_usd * 1e12)  # rough fallback for ~$0.001/18-dec tokens
         params = {
             "sellToken":   token_address,
             "buyToken":    USDC_BASE,

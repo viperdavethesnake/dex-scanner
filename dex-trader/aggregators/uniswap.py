@@ -4,7 +4,8 @@ QuoterV2: 0x3d4e44Eb1374240CE5F1B136Cf395a8eae0e6953
 Fee tiers tried in order: 10000 (1%), 3000 (0.3%), 500 (0.05%).
 First tier returning non-zero amountOut is used.
 
-Assumes 18 decimal places for token input/output.
+Token decimals fetched via get_decimals() (on-chain, cached).
+price_usd in the returned Quote is always per-token (not total USDC).
 """
 import logging
 import time
@@ -12,6 +13,7 @@ from typing import Optional
 
 from .types import Quote
 from eth_price import get_eth_usd
+from token_decimals import get_decimals
 
 log = logging.getLogger(__name__)
 
@@ -48,10 +50,13 @@ _QUOTER_ABI = [
 
 
 def quote(token_address: str, sell_usd: float, w3,
-          direction: str = "buy", fill_price_usd: float = None) -> Optional[Quote]:
+          direction: str = "buy", fill_price_usd: float = None,
+          signal_price_usd: float = None) -> Optional[Quote]:
     """
     Tries all fee tiers; returns first Quote with non-zero amountOut.
     Returns None if all fee tiers fail or w3 is None.
+    signal_price_usd: DexScreener price at signal time — used to compute slippage_bps.
+    price_usd in the returned Quote is always per-token (not total USDC).
     """
     if w3 is None:
         return None
@@ -64,17 +69,22 @@ def quote(token_address: str, sell_usd: float, w3,
         )
         cs = w3.to_checksum_address
 
+        tok_dec = get_decimals(token_address, w3)
+
         if direction == "buy":
-            token_in  = cs(USDC_BASE)
-            token_out = cs(token_address)
-            amount_in = int(sell_usd * 10 ** USDC_DECIMALS)
+            token_in     = cs(USDC_BASE)
+            token_out    = cs(token_address)
+            amount_in    = int(sell_usd * 10 ** USDC_DECIMALS)
+            tokens_float = None   # computed from amountOut after quote
         else:
             token_in  = cs(token_address)
             token_out = cs(USDC_BASE)
             if fill_price_usd and fill_price_usd > 0:
-                amount_in = int(sell_usd / fill_price_usd * 1e18)
+                tokens_float = sell_usd / fill_price_usd        # tokens to sell (float)
+                amount_in    = int(tokens_float * 10 ** tok_dec)
             else:
-                amount_in = int(sell_usd * 1e12)
+                amount_in    = int(sell_usd * 1e12)             # rough fallback
+                tokens_float = amount_in / 10 ** tok_dec        # back-convert for price calc
 
         for fee in FEE_TIERS:
             try:
@@ -88,9 +98,16 @@ def quote(token_address: str, sell_usd: float, w3,
                 latency_ms = int((time.monotonic() - t0) * 1000)
 
                 if direction == "buy":
-                    price_usd = sell_usd / (amount_out / 1e18) if amount_out > 0 else 0.0
+                    token_out_float = amount_out / 10 ** tok_dec
+                    price_usd = sell_usd / token_out_float if token_out_float > 0 else 0.0
                 else:
-                    price_usd = amount_out / 10 ** USDC_DECIMALS
+                    usdc_out  = amount_out / 10 ** USDC_DECIMALS
+                    price_usd = usdc_out / tokens_float if tokens_float and tokens_float > 0 else 0.0
+
+                # Slippage bps vs signal price
+                slippage_bps = 0
+                if signal_price_usd and signal_price_usd > 0 and price_usd > 0:
+                    slippage_bps = round(abs(signal_price_usd - price_usd) / signal_price_usd * 10000)
 
                 gas_usd = 0.0
                 try:
@@ -102,7 +119,7 @@ def quote(token_address: str, sell_usd: float, w3,
                 return Quote(
                     source       = "uniswap_v3",
                     price_usd    = price_usd,
-                    slippage_bps = 0,
+                    slippage_bps = slippage_bps,
                     gas_usd      = gas_usd,
                     route_summary= f"Uniswap V3 ({fee // 100}bps fee)",
                     latency_ms   = latency_ms,

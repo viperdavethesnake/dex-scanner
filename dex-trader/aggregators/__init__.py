@@ -20,25 +20,27 @@ __all__ = ["Quote", "get_quote"]
 
 
 def get_quote(
-    token_address:  str,
-    chain:          str,
-    sell_usd:       float,
-    w3              = None,
-    taker_address:  str   = None,
-    direction:      str   = "buy",
-    fill_price_usd: float = None,
+    token_address:    str,
+    chain:            str,
+    sell_usd:         float,
+    w3                = None,
+    taker_address:    str   = None,
+    direction:        str   = "buy",
+    fill_price_usd:   float = None,
+    signal_price_usd: float = None,
 ) -> Optional[Quote]:
     """
     Return first successful Quote from aggregators in priority order, or None.
 
     Args:
-        token_address:  ERC20 token to buy/sell
-        chain:          'base' | 'solana'
-        sell_usd:       USDC amount to spend (buy) or position size in USD (sell)
-        w3:             web3.Web3 instance for on-chain fallbacks (None skips Aerodrome/Uniswap)
-        taker_address:  wallet address for 0x taker param (ephemeral in shadow mode)
-        direction:      'buy' (USDC→token) or 'sell' (token→USDC)
-        fill_price_usd: fill price from entry (used to estimate token amount for exit quotes)
+        token_address:    ERC20 token to buy/sell
+        chain:            'base' | 'solana'
+        sell_usd:         USDC amount to spend (buy) or position size in USD (sell)
+        w3:               web3.Web3 instance for on-chain fallbacks (None skips Aerodrome/Uniswap)
+        taker_address:    wallet address for 0x taker param (ephemeral in shadow mode)
+        direction:        'buy' (USDC→token) or 'sell' (token→USDC)
+        fill_price_usd:   fill price from entry (used to estimate token amount for exit quotes)
+        signal_price_usd: DexScreener price at signal time (used by on-chain fallbacks for slippage_bps)
     """
     if chain == "solana":
         raise NotImplementedError("Solana trading deferred to Phase 5+")
@@ -49,7 +51,7 @@ def get_quote(
     # 1. 0x
     try:
         q = zerox.quote(token_address, sell_usd, taker_address,
-                        direction=direction, fill_price_usd=fill_price_usd)
+                        direction=direction, fill_price_usd=fill_price_usd, w3=w3)
         if q:
             return q
     except Exception as exc:
@@ -58,7 +60,8 @@ def get_quote(
     # 2. Aerodrome
     try:
         q = aerodrome.quote(token_address, sell_usd, w3,
-                            direction=direction, fill_price_usd=fill_price_usd)
+                            direction=direction, fill_price_usd=fill_price_usd,
+                            signal_price_usd=signal_price_usd)
         if q:
             return q
     except Exception as exc:
@@ -67,7 +70,8 @@ def get_quote(
     # 3. Uniswap V3
     try:
         q = uniswap.quote(token_address, sell_usd, w3,
-                          direction=direction, fill_price_usd=fill_price_usd)
+                          direction=direction, fill_price_usd=fill_price_usd,
+                          signal_price_usd=signal_price_usd)
         if q:
             return q
     except Exception as exc:

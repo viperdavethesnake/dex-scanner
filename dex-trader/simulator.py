@@ -38,7 +38,7 @@ def compute_exit(fill_price_usd: float, fill_size_usd: float,
 
     cost_pct = slippage (bps/100) + gas as % of fill size
     net_pct  = gross_pct - cost_pct
-    cost_delta_pct = cost_pct - 1.5 (real cost vs backtest assumption)
+    cost_delta_pct = (backtest_gross - net_pct) - 1.5 (real total friction vs backtest 1.5% assumption)
     """
     gross_pct = 0.0
     if fill_price_usd and fill_price_usd > 0 and exit_quote_price_usd:
@@ -54,7 +54,11 @@ def compute_exit(fill_price_usd: float, fill_size_usd: float,
     if signal_price_usd and signal_price_usd > 0 and exit_dex_price_usd:
         backtest_gross = (exit_dex_price_usd - signal_price_usd) / signal_price_usd * 100
     backtest_net_pct = backtest_gross - 1.5
-    cost_delta_pct   = cost_pct - 1.5
+    # cost_delta_pct: how much extra we paid vs backtest's 1.5% assumption.
+    # real_total_cost = backtest_gross - net_pct captures full round-trip friction
+    # (entry staleness + exit slippage + gas), not just per-leg cost_pct.
+    real_total_cost = backtest_gross - net_pct
+    cost_delta_pct  = real_total_cost - 1.5
 
     return {
         "gross_pct":        round(gross_pct, 4),

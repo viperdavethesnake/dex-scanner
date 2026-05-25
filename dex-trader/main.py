@@ -14,6 +14,7 @@ Shadow mode (SHADOW_MODE=true, default):
 """
 import json
 import logging
+import math
 import os
 import sys
 import threading
@@ -176,15 +177,18 @@ def _fetch_dexscreener_price(chain: str, pair_address: str) -> Optional[float]:
 
 # ── DB write helpers ───────────────────────────────────────────────────────────
 
-def _insert_intent(conn, signal: dict, score: float, band: str, model_ver: str) -> int:
+def _insert_intent(conn, signal: dict, score: float, band: str, model_ver: str,
+                   signal_features: dict = None) -> int:
+    sf = psycopg2.extras.Json(signal_features) if signal_features else None
     with conn.cursor() as cur:
         cur.execute("""
             INSERT INTO trades (
                 chain, token_address, pair_address, symbol,
                 signal_ts, signal_price_usd,
                 conviction_score, conviction_band, model_version,
+                signal_features,
                 collector_signal_id, status
-            ) VALUES (%s,%s,%s,%s, %s,%s, %s,%s,%s, %s, 'intent')
+            ) VALUES (%s,%s,%s,%s, %s,%s, %s,%s,%s, %s, %s, 'intent')
             RETURNING id
         """, (
             signal.get("chain"),
@@ -194,6 +198,7 @@ def _insert_intent(conn, signal: dict, score: float, band: str, model_ver: str) 
             signal.get("scanned_at"),
             signal.get("price_usd"),
             score, band, model_ver,
+            sf,
             signal.get("id"),
         ))
         trade_id = cur.fetchone()[0]
@@ -337,6 +342,13 @@ def _process_signal(signal: dict, scorer: Scorer, trader_conn, w3) -> None:
     if score < THRESHOLD:
         return
 
+    # Build JSON-safe feature snapshot (NaN/Inf → None for JSONB storage)
+    signal_features = {
+        k: (None if isinstance(v, float) and not math.isfinite(v) else v)
+        for k, v in enriched.items()
+        if not isinstance(v, (dict, list))
+    }
+
     band = Scorer.conviction_band(score)
     liq  = (signal.get("liquidity_usd") or 0) / 1000
     log.info("signal %s %s | score=%.3f band=%s age=%sm liq=$%.0fk → entry check",
@@ -352,6 +364,7 @@ def _process_signal(signal: dict, scorer: Scorer, trader_conn, w3) -> None:
     trade_id = _insert_intent(
         trader_conn, signal, score, band,
         scorer.meta.get("trained_at", "unknown"),
+        signal_features=signal_features,
     )
 
     # 5. Security check
@@ -367,7 +380,8 @@ def _process_signal(signal: dict, scorer: Scorer, trader_conn, w3) -> None:
     # 6. Get quote
     signal_price = float(signal.get("price_usd") or 0)
     q = get_quote(token, chain, TRADE_SIZE_USD,
-                  w3=w3, taker_address=taker_address, direction="buy")
+                  w3=w3, taker_address=taker_address, direction="buy",
+                  signal_price_usd=signal_price)
     if q is None:
         log.warning("quote NONE %s trade_id=%d (no liquidity)", sym, trade_id)
         _update_skipped(trader_conn, trade_id, "no_quote")
@@ -392,6 +406,7 @@ def _process_signal(signal: dict, scorer: Scorer, trader_conn, w3) -> None:
     # 8. Simulate fill
     fill = compute_entry(signal_price, q.price_usd, TRADE_SIZE_USD)
     _update_simulated(trader_conn, trade_id, q, fill)
+    risk.record_entry()   # increment hourly counter only after confirmed fill
 
     trade = {
         "id":               trade_id,
@@ -524,6 +539,9 @@ def main():
         t0 = time.monotonic()
 
         try:
+            # Exits fire first — timer-based positions expire regardless of kill switch
+            _manage_open_positions(trader_conn, w3)
+
             kill = risk.check_kill_switch(trader_conn)
 
             if not kill:
@@ -538,9 +556,6 @@ def main():
             else:
                 log.info("kill switch armed — skipping entries, managing exits")
 
-            # Always manage exits (positions expire even with kill switch armed)
-            _manage_open_positions(trader_conn, w3)
-
             # Hot-reload model if export_model.py was re-run
             scorer.maybe_reload()
             _health["model_version"] = scorer.meta.get("trained_at", "unknown")
@@ -548,10 +563,17 @@ def main():
         except psycopg2.OperationalError as exc:
             log.error("DB connection lost: %s — attempting reconnect", exc)
             try:
-                trader_conn = db.connect_trader()
-                log.info("trader DB reconnected")
+                if trader_conn.closed:
+                    trader_conn = db.connect_trader()
+                    log.info("trader DB reconnected")
             except Exception as e2:
-                log.error("reconnect failed: %s", e2)
+                log.error("trader reconnect failed: %s", e2)
+            try:
+                if collector_conn.closed:
+                    collector_conn = db.connect_collector()
+                    log.info("collector DB reconnected")
+            except Exception as e2:
+                log.error("collector reconnect failed: %s", e2)
         except Exception as exc:
             log.error("loop error: %s", exc, exc_info=True)
 
