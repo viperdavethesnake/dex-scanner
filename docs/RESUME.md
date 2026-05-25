@@ -1,6 +1,6 @@
 # DEX Scanner — Resume
 
-**Last updated:** 2026-05-25 (session 3 close — shadow trader running, status confirmed)
+**Last updated:** 2026-05-25 (session 4 close — four scorer bugs found and fixed; GPU stack up for LLM play)
 
 ---
 
@@ -43,13 +43,13 @@ docker compose stop dex-collector dex-collector-db
 
 | Service | Status | Notes |
 |---------|--------|-------|
-| `dex-collector-db` | **running** | Up 2 days, port 5434 |
-| `dex-collector` | **running** | Up 46 hr, polling every 5 min |
-| `dex-trader-db` | **running** | Up 2 hr, port 5435 |
-| `dex-trader` | **running** | Up 11 min, shadow mode, 0 restarts, healthy |
-| `dex-llamacpp` | stopped | GPU free |
-| `dex-timescale` | stopped | |
-| `dex-n8n` | stopped | Auto-scanner was stopped before shutdown |
+| `dex-collector-db` | **running** | port 5434 |
+| `dex-collector` | **running** | polling every 5 min |
+| `dex-trader-db` | **running** | port 5435 |
+| `dex-trader` | **running** | shadow mode, healthy — clean data since 19:26 UTC 2026-05-25 |
+| `dex-llamacpp` | **running** | GPU up for LLM play |
+| `dex-timescale` | **running** | |
+| `dex-n8n` | **running** | auto-scanner resumes on start — stop if not wanted |
 
 ### Workflows
 
@@ -255,6 +255,30 @@ analysis/features.py  Shared feature engineering — single source of truth
 
 **Startup verification (2026-05-25 08:31 UTC):** all required log lines present, health endpoint `{"status":"ok", "shadow_mode":true}`, watermark advancing, zero restarts.
 
+**Four bugs found and fixed (session 4 — 2026-05-25):**
+
+The trader ran from 08:31→19:26 UTC (11h) with zero successful scores. All four bugs were stacked: any signal surviving hard_filter would crash at scorer.py before a trade row could be created.
+
+| # | Commit | Bug | Root cause |
+|---|--------|-----|-----------|
+| 1 | `1ea05bd` | `ValueError: pandas dtype must be int/float/bool` | psycopg2 returns `NUMERIC` as `Decimal`; pandas infers `object` dtype; LightGBM rejects it |
+| 2 | `e8e8ac5` | `TypeError: datetime not JSON serializable` | `scanned_at`/`pair_created_at` datetime fields from collector row passed to `psycopg2.extras.Json()` |
+| 3 | `deb2ab4` | `fill_price_usd = 0` on every fill | `data.get("price", 0)` — 0x v2 has no `"price"` field; price must be derived from `buyAmount + tok_dec` |
+| 4 | `8ec282b` | Silent categorical miscoding | `.astype("category")` on single-row inference derives codes from that one row. `micro_trend="up"` got code 0 (="down" at training) — every score was wrong |
+
+**v0.3 tag context:** `v0.3` (`372ba32`) marks the architectural milestone — service scaffolded, all 13 hardening fixes in, first startup verified. It is a **pre-discovery snapshot** — no real scoring ever succeeded under that tag. Real shadow data starts at commit `8ec282b`, container restart 19:26 UTC 2026-05-25.
+
+**Do not re-tag v0.3.** Tag `v0.3.1` once 24 hours of clean data have accumulated in the trades table.
+
+**Dirty trade:** `trade_id=1` (GEODE, exited) has `fill_price_usd=0` (pre-fix zero). `gross_pct=0, net_pct=0`. The exit quote was real (`exit_price_usd=$0.000001652`) but P&L is uncomputable. Ignore this row in analysis — all subsequent rows are clean.
+
+**Model re-exported after categorical fix:**
+- `trained_at: 2026-05-25T19:25:48Z`
+- `val_auc: 0.589` (was 0.620 — different val window, not a regression; 0.620 was honest math on wrong scores, 0.589 is honest math on correct scores)
+- `precision@0.65: 56.5%`, `precision@0.70: 59.2%`
+- `categorical_mappings` now in `metadata.json` — `micro_trend` 5 values, `vol_trend` 4 values
+- Note: `dex` has only 1 trained category (`uniswap`) — effectively a constant, zero feature importance. Drop from model on next retrain.
+
 ### Bug fix — Empty batch short-circuit (completed 2026-05-17)
 
 **Bug:** When all tokens in a batch were pre-filtered (by the Phase 8 combined age/micro_trend/V/L check), Build Prompt still sent an empty token list to the LLM. With thinking enabled, the LLM burned ~30s then responded as a chatbot: "Ready. Drop the token list... Waiting on your data." Format Response then rendered this as the AI Analysis section.
@@ -310,31 +334,34 @@ GROUP BY 1, 2 ORDER BY 1, 2;
 
 ## Next session
 
-### Stack state at close (2026-05-25)
+### Stack state at close (2026-05-25, session 4)
 
 | Service | Status | Notes |
 |---------|--------|-------|
 | `dex-collector-db` | **running** | port 5434 |
 | `dex-collector` | **running** | Birdeye enrichment ENABLED at rate=0.02 |
 | `dex-trader-db` | **running** | port 5435 |
-| `dex-trader` | **running** | Shadow mode, threshold=0.65, **LIVE since ~08:31 UTC**, 0 restarts |
-| `dex-llamacpp` | stopped | GPU free |
-| `dex-timescale` | stopped | |
-| `dex-n8n` | stopped | |
+| `dex-trader` | **running** | Shadow mode, threshold=0.65, clean data since 19:26 UTC; 1 dirty trade in DB (id=1) |
+| `dex-llamacpp` | **running** | GPU occupied — user playing with LLM |
+| `dex-timescale` | **running** | |
+| `dex-n8n` | **running** | auto-scanner likely running |
 
-### Shadow trader health (status check ~08:42 UTC)
-
-```json
-{"status": "ok", "open_positions": 0, "last_signal_ts": "2026-05-25T08:38:00Z",
- "model_version": "2026-05-25T08:19:42Z", "shadow_mode": true}
-```
+### Shadow trader health (session 4 close, ~20:26 UTC)
 
 - `kill_switch = false`, `shadow_mode = true`
-- Watermark: 28908 → 28959 (51 signals ingested in ~11 min, all filtered — normal)
-- `trades` table: 0 rows — no signal has cleared threshold + risk gates yet; loop is healthy
+- Watermark: 28908 → ~31041 (ingesting ~5-6 signals per 5m cycle, all age_too_old right now)
+- `trades` table: 1 row (GEODE, dirty, fill_price=0 — see bug notes above)
 - Loop cadence: ingest lines every ~5 min, no errors
+- **Real scoring starts** from container restart at 19:26 UTC — waiting for first clean fill
 
 Health endpoint: `docker exec dex-trader curl -s http://localhost:8090/health`
+
+### First clean fill checklist (next session)
+
+1. Query: `SELECT id, symbol, status, fill_price_usd, exit_price_usd, gross_pct, net_pct FROM trades WHERE id > 1 ORDER BY id;`
+2. Confirm `fill_price_usd > 0` on any new row
+3. Confirm `exit_price_usd > 0` and `gross_pct` is non-zero after exit
+4. Once 24h of clean fills accumulated → tag `v0.3.1`
 
 ### Kill switch (emergency stop)
 ```bash
@@ -366,9 +393,11 @@ FROM trades WHERE status='skipped' GROUP BY 1 ORDER BY 2 DESC;
 ### Pending work
 
 **Shadow trader — let it accumulate:**
-- Target ≥200 exited trades before drawing any conclusions.
-- At 5 poll cycles/min × 5min hold, expect ~1 entry/day if signal flow is normal.
-- Estimated time to 200 exited: several weeks. Check weekly.
+- Phase 4 timeline restarts from 19:26 UTC 2026-05-25 (first clean data).
+- Ignore trade id=1 (dirty fill_price=0).
+- Target ≥200 exited trades before drawing P&L conclusions.
+- Projected: 25–70 fills/day (see `docs/SHADOW-TRADER-PROJECTIONS.md`). Signal flow currently gated by age_too_old — normal for afternoon/evening; new launches resume overnight and morning.
+- Tag `v0.3.1` once 24h of clean trades accumulated.
 
 **Data accumulation — just let it run:**
 - Collector Birdeye enrichment accumulating `unique_traders_1h` + `net_inflow_usd` on Base tokens.
