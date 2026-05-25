@@ -23,8 +23,6 @@ from datetime import datetime, timedelta, timezone
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Optional
 
-import numpy as np
-import pandas as pd
 import psycopg2
 import psycopg2.extras
 from eth_account import Account
@@ -34,6 +32,7 @@ import db
 import risk
 import signals as sig
 from aggregators import get_quote
+from features import engineer_features
 from scorer import Scorer
 from security import is_safe
 from simulator import compute_entry, compute_exit
@@ -114,45 +113,6 @@ def _start_health_server():
     server = HTTPServer(("0.0.0.0", HEALTH_PORT), _HealthHandler)
     threading.Thread(target=server.serve_forever, daemon=True).start()
     log.info("health: http://0.0.0.0:%d/health", HEALTH_PORT)
-
-
-# ── Feature engineering (mirrors analysis/export_model.py) ────────────────────
-
-def engineer_features(signal: dict) -> dict:
-    """Apply the same derived features as export_model.py engineer_features()."""
-    def sdiv(a, b, fill=float("nan")):
-        try:
-            return a / b if b and b > 0 else fill
-        except Exception:
-            return fill
-
-    vol5m = float(signal.get("volume_5m") or 0)
-    vol1h = float(signal.get("volume_1h") or 0)
-    vol6h = float(signal.get("volume_6h") or 0)
-    liq   = float(signal.get("liquidity_usd") or 0)
-    mcap  = float(signal.get("market_cap") or 0)
-    buys5 = float(signal.get("buys_5m") or 0)
-    sell5 = float(signal.get("sells_5m") or 0)
-    buys1h= float(signal.get("buys_1h") or 0)
-    sell1h= float(signal.get("sells_1h") or 0)
-    pch5m = float(signal.get("price_ch_5m") or 0)
-
-    e = dict(signal)
-    e["vol5m_1h_ratio"]   = sdiv(vol5m * 12, vol1h)
-    e["vol1h_6h_ratio"]   = sdiv(vol1h * 6, vol6h)
-    e["liq_mcap_ratio"]   = sdiv(liq, mcap)
-    e["net_txn_5m"]       = buys5 - sell5
-    e["net_txn_1h"]       = buys1h - sell1h
-    e["txn_accel"]        = sdiv(buys5 * 12, buys1h)
-    e["sell_pressure_5m"] = sdiv(sell5, max(buys5 + sell5, 1))
-    vol5m_1h = e["vol5m_1h_ratio"] if not np.isnan(e["vol5m_1h_ratio"]) else 0
-    e["momentum_score"]   = pch5m * min(vol5m_1h, 10)
-
-    for col in ["liquidity_usd", "market_cap", "volume_5m", "volume_1h", "volume_6h"]:
-        val = float(signal.get(col) or 0)
-        e[f"log_{col}"] = float(np.log1p(val))
-
-    return e
 
 
 # ── DexScreener price fetch ────────────────────────────────────────────────────
@@ -326,7 +286,8 @@ def _ingest_signals(collector_conn, trader_conn) -> list[dict]:
 
 # ── Signal processing ─────────────────────────────────────────────────────────
 
-def _process_signal(signal: dict, scorer: Scorer, trader_conn, w3) -> None:
+def _process_signal(signal: dict, scorer: Scorer, trader_conn, w3,
+                    kill_switch_armed: bool = False) -> None:
     token = signal.get("token_address", "?")
     sym   = signal.get("symbol", "?")
     chain = signal.get("chain", "base")
@@ -354,8 +315,9 @@ def _process_signal(signal: dict, scorer: Scorer, trader_conn, w3) -> None:
     log.info("signal %s %s | score=%.3f band=%s age=%sm liq=$%.0fk → entry check",
              sym, chain, score, band, signal.get("age_minutes", 0), liq)
 
-    # 3. Risk gates
-    allowed, reason = risk.check_entry_allowed(token, trader_conn)
+    # 3. Risk gates — pass pre-read kill_switch_armed to avoid redundant DB query
+    allowed, reason = risk.check_entry_allowed(token, trader_conn,
+                                               kill_switch_armed=kill_switch_armed)
     if not allowed:
         log.info("risk block %s: %s", sym, reason)
         return
@@ -500,6 +462,51 @@ def _manage_open_positions(trader_conn, w3) -> None:
         )
 
 
+# ── Web3 reconnect ────────────────────────────────────────────────────────────
+
+_w3_fail_count      = 0
+_w3_last_reconnect  = 0.0
+W3_RECONNECT_AFTER_FAILS = int(os.environ.get("W3_RECONNECT_AFTER_FAILS", "3"))
+W3_RECONNECT_BACKOFF_SEC = int(os.environ.get("W3_RECONNECT_BACKOFF_SEC",  "30"))
+
+
+def _maybe_reconnect_w3(w3: Web3, rpc_url: str) -> Web3:
+    """
+    Test w3 connectivity each loop. On failure: increment counter.
+    If failures >= W3_RECONNECT_AFTER_FAILS AND >= W3_RECONNECT_BACKOFF_SEC
+    since last reconnect attempt: rebuild w3 and reset counter.
+    Backoff prevents flap loops when Alchemy is down for extended periods.
+    Returns the (possibly new) w3 instance.
+    """
+    global _w3_fail_count, _w3_last_reconnect
+    try:
+        if w3.is_connected():
+            _w3_fail_count = 0
+            return w3
+    except Exception:
+        pass
+
+    _w3_fail_count += 1
+    now = time.monotonic()
+    if (_w3_fail_count >= W3_RECONNECT_AFTER_FAILS
+            and (now - _w3_last_reconnect) >= W3_RECONNECT_BACKOFF_SEC):
+        log.warning(
+            "web3 disconnected (%d consecutive failures) — rebuilding w3 (rpc=%s)",
+            _w3_fail_count, rpc_url.split("/v2/")[0],
+        )
+        try:
+            w3 = Web3(Web3.HTTPProvider(rpc_url, request_kwargs={"timeout": 5}))
+            _w3_fail_count    = 0
+            _w3_last_reconnect = now
+            log.info("web3 reconnected: connected=%s", w3.is_connected())
+        except Exception as exc:
+            log.error("web3 reconnect failed: %s", exc)
+            _w3_last_reconnect = now   # reset timer so we don't retry every cycle
+    else:
+        log.debug("web3 not connected (fail_count=%d)", _w3_fail_count)
+    return w3
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main():
@@ -542,6 +549,10 @@ def main():
             # Exits fire first — timer-based positions expire regardless of kill switch
             _manage_open_positions(trader_conn, w3)
 
+            # Web3 connectivity check (with backoff reconnect)
+            w3 = _maybe_reconnect_w3(w3, rpc_url)
+
+            # Single kill-switch DB read per cycle — passed through to avoid re-query
             kill = risk.check_kill_switch(trader_conn)
 
             if not kill:
@@ -549,7 +560,8 @@ def main():
                 new_signals = _ingest_signals(collector_conn, trader_conn)
                 for signal in new_signals:
                     try:
-                        _process_signal(signal, scorer, trader_conn, w3)
+                        _process_signal(signal, scorer, trader_conn, w3,
+                                        kill_switch_armed=False)
                     except Exception as exc:
                         addr = (signal.get("token_address") or "?")[:12]
                         log.error("signal error %s: %s", addr, exc, exc_info=True)

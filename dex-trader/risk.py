@@ -96,15 +96,20 @@ def check_kill_switch(conn) -> bool:
         return bool(row and row[0].lower() == "true")
 
 
-def check_entry_allowed(token_address: str, conn) -> Tuple[bool, str]:
+def check_entry_allowed(token_address: str, conn,
+                        kill_switch_armed: bool = None) -> Tuple[bool, str]:
     """
     Returns (allowed, reason). reason='' when allowed=True.
     Does NOT modify state — caller must call record_entry() after a confirmed fill.
+    kill_switch_armed: pre-read value from the main loop (avoids redundant DB query).
+                       If None, queries the DB (backward-compatible).
     """
     global _trades_this_hour, _hour_window_start
 
-    # Kill switch
-    if check_kill_switch(conn):
+    # Kill switch — use pre-read value if provided, else query DB
+    if kill_switch_armed is None:
+        kill_switch_armed = check_kill_switch(conn)
+    if kill_switch_armed:
         return False, "kill_switch_armed"
 
     # Position limit

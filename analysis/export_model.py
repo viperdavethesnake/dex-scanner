@@ -38,6 +38,8 @@ import pandas as pd
 import psycopg2
 from sklearn.metrics import roc_auc_score
 
+from features import engineer_features as _engineer_row
+
 # ── Paths ──────────────────────────────────────────────────────────────────────
 
 SCRIPT_DIR  = os.path.dirname(os.path.abspath(__file__))
@@ -90,31 +92,26 @@ def load_data(chain_filter=None):
 
 
 def engineer_features(df):
+    """Apply shared feature engineering to a DataFrame, returning enriched DataFrame.
+
+    Delegates per-row computation to analysis/features.py (single source of truth).
+    Categoricals and the binary target column are handled here after row expansion.
+    """
     df = df.copy()
     df["target"] = (df["outcome_pct"] > 0).astype(int)
 
-    def sdiv(a, b, fill=np.nan):
-        return np.where(b > 0, a / b, fill)
+    # Apply shared dict-based engineer_features row-by-row
+    rows = df.to_dict("records")
+    enriched = pd.DataFrame([_engineer_row(r) for r in rows])
 
-    df["vol5m_1h_ratio"] = sdiv(df["volume_5m"] * 12, df["volume_1h"])
-    df["vol1h_6h_ratio"] = sdiv(df["volume_1h"] * 6,  df["volume_6h"])
-    df["liq_mcap_ratio"] = sdiv(df["liquidity_usd"],   df["market_cap"])
-    df["net_txn_5m"]     = df["buys_5m"]  - df["sells_5m"]
-    df["net_txn_1h"]     = df["buys_1h"]  - df["sells_1h"]
-    df["txn_accel"]      = sdiv(df["buys_5m"] * 12, df["buys_1h"])
-    df["sell_pressure_5m"] = sdiv(
-        df["sells_5m"],
-        (df["buys_5m"] + df["sells_5m"]).clip(lower=1),
-    )
-    df["momentum_score"] = df["price_ch_5m"] * df["vol5m_1h_ratio"].clip(upper=10)
+    # Restore index alignment (to_dict → DataFrame resets to 0-based)
+    enriched.index = df.index
 
-    for col in ["liquidity_usd", "market_cap", "volume_5m", "volume_1h", "volume_6h"]:
-        df[f"log_{col}"] = np.log1p(df[col].fillna(0))
-
+    # Categoricals (not handled in features.py — training-only concern)
     for col in CATEGORICAL_FEATURES:
-        df[col] = df[col].fillna("unknown").astype("category")
+        enriched[col] = enriched[col].fillna("unknown").astype("category")
 
-    return df
+    return enriched
 
 
 def get_feature_cols(df):

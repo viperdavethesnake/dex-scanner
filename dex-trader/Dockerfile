@@ -2,7 +2,8 @@ FROM python:3.12-slim
 WORKDIR /app
 # curl needed for healthcheck
 RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
-COPY requirements.txt .
+COPY dex-trader/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-COPY . .
+COPY dex-trader/ .
+COPY analysis/features.py .
 CMD ["python", "-u", "main.py"]

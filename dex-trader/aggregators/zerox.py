@@ -102,14 +102,14 @@ def quote(token_address: str, sell_usd: float, taker_address: str,
     except (ValueError, TypeError):
         pass
 
-    # Slippage bps
+    # Slippage bps — v2 API: derived from buyAmount vs minBuyAmount
     slippage_bps = 200
     try:
-        p  = float(data.get("price", 0) or 0)
-        gp = float(data.get("guaranteedPrice", 0) or 0)
-        if p > 0 and gp > 0:
-            slippage_bps = round(abs(p - gp) / p * 10000)
-    except (ValueError, ZeroDivisionError):
+        buy_amount     = int(data.get("buyAmount", 0) or 0)
+        min_buy_amount = int(data.get("minBuyAmount", 0) or 0)
+        if buy_amount > 0 and min_buy_amount > 0 and min_buy_amount <= buy_amount:
+            slippage_bps = round((buy_amount - min_buy_amount) / buy_amount * 10000)
+    except (ValueError, TypeError, ZeroDivisionError):
         pass
 
     # Gas USD
@@ -123,9 +123,13 @@ def quote(token_address: str, sell_usd: float, taker_address: str,
     except (ValueError, TypeError):
         pass
 
-    # Route label
-    sources = data.get("sources") or []
-    route_label = sources[0].get("name", "?") if sources else "?"
+    # Route label — v2 API: use route.fills (top 2 sources for multi-hop)
+    fills = ((data.get("route") or {}).get("fills") or [])
+    if fills:
+        names = [f.get("source", "?") for f in fills[:2]]
+        route_label = "+".join(names)
+    else:
+        route_label = "?"
     route_summary = f"0x ({route_label})"
 
     return Quote(

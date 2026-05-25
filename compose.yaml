@@ -149,7 +149,8 @@ services:
 
   dex-trader:
     build:
-      context: ./dex-trader
+      context: .
+      dockerfile: dex-trader/Dockerfile
     container_name: dex-trader
     restart: unless-stopped
     networks:
