@@ -78,8 +78,20 @@ class Scorer:
         Return p(win) ∈ [0,1].
         enriched_signal must already have derived features applied (engineer_features()).
         Missing columns are filled with NaN (LightGBM handles gracefully).
+
+        Numeric values are explicitly cast to float here because psycopg2 returns
+        NUMERIC DB columns as Decimal objects, which pandas infers as object dtype
+        and LightGBM rejects.
         """
-        row = {col: enriched_signal.get(col, np.nan) for col in self.features}
+        row = {}
+        for col in self.features:
+            val = enriched_signal.get(col, np.nan)
+            if col not in CATEGORICAL_FEATURES:
+                try:
+                    val = float(val) if val is not None else np.nan
+                except (TypeError, ValueError):
+                    val = np.nan
+            row[col] = val
         X = pd.DataFrame([row])[self.features]
         for col in CATEGORICAL_FEATURES:
             if col in X.columns:
