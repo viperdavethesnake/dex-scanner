@@ -14,7 +14,7 @@ The window is 5 minutes. Exit is hard — no exceptions, no "let's see where it 
 
 ## What the Data Confirms
 
-From 19,700+ unbiased observations (all tokens, not just scanner survivors):
+From 28,000+ unbiased observations (all tokens, not just scanner survivors):
 
 **The pump is real and short.** Tokens in the best momentum state (micro_trend=up, volume accelerating, early age) average +5–11% at 5 minutes. The same tokens average negative by 15–30 minutes. The window is exactly as short as the thesis assumes.
 

@@ -26,7 +26,7 @@ An AI-powered token screener that runs on-demand or on a 5-minute automatic cycl
 
 A GPU-independent Python service that polls DexScreener every 5 minutes and records *every* token it sees — not just ones that pass the scanner's filters. Backfills actual 5-minute price outcomes for every row.
 
-This is the unbiased training dataset for the ML model. Currently: **19,700+ rows, 830 unique tokens, May 17–present.**
+This is the unbiased training dataset for the ML model. Currently: **28,000+ rows, 800+ unique tokens, May 17–present.**
 
 ### 3. ML Model (built — not yet deployed)
 

@@ -285,6 +285,15 @@ GROUP BY 1, 2 ORDER BY 1, 2;
 
 Known minor issue: no sleep between back-to-back Birdeye calls within a cycle. At 2% rate this is rare. Fix when/if 429 rate becomes meaningful.
 
+### Track 2 — Shadow trader (in progress)
+
+- Design approved 2026-05-25 → `docs/decisions/SHADOW-TRADER-DESIGN.md`
+- **Prereqs before Phase 3 implementation:**
+  - P1: `analysis/export_model.py` — write and run to produce `analysis/models/lgbm_base.txt` + companions (**in progress this session**)
+  - P2–P4: ZEROX / ALCHEMY / JUPITER API keys — user provides
+  - P5: `./trader_data/` directory — create before first `docker compose up` on trader group
+- Phase 3 (implementation) pending user go/no-go after prereqs are confirmed
+
 ### Pending work
 
 **Data accumulation — just let it run:**

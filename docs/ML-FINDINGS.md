@@ -212,7 +212,7 @@ The model decays quickly between training and validation periods:
 | Train (May 17–20) | 0.90–0.92 | 89–91% |
 | Val (May 21–22) | 0.59–0.60 | 50–54% |
 
-CV AUC of 0.61 is the honest forward-looking estimate. **The model needs to be retrained on a rolling weekly basis** to stay calibrated to current market regime.
+CV AUC of 0.61 is the honest forward-looking estimate. **The model needs to be retrained on a rolling weekly basis** to stay calibrated to current chain conditions (launchpad mix, bot behavior, liquidity patterns).
 
 ---
 

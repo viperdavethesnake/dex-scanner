@@ -11,9 +11,11 @@ The goal: automated 5-minute scalp trades on new DEX token launches, Base and So
 | Signal pipeline (DexScreener → signals → filters) | ✅ Live |
 | LLM scanner (manual sessions) | ✅ Live |
 | Data collector (continuous, GPU-free) | ✅ Running 24/7 |
-| ML model (LightGBM, 0.61 AUC) | ✅ Built, not deployed |
-| Execution layer | ❌ Not built |
-| Wallet integration | ❌ Not built |
+| ML model (LightGBM, Base 0.67 / Solana 0.57 AUC) | ✅ Built, pending deployment via shadow trader |
+| Birdeye enrichment in collector | ✅ Live (2026-05-23, Base only, sample rate 0.02) |
+| Shadow trader design | ✅ Approved 2026-05-25, see `docs/decisions/SHADOW-TRADER-DESIGN.md` |
+| Execution layer | 🛠️ In progress (shadow mode first) |
+| Wallet integration | 🛠️ In progress (shadow mode — no real keys in use) |
 
 ---
 
@@ -22,12 +24,12 @@ The goal: automated 5-minute scalp trades on new DEX token launches, Base and So
 The collector runs automatically. Each week of data improves the model.
 
 **Priorities:**
-- Add Birdeye enrichment to the collector (`net_inflow_usd`, `unique_traders_1h`) — one build session, largest single improvement available
+- Add Birdeye enrichment to the collector (`net_inflow_usd`, `unique_traders_1h`) — ✅ done (Base-only, 2026-05-23)
 - Retrain weekly on a rolling window — model decays; a 4-day-old model degrades to ~0.59 AUC
-- Switch training target to `>10% move` (AUC 0.684, 2.34x lift vs 0.61 for win/loss)
-- Train separate Base and Solana models (Base: 0.67 AUC, Solana: 0.57)
+- Train separate Base and Solana models (Base: 0.67 AUC, Solana: 0.57) — straightforward once execution layer is built
+- Switch training target to `>10% move` (AUC 0.684) — experiment result; see `docs/ML-FINDINGS.md`. Deferred until shadow mode is validated.
 
-**Gate to Phase 2:** 4+ weeks of data, stable out-of-sample AUC ≥ 0.62 on a rolling test set.
+**Gate to Phase 2:** Shadow trader running for ≥5 days AND average `cost_delta_pct` (measured real cost vs backtest 1.5% assumption) stays under +1.0 percentage points. Time-based data gates do not apply — each token launch is an independent ~hour-long event, not a market trend. Thousands of independent samples already exist in the collector; the remaining unknown is execution cost, which only live aggregator quotes can answer.
 
 ---
 
@@ -37,9 +39,9 @@ A new Python service (`dex-trader`) added to the Docker Compose stack. No depend
 
 **Decision loop:**
 ```
-Every 5 minutes:
-  1. Pull latest DexScreener signals
-  2. Compute signals (same logic as collector)
+Every 5 seconds:
+  1. Pick up new signals from collector DB (raw_signals, past watermark)
+  2. Apply hard pre-filters (age 15–90m, micro_trend exclusions, V/L ceilings — same as scanner)
   3. Score with ML model
   4. For each token scoring ≥ threshold:
        - Check: not already in a position for this token
@@ -69,15 +71,13 @@ Every 5 minutes:
 
 **Chain: Base first.** Better model accuracy, Coinbase native infrastructure, lower and more predictable gas fees.
 
-**Wallet options:**
-- Coinbase Developer Platform (CDP SDK) — managed MPC wallet, Python library, native Base support
-- Direct web3.py + private key — simpler, more portable, no third-party dependency
-- Decision to be made based on Coinbase API access available
+**Wallet:** Direct `web3.py` + `eth-account` with `PRIVATE_KEY` env var. Decided in `docs/decisions/SHADOW-TRADER-DESIGN.md §6`. No third-party key custody, full local control, straightforward key rotation. CDP SDK and similar add unnecessary infrastructure dependencies at this wallet size.
 
-**DEX routing:**
-- 0x API swap endpoint — aggregates across Base DEXes (Uniswap V3, Aerodrome, etc.), returns best price, handles token approvals
-- OR: direct Uniswap V3 router — simpler dependency, slightly less optimal routing
-- Minimum liquidity check at execution time: ≥$10k (already enforced in scanner, re-check before trade)
+**DEX routing (decided — see `docs/decisions/SHADOW-TRADER-DESIGN.md §5`):**
+- Primary: 0x Swap API v2 — aggregates across Base DEXes, free tier, 1 RPS
+- Fallback: Aerodrome Router — fires for ~10–25% of candidates (new tokens too thin for 0x)
+- Secondary fallback: Uniswap V3 QuoterV2
+- Minimum liquidity check at execution time: ≥$10k (re-verified at quote time)
 
 **Key implementation details:**
 - Token approval transaction required on first buy of any ERC-20 — handle gracefully, add ~$0.05 gas and ~5s latency
@@ -96,11 +96,11 @@ Every 5 minutes:
 
 Run the execution layer with real signals and real threshold logic but do not submit actual transactions. Log every "would have bought" and "would have sold" event.
 
-**Duration:** minimum 2 weeks  
-**Validation:** paper trade P&L should match backtest within 30%  
+**Duration:** Until shadow has logged ≥200 completed trades and `cost_delta_pct` has stabilized within ±0.5pp over a rolling 50-trade window.  
+**Validation:** shadow trade P&L should match backtest within 30%  
 **What to watch:** fill simulation accuracy, signal frequency vs backtest, threshold stability
 
-If paper trade results diverge significantly from backtest, investigate before proceeding. Common causes: slippage assumption wrong, model threshold needs adjustment, market regime shifted.
+If shadow results diverge significantly from backtest, investigate before proceeding. Common causes: slippage assumption wrong, model threshold needs adjustment, or the data distribution has shifted (new launchpad dominant, new bot behavior, new chain conditions).
 
 ---
 
@@ -112,12 +112,12 @@ If paper trade results diverge significantly from backtest, investigate before p
 **Daily loss limit:** $50  
 **Review cadence:** daily P&L check, weekly model retrain
 
-Start with Base only. Add Solana after 4+ weeks of stable Base performance.
+Start with Base only. Add Solana after Base live has logged ≥30 profitable days with profit factor ≥1.5x AND Solana Birdeye access is unblocked (free tier reset test confirms or Lite tier upgrade approved).
 
 **Success criteria to scale up:**
-- 30+ days of live trading
+- ≥200 completed live trades
 - Profit factor ≥ 1.5x sustained (not just lucky early run)
-- Max drawdown within model predictions
+- Max drawdown within ±50% of shadow-measured drawdown (model does not predict drawdown directly; this is a measured stability check against the shadow baseline)
 - No execution failures (failed txs, stuck positions, approval hangs)
 
 ---
@@ -135,7 +135,7 @@ Docker Compose Stack
 │   ├── dex-collector       Data collection + outcome backfill
 │   └── dex-collector-db    Collector signal DB (training data)
 │
-└── Trader group (new — no GPU)         ← Phase 2/3
+└── Trader group (new — no GPU)         ← Phase 3 implementation in progress
     ├── dex-trader          Decision loop + execution
     ├── dex-trader-db       Trade log, position tracking
     └── dex-model-server    (optional) FastAPI model scoring endpoint
@@ -145,12 +145,12 @@ The trader group is fully independent of the scanner and LLM. It runs continuous
 
 ---
 
-## Open Questions
+## Open Questions (live)
 
-1. **Coinbase API specifics** — which Coinbase product/SDK is being used for wallet and execution? CDP SDK, Coinbase Wallet, or something else? Determines Phase 3 implementation.
+Resolved questions are recorded in `docs/decisions/`. Active open questions:
 
-2. **Solana wallet** — Phantom? Keypair file? Solana doesn't route through Coinbase natively.
+1. **Birdeye tier upgrade timing.** Currently Standard (free), 0.02 sample rate. Lite ($39/mo) unlocks Solana enrichment if reset test (2026-06-24) confirms tier-gating. Decision deferred until Base shadow proves profitable execution.
 
-3. **Model serving** — inline in the trader script (simplest) or a separate FastAPI endpoint (more modular, allows hot reload on retrain)?
+2. **Solana wallet integration.** Solana is deferred until Base live is stable. When activated: keypair file via `solders` + `solana-py`, Jupiter aggregator. Design stub exists at `dex-trader/aggregators/jupiter.py`.
 
-4. **Retraining automation** — manual weekly retrain via script, or a scheduled cron job that retrains and hot-swaps the model?
+3. **MEV / sandwich protection.** Shadow mode does not measure MEV cost. Live mode on Base will need either a private RPC (e.g., Flashbots Protect) or accept the MEV tax. Decision deferred until shadow-vs-live cost gap is measured.
