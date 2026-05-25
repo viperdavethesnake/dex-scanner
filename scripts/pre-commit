@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+gitleaks protect --staged --redact --no-banner --exit-code 1 || {
+  echo "❌ gitleaks detected secrets in staged changes — commit aborted."
+  echo "If this is a false positive, add the pattern to .gitleaksignore"
+  exit 1
+}

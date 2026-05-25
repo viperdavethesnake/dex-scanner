@@ -170,7 +170,7 @@ Webhook GET → DexScreener profiles → Filter Base/Solana → Fetch pair data
 **Rules:**
 - All secrets live in `.env` (gitignored). See `.env.example` for the full contract.
 - n8n workflow JSON files must use credential store references (`credentials.httpHeaderAuth.id`), never raw key values in `headerParameters`.
-- A `gitleaks` pre-commit hook is installed — it will block any commit containing detected secrets. If you get a false positive, add the pattern to `.gitleaksignore`, do not disable the hook.
+- A `gitleaks` pre-commit hook is tracked at `scripts/pre-commit`. Install it once after cloning: `bash scripts/install-hooks.sh`. It will block any commit containing detected secrets. If you get a false positive, add the pattern to `.gitleaksignore`, do not disable the hook.
 - When updating workflows via the n8n API, always pull the current workflow first, patch in-memory, and PUT back. Never reconstruct from scratch — credential references are stored in node data and must be preserved.
 - If a key is ever found hardcoded in a committed file: rotate immediately, strip from working tree, commit the strip, then clean git history with `git filter-repo`.
 
