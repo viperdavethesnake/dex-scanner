@@ -1,18 +1,19 @@
 # DEX Scanner — Resume
 
-**Last updated:** 2026-05-23 (session 2 — Birdeye enrichment implementation)
+**Last updated:** 2026-05-25 (session 3 — shadow trader Phase 3 live)
 
 ---
 
 ## Bring it back up
 
-The stack now has two independent groups. Start them separately.
+The stack has three independent groups. Start them separately.
 
-### Collector only (no GPU needed)
+### Collector + Trader (no GPU needed)
 ```bash
 cd /space/docker/containers/dex-scanner
-docker compose up -d dex-collector-db dex-collector
-docker logs dex-collector -f   # confirm polling
+docker compose up -d dex-collector-db dex-collector dex-trader-db dex-trader
+docker logs dex-collector -f    # confirm polling
+docker logs dex-trader -f       # confirm shadow loop running
 ```
 
 ### Scanner stack (GPU required)
@@ -24,8 +25,11 @@ Model load takes ~2 minutes. n8n won't start until llama-server is healthy.
 
 ### Stop independently
 ```bash
-# Stop scanner (free GPU), keep collector running
+# Stop scanner (free GPU), keep collector + trader running
 docker compose stop n8n timescaledb llamacpp
+
+# Stop trader
+docker compose stop dex-trader dex-trader-db
 
 # Stop collector
 docker compose stop dex-collector dex-collector-db
@@ -41,6 +45,8 @@ docker compose stop dex-collector dex-collector-db
 |---------|--------|-------|
 | `dex-collector-db` | **running** | Bridge network, port 5434 |
 | `dex-collector` | **running** | Polling every 5 min, GPU-independent |
+| `dex-trader-db` | **running** | Bridge network, port 5435 |
+| `dex-trader` | **running** | Shadow mode, threshold=0.65, polling 5s |
 | `dex-llamacpp` | stopped | GPU free |
 | `dex-timescale` | stopped | |
 | `dex-n8n` | stopped | Auto-scanner was stopped before shutdown |
@@ -208,6 +214,47 @@ const microPass = chain === 'solana'
 return ageMin >= 15 && ageMin <= 90 && microPass && vlPass;
 ```
 
+### Shadow Trader — Phase 3 (completed + live 2026-05-25)
+
+Full shadow-mode trading service (`dex-trader/`) scaffolded, hardened, and started live.
+
+**Architecture:**
+- Single-process poll loop (5s interval) — ingests `raw_signals` from collector DB, scores with LightGBM, gets aggregator quotes, records simulated fills and P&L
+- Two-threshold conviction: `SHADOW=0.65` (entry floor), `LIVE=0.70` (band classifier)
+- Exit timer: 5-minute hold, then aggregator exit quote + DexScreener parallel truth
+- All risk controls active in shadow: position limit (3), daily loss cap ($50), re-entry lockout (30m), hourly rate limit (20), kill switch
+
+**Services added to compose.yaml:**
+- `dex-trader-db` — TimescaleDB, port 5435, `dex-trader-net`
+- `dex-trader` — builds from repo root, dual-network (trader + collector)
+
+**Key files:**
+```
+dex-trader/           main.py, db.py, signals.py, scorer.py, security.py
+                      eth_price.py, simulator.py, risk.py, token_decimals.py
+dex-trader/aggregators/   __init__.py, types.py, zerox.py, aerodrome.py,
+                          uniswap.py, jupiter.py (stub)
+dex-trader/init.sql   trades hypertable, trader_state, signal_watermark
+analysis/features.py  Shared feature engineering — single source of truth
+```
+
+**13 hardening fixes shipped before first start (P0/P1 + P2):**
+- Correct token decimals (on-chain ERC20 lookup, two-level cache)
+- Per-token `price_usd` in sell direction (was total USDC received)
+- `cost_delta_pct = (backtest_gross - net_pct) - 1.5` captures full round-trip friction
+- `slippage_bps` from `minBuyAmount/buyAmount` (0x v2 field, not v1 `guaranteedPrice`)
+- Route label from `route.fills` (0x v2 structure, not v1 `sources[]`)
+- Slippage gate for on-chain fallbacks (signal_price vs quote_price)
+- `record_entry()` called only after confirmed fill (not on quote/security failure)
+- Exits fire before ingest each loop cycle
+- `signal_features` JSONB stored per trade row
+- Web3 reconnect helper with 3-failure threshold + 30s backoff
+- Shared `analysis/features.py` — `engineer_features()` verified bit-identical (13/13 features, <1e-12)
+- Kill-switch read once per cycle, passed through to avoid redundant DB queries
+- `libgomp1` added to Dockerfile (LightGBM runtime dep missing from `python:3.12-slim`)
+
+**Startup verification (2026-05-25 08:31 UTC):** all required log lines present, health endpoint `{"status":"ok", "shadow_mode":true}`, watermark advancing, zero restarts.
+
 ### Bug fix — Empty batch short-circuit (completed 2026-05-17)
 
 **Bug:** When all tokens in a batch were pre-filtered (by the Phase 8 combined age/micro_trend/V/L check), Build Prompt still sent an empty token list to the LLM. With thinking enabled, the LLM burned ~30s then responded as a chatbot: "Ready. Drop the token list... Waiting on your data." Format Response then rendered this as the AI Analysis section.
@@ -263,99 +310,70 @@ GROUP BY 1, 2 ORDER BY 1, 2;
 
 ## Next session
 
-### Stack state at close (2026-05-24)
+### Stack state at close (2026-05-25)
 
-| Service | Status |
-|---------|--------|
-| `dex-collector-db` | running, port 5434 |
-| `dex-collector` | running, Birdeye enrichment **ENABLED** at rate=0.02 |
-| `dex-llamacpp` | stopped (GPU free) |
-| `dex-timescale` | stopped |
-| `dex-n8n` | stopped |
+| Service | Status | Notes |
+|---------|--------|-------|
+| `dex-collector-db` | **running** | port 5434 |
+| `dex-collector` | **running** | Birdeye enrichment ENABLED at rate=0.02 |
+| `dex-trader-db` | **running** | port 5435 |
+| `dex-trader` | **running** | Shadow mode, threshold=0.65, **LIVE since ~08:31 UTC** |
+| `dex-llamacpp` | stopped | GPU free |
+| `dex-timescale` | stopped | |
+| `dex-n8n` | stopped | |
 
-### Birdeye enrichment health (after ~18h live)
+### Shadow trader health (first start — 2026-05-25 08:31 UTC)
 
-| Status | Calls | Notes |
-|--------|-------|-------|
-| HTTP 200 | 11 | 816ms avg — good |
-| HTTP 429 | 2 | Two Base tokens sampled same cycle, no inter-call sleep — rare, deferred |
-| Timeout | 1 | Occasional Standard tier slowness — within acceptable range |
+Startup sequence verified clean:
 
-14 enriched rows in `raw_signals` so far. Letting it accumulate — **no action needed**.
-
-Known minor issue: no sleep between back-to-back Birdeye calls within a cycle. At 2% rate this is rare. Fix when/if 429 rate becomes meaningful.
-
-### Track 2 — Shadow trader (Phase 3 scaffolded — pending user review)
-
-**Phase 3 implementation is complete. dex-trader NOT started yet — user reviews code first.**
-
-#### Files created (2026-05-25)
 ```
-dex-trader/
-  main.py          Main loop — ingests raw_signals, scores, quotes, records P&L
-  db.py            DB connections (trader + collector), idempotent migrate()
-  signals.py       hard_filter() — Phase 9 scanner replica
-  scorer.py        LightGBM load, hot-reload on mtime, score(), conviction_band()
-  security.py      GoPlus + Honeypot.is, 1h in-memory cache, fail-open in shadow
-  eth_price.py     Coinbase ETH/USD, 600s cache, $3000 fallback
-  simulator.py     compute_entry(), compute_exit() with backtest comparison
-  risk.py          Position limit, daily loss cap, re-entry lock, kill switch poll
-  aggregators/
-    __init__.py    get_quote() dispatcher (0x → Aerodrome → Uniswap V3)
-    types.py       Quote dataclass
-    zerox.py       0x Swap API v2 (ephemeral taker, liquidityAvailable guard)
-    aerodrome.py   Aerodrome Router on-chain (single-hop then two-hop)
-    uniswap.py     Uniswap V3 QuoterV2 (fee tiers 1%, 0.3%, 0.05%)
-    jupiter.py     Stub — raises NotImplementedError (Solana Phase 5+)
-  init.sql         trader_db schema (trades, trader_state, signal_watermark)
-  requirements.txt
-  Dockerfile
+shadow mode: ephemeral taker_address=0xD9389e719ba3631A58A3776ce2E7Cd1C2bA3C9e3
+DEX Trader — shadow_mode=True threshold=0.65
+health: http://0.0.0.0:8090/health
+db: connected to dex-trader-db:5432/trader  (migration complete)
+db: connected to dex-collector-db:5432/collector_signals
+web3: connected=True rpc=https://base-mainnet.g.alchemy.com
+model loaded: version=2026-05-25T08:19:42Z auc=0.620 threshold=0.65 (shadow mode) n_features=34
+risk: restored 0 open positions, 0 re-entry locks
+startup complete — entering loop (poll_interval=5s)
+ingest: 6 new signals | watermark=28908
 ```
 
-#### compose.yaml changes
-- `dex-trader-db` service added (TimescaleDB, port 5435, `dex-trader-net`)
-- `dex-trader` service added (builds from `./dex-trader/`, dual-network: trader + collector)
-- `dex-trader-net` bridge network added
-- `./trader_data/` created and gitignored (TimescaleDB volume mount)
+Health endpoint: `docker exec dex-trader curl -s http://localhost:8090/health`
 
-#### Key design decisions implemented
-- **Ephemeral taker**: `Account.create()` per process start — sentinel 0x000...001 confirmed returning HTTP 400; abandoned
-- **Two-threshold**: `CONVICTION_THRESHOLD_SHADOW=0.65` (entry floor) + `CONVICTION_THRESHOLD_LIVE=0.70` (band classifier); `conviction_band` column on every trade row
-- **ETH/USD**: Coinbase public API, 600s cache, $3000 fallback
-- **Exit P&L**: aggregator exit quote as canonical; DexScreener as parallel truth (stored in `exit_price_usd`)
-
-#### To start (after user review)
-```bash
-# DB only first — verify schema applies cleanly
-docker compose up -d dex-trader-db
-docker exec dex-trader-db psql -U trader -d trader -c "\dt"
-
-# Then trader (when user gives go-ahead)
-docker compose up -d dex-trader
-docker logs dex-trader -f
-```
-
-#### Kill switch (emergency stop)
+### Kill switch (emergency stop)
 ```bash
 docker exec dex-trader-db psql -U trader -d trader \
   -c "UPDATE trader_state SET value='true' WHERE key='kill_switch';"
 ```
 
-#### Phase 4 checkpoint queries (after ≥200 trades exited)
+### Phase 4 checkpoint queries (run after ≥200 trades exited)
 ```sql
+-- Overall P&L vs backtest assumption
+SELECT COUNT(*) n,
+       ROUND(AVG(net_pct)::numeric,2)         avg_net_pct,
+       ROUND(AVG(cost_delta_pct)::numeric,2)  avg_cost_delta,
+       ROUND(AVG(entry_cost_pct)::numeric,2)  avg_entry_cost
+FROM trades WHERE status='exited';
+
 -- conviction_band breakdown
 SELECT conviction_band, COUNT(*), ROUND(AVG(net_pct)::numeric,2) avg_net
-FROM trades WHERE status='exited' GROUP BY conviction_band;
+FROM trades WHERE status='exited' GROUP BY conviction_band ORDER BY 1;
 
--- quote source coverage
+-- Quote source coverage (who is actually filling)
 SELECT quote_source, COUNT(*) FROM trades WHERE fill_ts IS NOT NULL GROUP BY 1;
 
--- cost delta vs backtest assumption
-SELECT ROUND(AVG(cost_pct)::numeric,2) real_cost, ROUND(AVG(cost_delta_pct)::numeric,2) delta
-FROM trades WHERE status='exited';
+-- Slippage gate effectiveness
+SELECT failure_reason, COUNT(*)
+FROM trades WHERE status='skipped' GROUP BY 1 ORDER BY 2 DESC;
 ```
 
 ### Pending work
+
+**Shadow trader — let it accumulate:**
+- Target ≥200 exited trades before drawing any conclusions.
+- At 5 poll cycles/min × 5min hold, expect ~1 entry/day if signal flow is normal.
+- Estimated time to 200 exited: several weeks. Check weekly.
 
 **Data accumulation — just let it run:**
 - Collector Birdeye enrichment accumulating `unique_traders_1h` + `net_inflow_usd` on Base tokens.
@@ -374,7 +392,7 @@ FROM trades WHERE status='exited';
 - ~~Solana buy_pct_5m > 75%~~ — only >85% is bad (n=61, too small to act on)
 - ~~Age floor 15→20m~~ — Base 15–20m is +18.82%, 64.9% win, do NOT filter
 
-**When Base auto-trading goes live:**
+**When Base auto-trading goes live (Phase 4+):**
 - Upgrade Birdeye to Lite ($39/month) → Solana enrichment + faster responses.
 - Bump `COLLECTOR_BIRDEYE_SAMPLE_RATE` to 0.2 (1.5M CU limit vs current 30k).
 
