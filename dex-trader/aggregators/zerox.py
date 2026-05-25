@@ -49,8 +49,12 @@ def quote(token_address: str, sell_usd: float, taker_address: str,
         "0x-version": "v2",
     }
 
+    # Token decimals needed for both buy (price derivation) and sell (amount calc)
+    tok_dec = get_decimals(token_address, w3)
+
     if direction == "buy":
         sell_amount = int(sell_usd * 10 ** USDC_DECIMALS)
+        token_amount = None  # not needed for buy; set for price calc reference
         params = {
             "sellToken":   USDC_BASE,
             "buyToken":    token_address,
@@ -63,7 +67,6 @@ def quote(token_address: str, sell_usd: float, taker_address: str,
         # Sell direction: token → USDC
         # Compute approximate token amount using on-chain decimals.
         if fill_price_usd and fill_price_usd > 0:
-            tok_dec = get_decimals(token_address, w3)
             token_amount = int(sell_usd / fill_price_usd * 10 ** tok_dec)
         else:
             token_amount = int(sell_usd * 1e12)  # rough fallback for ~$0.001/18-dec tokens
@@ -95,19 +98,43 @@ def quote(token_address: str, sell_usd: float, taker_address: str,
     if not data.get("liquidityAvailable", True):
         return None
 
-    # Extract price
+    # Parse amounts once — used for both price derivation and slippage.
+    # 0x v2 has no 'price' field; price must be derived from buyAmount.
+    buy_amount     = 0
+    min_buy_amount = 0
+    try:
+        buy_amount     = int(data.get("buyAmount",    0) or 0)
+        min_buy_amount = int(data.get("minBuyAmount", 0) or 0)
+    except (ValueError, TypeError):
+        pass
+
+    # Derive price from amounts
     price_usd = 0.0
     try:
-        price_usd = float(data.get("price", 0))
-    except (ValueError, TypeError):
+        if buy_amount > 0:
+            if direction == "buy":
+                # Sold USDC → received tokens
+                token_out = buy_amount / 10 ** tok_dec
+                if token_out > 0:
+                    price_usd = sell_usd / token_out
+            else:
+                # Sold tokens → received USDC
+                usdc_out = buy_amount / 10 ** USDC_DECIMALS
+                if fill_price_usd and fill_price_usd > 0:
+                    tokens_sold = sell_usd / fill_price_usd
+                elif token_amount:
+                    tokens_sold = token_amount / 10 ** tok_dec
+                else:
+                    tokens_sold = 0.0
+                if tokens_sold > 0:
+                    price_usd = usdc_out / tokens_sold
+    except (ValueError, TypeError, ZeroDivisionError):
         pass
 
     # Slippage bps — v2 API: derived from buyAmount vs minBuyAmount
     slippage_bps = 200
     try:
-        buy_amount     = int(data.get("buyAmount", 0) or 0)
-        min_buy_amount = int(data.get("minBuyAmount", 0) or 0)
-        if buy_amount > 0 and min_buy_amount > 0 and min_buy_amount <= buy_amount:
+        if buy_amount > 0 and 0 < min_buy_amount <= buy_amount:
             slippage_bps = round((buy_amount - min_buy_amount) / buy_amount * 10000)
     except (ValueError, TypeError, ZeroDivisionError):
         pass
