@@ -22,9 +22,9 @@
 |-------|------:|-------|
 | `up`    | 443 | Primary entry target |
 | `flat`  | 362 | Excluded on Solana; Base ≤4x V/L ceiling |
-| `fading`| 269 | Excluded |
+| `fading`| 269 | Passes filter (Base); excluded: `down`, `recovering` only |
 
-Base filter passes both `up` and `flat` micro-trends (with volume ceiling), so the relevant pool is `up + flat` = ~805 signals over 3 days.
+Base filter passes `up`, `flat`, and `fading` micro-trends (with volume ceiling), so the relevant pool is `up + flat + fading` = ~1074 signals over 3 days.
 
 ---
 
@@ -32,7 +32,7 @@ Base filter passes both `up` and `flat` micro-trends (with volume ceiling), so t
 
 - **Val-set AUC:** 0.620
 - **Threshold:** 0.65 (shadow), 0.70 (live)
-- **Val-set precision at 0.65:** ~28% (232 predicted-positive out of 828 eligible)
+- **Val-set scoring rate at 0.65:** ~28% (232 predicted-positive out of 828 eligible)
 
 Applied to signal flow: **0.2–0.4 model hits per 5-min cycle → 60–120 scored signals/day.**
 
@@ -105,11 +105,14 @@ Trader's first ingest batch (signal IDs 28908–28959, 10 Base signals) had **0 
 Once first 10 shadow fills accumulate:
 
 ```sql
--- Quote rejection rate
+-- Rejection breakdown by gate
 SELECT
-  COUNT(*) FILTER (WHERE status = 'skipped' AND notes LIKE '%liquidityAvailable%') AS quote_rejected,
-  COUNT(*) FILTER (WHERE status IN ('simulated','managed','exited')) AS filled,
-  COUNT(*) AS total
+  COUNT(*) FILTER (WHERE status='skipped' AND failure_reason='no_quote')                AS quote_rejected,
+  COUNT(*) FILTER (WHERE status='skipped' AND failure_reason LIKE 'quote_drift%')       AS drift_rejected,
+  COUNT(*) FILTER (WHERE status='skipped' AND failure_reason LIKE 'slippage_too_high%') AS slippage_rejected,
+  COUNT(*) FILTER (WHERE status='skipped' AND failure_reason LIKE 'security_fail%')     AS security_rejected,
+  COUNT(*) FILTER (WHERE status IN ('simulated','exited'))                              AS filled,
+  COUNT(*)                                                                              AS total_post_score
 FROM trades
 WHERE created_at >= CURRENT_DATE;
 ```
