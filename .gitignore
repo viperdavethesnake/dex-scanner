@@ -23,3 +23,11 @@ litellm_data/
 *.bak
 venv/
 analysis/figures/
+
+# ML model artifacts (binary blobs — tracked via .gitkeep, not committed)
+analysis/models/*.txt
+analysis/models/*.json
+!analysis/models/.gitkeep
+
+# Collector data volume
+collector_data/
