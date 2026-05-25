@@ -152,7 +152,7 @@ def train_model(train, feature_cols):
 
 # ── Export ──────────────────────────────────────────────────────────────────────
 
-def export(model, feature_cols, val_auc, train_cutoff):
+def export(model, feature_cols, val_auc, train_cutoff, cat_mappings=None):
     os.makedirs(MODELS_DIR, exist_ok=True)
 
     # 1. Booster (LightGBM native text format — portable, no pickle)
@@ -169,6 +169,12 @@ def export(model, feature_cols, val_auc, train_cutoff):
         "val_auc":       round(float(val_auc), 4),
         "trained_at":    datetime.now(timezone.utc).isoformat(),
         "n_features":    len(feature_cols),
+        # Training-time category vocabularies — required for correct inference.
+        # LightGBM uses integer codes internally; the code for a given string
+        # depends on the category list order.  Without pinning this at training
+        # time, a single-row inference DataFrame would derive its own codes and
+        # silently mis-score every signal.
+        "categorical_mappings": cat_mappings or {},
         "note": (
             "Threshold 0.70 = ML-FINDINGS.md canonical (First-entry >=0.70, 2.50x PF). "
             "SHADOW-TRADER-DESIGN.md §9 defaults CONVICTION_THRESHOLD to 0.65 — "
@@ -212,6 +218,15 @@ def main():
     feature_cols = get_feature_cols(df)
     print(f"  {len(feature_cols)} feature columns")
 
+    # Capture training-time categorical vocabularies before the train/val split.
+    # Pandas keeps the full category set even after subsetting, so these categories
+    # reflect what LightGBM will see during model.fit().
+    cat_mappings = {}
+    for col in CATEGORICAL_FEATURES:
+        if col in df.columns and hasattr(df[col], "cat"):
+            cat_mappings[col] = list(df[col].cat.categories)
+    print(f"  categorical mappings: { {k: len(v) for k, v in cat_mappings.items()} }")
+
     # 3. Split
     train = df[df["scanned_at"] < args.train_cutoff].copy()
     val   = df[df["scanned_at"] >= args.train_cutoff].copy()
@@ -248,7 +263,8 @@ def main():
 
     # 6. Export
     print(f"\nExporting to {MODELS_DIR}/ …")
-    metadata = export(model, feature_cols, val_auc, args.train_cutoff)
+    metadata = export(model, feature_cols, val_auc, args.train_cutoff,
+                      cat_mappings=cat_mappings)
 
     # 7. Verify sizes
     sizes = {

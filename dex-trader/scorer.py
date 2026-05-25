@@ -51,6 +51,7 @@ class Scorer:
             self.meta = json.load(f)
         self.mtime        = os.path.getmtime(MODEL_PATH)
         self.last_checked = time.monotonic()
+        self.cat_mappings = self.meta.get("categorical_mappings", {}) or {}
         log.info(
             "model loaded: version=%s auc=%.3f threshold=%.2f (%s mode) n_features=%d",
             self.meta.get("trained_at", "?"),
@@ -59,6 +60,11 @@ class Scorer:
             "shadow" if SHADOW_MODE else "live",
             len(self.features),
         )
+        if not self.cat_mappings:
+            log.warning(
+                "model metadata missing categorical_mappings — "
+                "categorical inference may produce wrong scores"
+            )
 
     def maybe_reload(self) -> None:
         """Check model file mtime every RELOAD_CHECK_INTERVAL; reload if changed."""
@@ -95,7 +101,15 @@ class Scorer:
         X = pd.DataFrame([row])[self.features]
         for col in CATEGORICAL_FEATURES:
             if col in X.columns:
-                X[col] = X[col].astype("category")
+                cats = self.cat_mappings.get(col)
+                if cats:
+                    # Anchor to training-time vocabulary.
+                    # Values absent from cats become NaN (code -1),
+                    # which LightGBM treats as missing — correct behaviour.
+                    X[col] = pd.Categorical(X[col], categories=cats)
+                else:
+                    # Back-compat: no mappings in metadata (old model file)
+                    X[col] = X[col].astype("category")
         return float(self.booster.predict(X)[0])
 
     @staticmethod
