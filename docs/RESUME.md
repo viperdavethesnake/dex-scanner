@@ -385,9 +385,16 @@ FROM trades WHERE status='exited' GROUP BY conviction_band ORDER BY 1;
 -- Quote source coverage (who is actually filling)
 SELECT quote_source, COUNT(*) FROM trades WHERE fill_ts IS NOT NULL GROUP BY 1;
 
--- Slippage gate effectiveness
+-- Skip reason breakdown (includes legacy quote_drift% and new v2 reasons)
 SELECT failure_reason, COUNT(*)
 FROM trades WHERE status='skipped' GROUP BY 1 ORDER BY 2 DESC;
+
+-- Drift gate v2 breakdown (trades from 2026-05-27 onwards)
+SELECT
+  COUNT(*) FILTER (WHERE status='skipped' AND failure_reason LIKE 'quote_drift%')    AS legacy_quote_drift,
+  COUNT(*) FILTER (WHERE status='skipped' AND failure_reason LIKE 'momentum_failed%') AS momentum_failed,
+  COUNT(*) FILTER (WHERE status='skipped' AND failure_reason LIKE 'drift_too_high%')  AS drift_too_high
+FROM trades;
 ```
 
 ### Pending work

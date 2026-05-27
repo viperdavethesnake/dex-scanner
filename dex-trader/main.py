@@ -55,7 +55,16 @@ SHADOW_MODE           = os.environ.get("SHADOW_MODE", "true").lower() == "true"
 POLL_INTERVAL         = int(os.environ.get("POLL_INTERVAL", "5"))
 TRADE_SIZE_USD        = float(os.environ.get("TRADE_SIZE_USD", "10.0"))
 POSITION_HOLD_SECONDS = int(os.environ.get("POSITION_HOLD_SECONDS", "300"))
-QUOTE_DRIFT_MAX_PCT   = float(os.environ.get("QUOTE_DRIFT_MAX_PCT", "3.0"))
+# Asymmetric drift gates — strategy is momentum scalping, not value entry.
+# See docs/decisions/DRIFT-GATE-V2.md
+QUOTE_DRIFT_DOWN_MAX_PCT = float(os.environ.get("QUOTE_DRIFT_DOWN_MAX_PCT", "1.5"))
+QUOTE_DRIFT_UP_MAX_PCT   = float(os.environ.get("QUOTE_DRIFT_UP_MAX_PCT",   "15.0"))
+
+# Exit cost estimates used when aggregator returns None (no liquidity).
+# Without these, gross_pct ≈ net_pct and P&L is overstated.
+FALLBACK_EXIT_GAS_USD       = float(os.environ.get("FALLBACK_EXIT_GAS_USD",       "0.20"))
+FALLBACK_EXIT_SLIPPAGE_BPS  = int  (os.environ.get("FALLBACK_EXIT_SLIPPAGE_BPS",  "300"))
+
 SLIPPAGE_REJECT_BPS   = int(os.environ.get("SLIPPAGE_REJECT_BPS", "500"))
 HEALTH_PORT           = int(os.environ.get("HEALTH_PORT", "8090"))
 
@@ -361,13 +370,30 @@ def _process_signal(signal: dict, scorer: Scorer, trader_conn, w3,
     log.info("quote %s: %s | price=$%.8f slippage=%dbps gas=$%.3f latency=%dms",
              sym, q.source, q.price_usd, q.slippage_bps, q.gas_usd, q.latency_ms)
 
-    # 7. Quote validation (drift + slippage)
+    # 7. Quote validation — asymmetric drift gate for momentum strategy
+    #
+    # Continued positive drift between signal and quote IS the signal
+    # confirming in real time. Reject only when:
+    #   (a) the token has reversed >X% (momentum failed before we could enter), or
+    #   (b) the token has already extended >Y% (move likely near-complete; 5-min
+    #       scalp on an already-pumped token has less remaining edge).
+    #
+    # The previous one-sided gate (reject if drift > +3%) actively selected
+    # against the model's strongest signals and accepted reversals. See
+    # docs/decisions/DRIFT-GATE-V2.md for the analysis.
     if signal_price > 0 and q.price_usd > 0:
         drift_pct = (q.price_usd - signal_price) / signal_price * 100
-        if drift_pct > QUOTE_DRIFT_MAX_PCT:
-            log.warning("quote_drift %s: %.1f%% > %.1f%% max", sym, drift_pct, QUOTE_DRIFT_MAX_PCT)
-            _update_skipped(trader_conn, trade_id, f"quote_drift:{drift_pct:.1f}%")
+        if drift_pct < -QUOTE_DRIFT_DOWN_MAX_PCT:
+            log.warning("momentum_failed %s: drift=%+.2f%% < -%.2f%% (signal reversing)",
+                        sym, drift_pct, QUOTE_DRIFT_DOWN_MAX_PCT)
+            _update_skipped(trader_conn, trade_id, f"momentum_failed:{drift_pct:+.2f}%")
             return
+        if drift_pct > QUOTE_DRIFT_UP_MAX_PCT:
+            log.warning("drift_too_high %s: drift=%+.2f%% > +%.2f%% (over-extended)",
+                        sym, drift_pct, QUOTE_DRIFT_UP_MAX_PCT)
+            _update_skipped(trader_conn, trade_id, f"drift_too_high:{drift_pct:+.2f}%")
+            return
+        log.info("drift OK %s: %+.2f%%", sym, drift_pct)
 
     if q.slippage_bps > SLIPPAGE_REJECT_BPS:
         log.warning("slippage_reject %s: %dbps > %d max", sym, q.slippage_bps, SLIPPAGE_REJECT_BPS)
@@ -441,12 +467,19 @@ def _manage_open_positions(trader_conn, w3) -> None:
             eq_gas     = exit_q.gas_usd
             eq_slip    = exit_q.slippage_bps
         else:
-            log.warning("exit_quote NONE trade_id=%d — using dexscreener fallback", trade_id)
+            log.warning(
+                "exit_quote NONE trade_id=%d — dexscreener fallback + estimated costs "
+                "(gas=$%.2f, slip=%dbps)", trade_id,
+                FALLBACK_EXIT_GAS_USD, FALLBACK_EXIT_SLIPPAGE_BPS,
+            )
             eq_price   = exit_dex
             eq_source  = "dexscreener_fallback"
             eq_latency = 0
-            eq_gas     = 0.0
-            eq_slip    = 0
+            # Conservative estimates so P&L isn't artificially inflated when no
+            # real aggregator quote is available. Identify these trades in
+            # analysis via exit_quote_source='dexscreener_fallback'.
+            eq_gas     = FALLBACK_EXIT_GAS_USD
+            eq_slip    = FALLBACK_EXIT_SLIPPAGE_BPS
 
         pnl = compute_exit(
             fill_price_usd       = fill_price,
@@ -492,8 +525,11 @@ def _maybe_reconnect_w3(w3: Web3, rpc_url: str) -> Web3:
         if w3.is_connected():
             _w3_fail_count = 0
             return w3
-    except Exception:
-        pass
+    except Exception as exc:
+        # Log the underlying error on first failure of each cycle, then suppress
+        # repeats until we either recover or trigger a reconnect.
+        if _w3_fail_count == 0:
+            log.warning("web3 is_connected raised: %s", exc)
 
     _w3_fail_count += 1
     now = time.monotonic()
@@ -507,7 +543,16 @@ def _maybe_reconnect_w3(w3: Web3, rpc_url: str) -> Web3:
             w3 = Web3(Web3.HTTPProvider(rpc_url, request_kwargs={"timeout": 5}))
             _w3_fail_count    = 0
             _w3_last_reconnect = now
-            log.info("web3 reconnected: connected=%s", w3.is_connected())
+            try:
+                _connected = w3.is_connected()
+                if _connected:
+                    log.info("web3 reconnected: connected=True block=%d",
+                             w3.eth.block_number)
+                else:
+                    log.warning("web3 reconnected but still not responding "
+                                "(provider returned False on is_connected)")
+            except Exception as exc:
+                log.warning("web3 reconnected but is_connected raised: %s", exc)
         except Exception as exc:
             log.error("web3 reconnect failed: %s", exc)
             _w3_last_reconnect = now   # reset timer so we don't retry every cycle
