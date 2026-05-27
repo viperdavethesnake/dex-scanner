@@ -1,6 +1,6 @@
 # DEX Scanner — Resume
 
-**Last updated:** 2026-05-25 (session 4 close — four scorer bugs found and fixed; GPU stack up for LLM play)
+**Last updated:** 2026-05-27 (session 5 close — drift gate v2 deployed; web3 transient issue resolved)
 
 ---
 
@@ -46,8 +46,8 @@ docker compose stop dex-collector dex-collector-db
 | `dex-collector-db` | **running** | port 5434 |
 | `dex-collector` | **running** | polling every 5 min |
 | `dex-trader-db` | **running** | port 5435 |
-| `dex-trader` | **running** | shadow mode, healthy — clean data since 19:26 UTC 2026-05-25 |
-| `dex-llamacpp` | **running** | GPU up for LLM play |
+| `dex-trader` | **running** | shadow mode, drift gate v2, restarted 14:53 UTC 2026-05-27 |
+| `dex-llamacpp` | **stopped** | GPU free |
 | `dex-timescale` | **running** | |
 | `dex-n8n` | **running** | auto-scanner resumes on start — stop if not wanted |
 
@@ -341,27 +341,43 @@ GROUP BY 1, 2 ORDER BY 1, 2;
 | `dex-collector-db` | **running** | port 5434 |
 | `dex-collector` | **running** | Birdeye enrichment ENABLED at rate=0.02 |
 | `dex-trader-db` | **running** | port 5435 |
-| `dex-trader` | **running** | Shadow mode, threshold=0.65, clean data since 19:26 UTC; 1 dirty trade in DB (id=1) |
-| `dex-llamacpp` | **running** | GPU occupied — user playing with LLM |
+| `dex-trader` | **running** | Shadow mode, drift gate v2, restarted 14:53 UTC 2026-05-27 |
+| `dex-llamacpp` | **stopped** | GPU free |
 | `dex-timescale` | **running** | |
 | `dex-n8n` | **running** | auto-scanner likely running |
 
-### Shadow trader health (session 4 close, ~20:26 UTC)
+### Shadow trader health (session 5 close, ~15:28 UTC 2026-05-27)
 
 - `kill_switch = false`, `shadow_mode = true`
-- Watermark: 28908 → ~31041 (ingesting ~5-6 signals per 5m cycle, all age_too_old right now)
-- `trades` table: 1 row (GEODE, dirty, fill_price=0 — see bug notes above)
-- Loop cadence: ingest lines every ~5 min, no errors
-- **Real scoring starts** from container restart at 19:26 UTC — waiting for first clean fill
+- Watermark: 38,343 (at close)
+- `trades` table: 63 rows total. Trades 1–62 under old gate (ignore id=1, dirty fill). Trade 63+ under drift gate v2.
+- **Drift gate v2** live as of restart 14:53 UTC. First gate decision: `momentum_failed SCAI drift=-12.91%` (correctly blocked a reverser the old gate would have filled).
+- web3: `connected=True` on restart — previous "connected=False" loop was a transient issue, resolved by container restart.
+- Loop cadence: ingest every ~5 min, no errors, no open positions
 
 Health endpoint: `docker exec dex-trader curl -s http://localhost:8090/health`
 
-### First clean fill checklist (next session)
+### Gate v2 baseline query (run next session to see first batch under new logic)
+```sql
+-- New trades under drift gate v2 only
+SELECT 
+  status,
+  failure_reason,
+  COUNT(*),
+  ROUND(AVG(net_pct)::numeric, 2) avg_net
+FROM trades
+WHERE id > 62
+GROUP BY status, failure_reason
+ORDER BY status, count DESC;
 
-1. Query: `SELECT id, symbol, status, fill_price_usd, exit_price_usd, gross_pct, net_pct FROM trades WHERE id > 1 ORDER BY id;`
-2. Confirm `fill_price_usd > 0` on any new row
-3. Confirm `exit_price_usd > 0` and `gross_pct` is non-zero after exit
-4. Once 24h of clean fills accumulated → tag `v0.3.1`
+-- Gate decision breakdown (v2 era)
+SELECT
+  COUNT(*) FILTER (WHERE failure_reason LIKE 'momentum_failed%') AS momentum_failed,
+  COUNT(*) FILTER (WHERE failure_reason LIKE 'drift_too_high%')  AS drift_too_high,
+  COUNT(*) FILTER (WHERE status = 'exited')                      AS exited,
+  ROUND(AVG(net_pct) FILTER (WHERE status='exited')::numeric, 2) AS avg_net_pct
+FROM trades WHERE id > 62;
+```
 
 ### Kill switch (emergency stop)
 ```bash
@@ -399,12 +415,13 @@ FROM trades;
 
 ### Pending work
 
-**Shadow trader — let it accumulate:**
-- Phase 4 timeline restarts from 19:26 UTC 2026-05-25 (first clean data).
+**Shadow trader — let it accumulate under drift gate v2:**
+- Gate v2 epoch starts at id=63 (restart 14:53 UTC 2026-05-27). Trades 1–62 are legacy (old gate).
 - Ignore trade id=1 (dirty fill_price=0).
-- Target ≥200 exited trades before drawing P&L conclusions.
-- Projected: 25–70 fills/day (see `docs/SHADOW-TRADER-PROJECTIONS.md`). Signal flow currently gated by age_too_old — normal for afternoon/evening; new launches resume overnight and morning.
-- Tag `v0.3.1` once 24h of clean trades accumulated.
+- Target ≥200 exited trades under v2 before drawing P&L conclusions.
+- Projected fill rate under v2 much higher than v1 — most previously-rejected tokens (drift 0–15%) now fill.
+- Key things to watch: `drift_too_high` rate (should be rare; if >10% of scored candidates, document it); `momentum_failed` rate (if >20%, consider loosening -1.5% floor to -3%); win rate should trend toward model's 56.5% precision.
+- Tag `v0.3.1` once 24h of v2-era trades accumulated.
 
 **Data accumulation — just let it run:**
 - Collector Birdeye enrichment accumulating `unique_traders_1h` + `net_inflow_usd` on Base tokens.
