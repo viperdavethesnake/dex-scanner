@@ -21,9 +21,7 @@ services:
         type: bind
         read_only: true
     devices:
-      - source: nvidia.com/gpu=all
-        target: nvidia.com/gpu=all
-        permissions: rwm
+      - nvidia.com/gpu=all
     networks:
       macvlan_net:
         ipv4_address: 192.168.33.231
@@ -42,6 +40,12 @@ services:
     depends_on:
       llamacpp:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dex -d dex_signals || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     environment:
       - POSTGRES_DB=dex_signals
       - POSTGRES_USER=dex
@@ -64,7 +68,7 @@ services:
       llamacpp:
         condition: service_healthy
       timescaledb:
-        condition: service_started
+        condition: service_healthy
     environment:
       - N8N_HOST=192.168.33.231
       - WEBHOOK_URL=http://192.168.33.231:5678
@@ -89,6 +93,7 @@ services:
     image: timescale/timescaledb:latest-pg16
     container_name: dex-collector-db
     restart: unless-stopped
+    command: postgres -c idle_in_transaction_session_timeout=60000
     networks:
       - dex-collector-net
     ports:
@@ -97,6 +102,12 @@ services:
       - POSTGRES_DB=collector_signals
       - POSTGRES_USER=collector
       - POSTGRES_PASSWORD=collector
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U collector -d collector_signals || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     volumes:
       - source: ./collector_data
         target: /var/lib/postgresql/data
@@ -109,12 +120,20 @@ services:
   dex-collector:
     build:
       context: ./collector
+    pull_policy: never
     container_name: dex-collector
     restart: unless-stopped
     networks:
       - dex-collector-net
     depends_on:
-      - dex-collector-db
+      dex-collector-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import os,time; exit(0 if os.path.exists('/tmp/heartbeat') and time.time()-os.path.getmtime('/tmp/heartbeat')<660 else 1)\""]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+      start_period: 360s
     env_file:
       - .env
     environment:
@@ -138,6 +157,12 @@ services:
       - POSTGRES_DB=trader
       - POSTGRES_USER=trader
       - POSTGRES_PASSWORD=trader
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U trader -d trader || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     volumes:
       - source: ./trader_data
         target: /var/lib/postgresql/data
@@ -151,14 +176,17 @@ services:
     build:
       context: .
       dockerfile: dex-trader/Dockerfile
+    pull_policy: never
     container_name: dex-trader
     restart: unless-stopped
     networks:
       - dex-trader-net
       - dex-collector-net
     depends_on:
-      - dex-trader-db
-      - dex-collector-db
+      dex-trader-db:
+        condition: service_healthy
+      dex-collector-db:
+        condition: service_healthy
     env_file:
       - .env
     environment:

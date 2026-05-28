@@ -146,7 +146,9 @@ def bulk_insert(conn, tokens: List[Token], scanned_at: datetime) -> int:
 def fetch_pending_outcomes(conn):
     with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
         cur.execute(PENDING_SQL)
-        return cur.fetchall()
+        rows = cur.fetchall()
+    conn.commit()  # close the open read transaction; prevents idle-in-transaction during sleep
+    return rows
 
 
 def update_outcome(conn, row_id: int, scanned_at, price_at_5m: float):

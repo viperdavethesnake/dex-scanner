@@ -278,6 +278,7 @@ def _ingest_signals(collector_conn, trader_conn) -> list[dict]:
             LIMIT 500
         """, (last_id,))
         rows = [dict(r) for r in cur.fetchall()]
+    collector_conn.commit()  # close the read transaction; prevents idle-in-transaction blocking DDL
 
     if rows:
         new_watermark = max(r["id"] for r in rows)

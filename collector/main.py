@@ -12,6 +12,7 @@ import logging
 import os
 import time
 from datetime import datetime, timezone
+from pathlib import Path
 
 import api
 import db
@@ -201,6 +202,7 @@ def main():
             except Exception:
                 pass
 
+        Path("/tmp/heartbeat").touch()
         elapsed = time.monotonic() - start
         sleep_for = max(0, POLL_INTERVAL - elapsed)
         log.debug("cycle done in %.1fs, sleeping %.1fs", elapsed, sleep_for)
