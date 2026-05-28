@@ -1,6 +1,6 @@
 # DEX Scanner — Resume
 
-**Last updated:** 2026-05-27 (session 5 close — drift gate v2 deployed; web3 transient issue resolved)
+**Last updated:** 2026-05-28 (session 7 close — health checks + idle-in-transaction deadlock fix)
 
 ---
 
@@ -43,13 +43,13 @@ docker compose stop dex-collector dex-collector-db
 
 | Service | Status | Notes |
 |---------|--------|-------|
+| `dex-llamacpp` | **running** | GPU active (RTX 8000) |
+| `dex-timescale` | **running** | |
+| `dex-n8n` | **running** | auto-scanner resumes on start — stop if not wanted |
 | `dex-collector-db` | **running** | port 5434 |
 | `dex-collector` | **running** | polling every 5 min |
 | `dex-trader-db` | **running** | port 5435 |
-| `dex-trader` | **running** | shadow mode, drift gate v2, restarted 14:53 UTC 2026-05-27 |
-| `dex-llamacpp` | **stopped** | GPU free |
-| `dex-timescale` | **running** | |
-| `dex-n8n` | **running** | auto-scanner resumes on start — stop if not wanted |
+| `dex-trader` | **running** | shadow mode, drift gate v2 |
 
 ### Workflows
 
@@ -279,6 +279,25 @@ The trader ran from 08:31→19:26 UTC (11h) with zero successful scores. All fou
 - `categorical_mappings` now in `metadata.json` — `micro_trend` 5 values, `vol_trend` 4 values
 - Note: `dex` has only 1 trained category (`uniswap`) — effectively a constant, zero feature importance. Drop from model on next retrain.
 
+### Session 7 — Health checks + idle-in-transaction deadlock fix (completed 2026-05-28)
+
+**Health checks added to all services** — previously only `dex-llamacpp`, `dex-n8n`, `dex-trader` had them:
+
+| Service | Check |
+|---------|-------|
+| `dex-timescale` | `pg_isready -U dex -d dex_signals` |
+| `dex-collector-db` | `pg_isready -U collector -d collector_signals` |
+| `dex-trader-db` | `pg_isready -U trader -d trader` |
+| `dex-collector` | Heartbeat file `/tmp/heartbeat` — touched each poll cycle; checked for age <660s |
+
+All `depends_on` conditions upgraded from `service_started` to `service_healthy`. CDI device syntax on `dex-llamacpp` corrected to short form (`- nvidia.com/gpu=all`).
+
+**Idle-in-transaction deadlock fixed** — `migrate()` in `collector/db.py` was blocked on startup whenever the trader was running:
+
+- Root cause: `collector/db.py:fetch_pending_outcomes()` and `dex-trader/main.py:_ingest_signals()` both ran `SELECT` queries on `collector_signals` with `autocommit=False` and never committed. The connection sat `idle in transaction` for the full 300s sleep interval. On collector restart, the next `ALTER TABLE ADD COLUMN` (DDL needs AccessExclusiveLock) blocked permanently — the trader's periodic re-reads kept resetting the idle timer, so the 60s DB timeout never fired.
+- Fix 1: `conn.commit()` added after the SELECT in both functions.
+- Fix 2: `idle_in_transaction_session_timeout=60000` added to `dex-collector-db` command as a safety net.
+
 ### Bug fix — Empty batch short-circuit (completed 2026-05-17)
 
 **Bug:** When all tokens in a batch were pre-filtered (by the Phase 8 combined age/micro_trend/V/L check), Build Prompt still sent an empty token list to the LLM. With thinking enabled, the LLM burned ~30s then responded as a chatbot: "Ready. Drop the token list... Waiting on your data." Format Response then rendered this as the AI Analysis section.
@@ -303,7 +322,7 @@ The trader ran from 08:31→19:26 UTC (11h) with zero successful scores. All fou
 
 ## n8n API key
 
-JWT stored at `keys/n8n-api-key.txt`. **Expires 2026-06-09** — no action needed until then.
+JWT stored in `.env` as `N8N_JWT`. **Expires 2026-06-20** — no action needed until then.
 
 ---
 
@@ -334,26 +353,26 @@ GROUP BY 1, 2 ORDER BY 1, 2;
 
 ## Next session
 
-### Stack state at close (2026-05-25, session 4)
+### Stack state at close (2026-05-28, session 7)
+
+All 7 services running and healthy. GPU active.
 
 | Service | Status | Notes |
 |---------|--------|-------|
+| `dex-llamacpp` | **running** | GPU active (RTX 8000) — stop to free GPU: `docker compose stop n8n timescaledb llamacpp` |
+| `dex-timescale` | **running** | |
+| `dex-n8n` | **running** | auto-scanner running |
 | `dex-collector-db` | **running** | port 5434 |
 | `dex-collector` | **running** | Birdeye enrichment ENABLED at rate=0.02 |
 | `dex-trader-db` | **running** | port 5435 |
-| `dex-trader` | **running** | Shadow mode, drift gate v2, restarted 14:53 UTC 2026-05-27 |
-| `dex-llamacpp` | **stopped** | GPU free |
-| `dex-timescale` | **running** | |
-| `dex-n8n` | **running** | auto-scanner likely running |
+| `dex-trader` | **running** | shadow mode, drift gate v2 |
 
-### Shadow trader health (session 5 close, ~15:28 UTC 2026-05-27)
+### Shadow trader health (session 6 close, 2026-05-28)
 
 - `kill_switch = false`, `shadow_mode = true`
-- Watermark: 38,343 (at close)
-- `trades` table: 63 rows total. Trades 1–62 under old gate (ignore id=1, dirty fill). Trade 63+ under drift gate v2.
-- **Drift gate v2** live as of restart 14:53 UTC. First gate decision: `momentum_failed SCAI drift=-12.91%` (correctly blocked a reverser the old gate would have filled).
-- web3: `connected=True` on restart — previous "connected=False" loop was a transient issue, resolved by container restart.
-- Loop cadence: ingest every ~5 min, no errors, no open positions
+- `trades` table: 63 rows total at session 6. Trades 1–62 under old gate (ignore id=1, dirty fill). Trade 63+ under drift gate v2.
+- **Drift gate v2** live since restart 14:53 UTC 2026-05-27.
+- v2 snapshot at session 6 close: 13 exits, 38.5% win rate, avg net -7.18%. Two rugs (PIRATES -89%, SPECULATE -57%) dominate losses. No stop-loss exists.
 
 Health endpoint: `docker exec dex-trader curl -s http://localhost:8090/health`
 
