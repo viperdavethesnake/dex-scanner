@@ -68,6 +68,9 @@ FALLBACK_EXIT_SLIPPAGE_BPS  = int  (os.environ.get("FALLBACK_EXIT_SLIPPAGE_BPS",
 SLIPPAGE_REJECT_BPS   = int(os.environ.get("SLIPPAGE_REJECT_BPS", "500"))
 HEALTH_PORT           = int(os.environ.get("HEALTH_PORT", "8090"))
 
+STOP_LOSS_ENABLED = os.environ.get("STOP_LOSS_ENABLED", "true").lower() == "true"
+STOP_LOSS_PCT     = float(os.environ.get("STOP_LOSS_PCT", "15.0"))
+
 CONVICTION_THRESHOLD_SHADOW = float(os.environ.get("CONVICTION_THRESHOLD_SHADOW", "0.65"))
 CONVICTION_THRESHOLD_LIVE   = float(os.environ.get("CONVICTION_THRESHOLD_LIVE",   "0.70"))
 THRESHOLD = CONVICTION_THRESHOLD_SHADOW if SHADOW_MODE else CONVICTION_THRESHOLD_LIVE
@@ -250,6 +253,77 @@ def _update_failed(conn, trade_id: int, reason: str):
             (reason, trade_id),
         )
     conn.commit()
+
+
+def _maybe_update_low(conn, trade_id: int, current_price: float,
+                      drawdown_pct: float, now: datetime) -> None:
+    """Update low_price_during_hold/low_drawdown_pct if this is a new worst.
+
+    Conditional UPDATE — only writes when drawdown deepens, so we don't burn
+    DB cycles writing identical or shallower values every poll.
+    """
+    with conn.cursor() as cur:
+        cur.execute("""
+            UPDATE trades
+            SET low_price_during_hold = %s,
+                low_drawdown_pct      = %s,
+                low_price_ts          = %s
+            WHERE id = %s
+              AND (low_drawdown_pct IS NULL OR %s < low_drawdown_pct)
+        """, (current_price, drawdown_pct, now, trade_id, drawdown_pct))
+    conn.commit()
+
+
+def _finalize_exit(trader_conn, w3, trade_id: int, trade: dict,
+                   fill_price: float, fill_size: float, sig_price: float,
+                   chain: str, pair_addr: str, exit_dex: float,
+                   trigger: str) -> None:
+    """Get exit quote, compute P&L, write exit row, remove from risk state."""
+    token = trade["token_address"]
+
+    exit_q = get_quote(token, chain, fill_size, w3=w3,
+                       taker_address=taker_address,
+                       direction="sell", fill_price_usd=fill_price)
+
+    if exit_q is not None:
+        eq_price   = exit_q.price_usd
+        eq_source  = exit_q.source
+        eq_latency = exit_q.latency_ms
+        eq_gas     = exit_q.gas_usd
+        eq_slip    = exit_q.slippage_bps
+    else:
+        log.warning(
+            "exit_quote NONE trade_id=%d — dexscreener fallback + estimated costs "
+            "(gas=$%.2f, slip=%dbps)", trade_id,
+            FALLBACK_EXIT_GAS_USD, FALLBACK_EXIT_SLIPPAGE_BPS,
+        )
+        eq_price   = exit_dex
+        eq_source  = "dexscreener_fallback"
+        eq_latency = 0
+        eq_gas     = FALLBACK_EXIT_GAS_USD
+        eq_slip    = FALLBACK_EXIT_SLIPPAGE_BPS
+
+    pnl = compute_exit(
+        fill_price_usd       = fill_price,
+        fill_size_usd        = fill_size,
+        exit_quote_price_usd = eq_price,
+        exit_dex_price_usd   = exit_dex,
+        signal_price_usd     = sig_price,
+        gas_usd              = eq_gas,
+        slippage_bps         = eq_slip,
+    )
+
+    _update_exited(trader_conn, trade_id,
+                   eq_price, eq_source, eq_latency, exit_dex, pnl, trigger)
+    risk.remove_position(trade_id)
+    _health["open_positions"] = len(risk.get_open_positions())
+
+    log.info(
+        "EXIT [%s] trade_id=%d %s | gross=%.2f%% cost=%.2f%% net=%.2f%% pnl=$%.3f",
+        trigger, trade_id, token[:12],
+        pnl.get("gross_pct", 0), pnl.get("cost_pct", 0),
+        pnl.get("net_pct", 0),   pnl.get("pnl_usd", 0),
+    )
 
 
 # ── Signal ingestion ──────────────────────────────────────────────────────────
@@ -435,74 +509,50 @@ def _manage_open_positions(trader_conn, w3) -> None:
     for trade_id, trade in list(open_.items()):
         fill_ts = trade.get("fill_ts")
         if fill_ts is None:
-            continue  # intent/quoted not yet filled — skip
+            continue
 
+        fill_price = trade.get("fill_price_usd") or 0.0
+        fill_size  = trade.get("fill_size_usd") or TRADE_SIZE_USD
+        sig_price  = trade.get("signal_price_usd") or fill_price
+        chain      = trade.get("chain", "base")
+        pair_addr  = trade.get("pair_address")
+
+        # 1. Fetch current price (single DexScreener call per cycle per position)
+        current_dex = _fetch_dexscreener_price(chain, pair_addr)
+
+        # 2. Track extremum drawdown for post-hoc analysis, regardless of exit path
+        drawdown_pct = None
+        if current_dex and fill_price > 0:
+            drawdown_pct = (current_dex - fill_price) / fill_price * 100
+            _maybe_update_low(trader_conn, trade_id, current_dex, drawdown_pct, now)
+
+        # 3. Stop-loss check (fires before timer if threshold crossed)
+        if (STOP_LOSS_ENABLED and drawdown_pct is not None
+                and drawdown_pct <= -STOP_LOSS_PCT):
+            log.warning("STOP-LOSS trade_id=%d %s | drawdown=%.2f%% (threshold=-%.1f%%)",
+                        trade_id, trade.get("token_address", "?")[:12],
+                        drawdown_pct, STOP_LOSS_PCT)
+            _finalize_exit(trader_conn, w3, trade_id, trade,
+                           fill_price, fill_size, sig_price,
+                           chain, pair_addr, current_dex or fill_price,
+                           trigger="stop_loss")
+            continue
+
+        # 4. Timer check (unchanged behavior for positions that didn't stop)
         if fill_ts.tzinfo is None:
             fill_ts = fill_ts.replace(tzinfo=utc)
         expected_exit = fill_ts + timedelta(seconds=POSITION_HOLD_SECONDS)
         if now < expected_exit:
             continue
 
-        token      = trade["token_address"]
-        chain      = trade.get("chain", "base")
-        pair_addr  = trade.get("pair_address")
-        fill_price = trade.get("fill_price_usd") or 0.0
-        fill_size  = trade.get("fill_size_usd") or TRADE_SIZE_USD
-        sig_price  = trade.get("signal_price_usd") or fill_price
-
-        log.info("exit timer trade_id=%d %s", trade_id, token[:12])
-
-        # Exit aggregator quote
-        exit_q = get_quote(token, chain, fill_size, w3=w3,
-                           taker_address=taker_address,
-                           direction="sell", fill_price_usd=fill_price)
-
-        # DexScreener parallel truth
-        exit_dex = _fetch_dexscreener_price(chain, pair_addr) or fill_price
-
-        # Unpack exit quote (or use DexScreener fallback)
-        if exit_q is not None:
-            eq_price   = exit_q.price_usd
-            eq_source  = exit_q.source
-            eq_latency = exit_q.latency_ms
-            eq_gas     = exit_q.gas_usd
-            eq_slip    = exit_q.slippage_bps
-        else:
-            log.warning(
-                "exit_quote NONE trade_id=%d — dexscreener fallback + estimated costs "
-                "(gas=$%.2f, slip=%dbps)", trade_id,
-                FALLBACK_EXIT_GAS_USD, FALLBACK_EXIT_SLIPPAGE_BPS,
-            )
-            eq_price   = exit_dex
-            eq_source  = "dexscreener_fallback"
-            eq_latency = 0
-            # Conservative estimates so P&L isn't artificially inflated when no
-            # real aggregator quote is available. Identify these trades in
-            # analysis via exit_quote_source='dexscreener_fallback'.
-            eq_gas     = FALLBACK_EXIT_GAS_USD
-            eq_slip    = FALLBACK_EXIT_SLIPPAGE_BPS
-
-        pnl = compute_exit(
-            fill_price_usd       = fill_price,
-            fill_size_usd        = fill_size,
-            exit_quote_price_usd = eq_price,
-            exit_dex_price_usd   = exit_dex,
-            signal_price_usd     = sig_price,
-            gas_usd              = eq_gas,
-            slippage_bps         = eq_slip,
+        # Use already-fetched current_dex; re-fetch only if step 1 returned None
+        exit_dex = current_dex if current_dex else (
+            _fetch_dexscreener_price(chain, pair_addr) or fill_price
         )
-
-        _update_exited(trader_conn, trade_id,
-                       eq_price, eq_source, eq_latency, exit_dex, pnl, "timer")
-        risk.remove_position(trade_id)
-        _health["open_positions"] = len(risk.get_open_positions())
-
-        log.info(
-            "EXIT trade_id=%d %s | gross=%.2f%% cost=%.2f%% net=%.2f%% pnl=$%.3f",
-            trade_id, token[:12],
-            pnl.get("gross_pct", 0), pnl.get("cost_pct", 0),
-            pnl.get("net_pct", 0),   pnl.get("pnl_usd", 0),
-        )
+        _finalize_exit(trader_conn, w3, trade_id, trade,
+                       fill_price, fill_size, sig_price,
+                       chain, pair_addr, exit_dex,
+                       trigger="timer")
 
 
 # ── Web3 reconnect ────────────────────────────────────────────────────────────

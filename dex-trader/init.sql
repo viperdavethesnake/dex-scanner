@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS trades (
 
     -- Exit (fill_ts + POSITION_HOLD_SECONDS = expected_exit_ts)
     exit_ts             TIMESTAMPTZ,
-    exit_trigger        TEXT,                        -- 'timer' | 'kill_switch'
+    exit_trigger        TEXT,                        -- 'timer' | 'stop_loss' | 'kill_switch'
     exit_price_usd      NUMERIC(30,12),              -- DexScreener price at exit (parallel truth)
     exit_quote_usd      NUMERIC(30,12),              -- aggregator quote at exit (primary P&L basis)
     exit_quote_source   TEXT,
@@ -108,3 +108,11 @@ CREATE TABLE IF NOT EXISTS signal_watermark (
 );
 
 INSERT INTO signal_watermark (id, last_id) VALUES (1, 0) ON CONFLICT DO NOTHING;
+
+
+-- ── Intra-hold price extremum (stop-loss analysis) ────────────────────────────
+-- Populated every poll cycle during hold. low_drawdown_pct = worst (most negative)
+-- drawdown seen; NULL until first price poll after fill.
+ALTER TABLE trades ADD COLUMN IF NOT EXISTS low_price_during_hold REAL;
+ALTER TABLE trades ADD COLUMN IF NOT EXISTS low_drawdown_pct REAL;
+ALTER TABLE trades ADD COLUMN IF NOT EXISTS low_price_ts TIMESTAMPTZ;
