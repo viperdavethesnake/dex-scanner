@@ -5,6 +5,7 @@ import requests
 log = logging.getLogger(__name__)
 
 PROFILES_URL          = "https://api.dexscreener.com/token-profiles/latest/v1"
+PROFILES_UPDATES_URL  = "https://api.dexscreener.com/token-profiles/recent-updates/v1"
 PAIRS_URL             = "https://api.dexscreener.com/latest/dex/tokens/{address}"
 PRICE_URL             = "https://api.dexscreener.com/latest/dex/pairs/{chain}/{pair_address}"
 BIRDEYE_OVERVIEW_URL  = "https://public-api.birdeye.so/defi/token_overview"
@@ -34,12 +35,23 @@ def _get(url, retries=3, backoff=2.0):
 
 
 def fetch_profiles():
-    """Return list of {chainId, tokenAddress} for base/solana tokens."""
-    data = _get(PROFILES_URL)
-    if not data:
-        return []
-    profiles = data if isinstance(data, list) else data.get("profiles", [])
-    return [p for p in profiles if p.get("chainId") in SUPPORTED_CHAINS]
+    """Return union of both DexScreener profile endpoints, deduplicated by tokenAddress."""
+    seen = set()
+    result = []
+    for url in (PROFILES_URL, PROFILES_UPDATES_URL):
+        data = _get(url)
+        if not data:
+            continue
+        profiles = data if isinstance(data, list) else data.get("profiles", [])
+        for p in profiles:
+            if p.get("chainId") not in SUPPORTED_CHAINS:
+                continue
+            addr = p.get("tokenAddress", "")
+            if not addr or addr in seen:
+                continue
+            seen.add(addr)
+            result.append(p)
+    return result
 
 
 def fetch_pair(token_address, chain_id):
