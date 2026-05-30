@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Auto-push after every commit.
+# Runs silently on success; warns on failure but never blocks the commit.
+git push 2>&1 || echo "⚠️  post-commit: git push failed — push manually before closing session"
