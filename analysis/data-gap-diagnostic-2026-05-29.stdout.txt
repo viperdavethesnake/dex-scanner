@@ -1,0 +1,148 @@
+===== SECTION 1.1 — Collector env (BIRDEYE_API_KEY value redacted) =====
+
+BIRDEYE_API_KEY=<present, 32 chars>
+COLLECTOR_BIRDEYE_ENRICHMENT=true
+COLLECTOR_BIRDEYE_MAX_PER_CYCLE=20
+COLLECTOR_BIRDEYE_SAMPLE_RATE=0.02
+DB_HOST=dex-collector-db
+DB_NAME=collector_signals
+DB_PASS=collector
+DB_USER=collector
+
+===== SECTION 1.2 — Birdeye files =====
+
+/space/docker/containers/dex-scanner/collector/api.py
+/space/docker/containers/dex-scanner/collector/main.py
+
+Key code paths (see full files for context):
+
+collector/main.py lines 37-47 — sampling logic:
+  def _should_sample(token_address: str, scanned_at: datetime, rate: float) -> bool:
+      window = scanned_at.replace(second=0, microsecond=0)
+      window = window.replace(minute=(window.minute // 5) * 5)
+      key = f"{token_address}:{window.isoformat()}"
+      h = int(hashlib.md5(key.encode()).hexdigest(), 16)
+      return (h % 10000) < int(rate * 10000)
+
+collector/main.py lines 50-97 — birdeye_enrich():
+  - Line 60-62: Solana tokens → skipped (cycle_state["skipped_solana"] += 1; return)
+  - Line 64-66: _should_sample() gate → if False: skipped_sample += 1; return
+  - Line 68-70: cap check (MAX_PER_CYCLE=20)
+  - Line 73: api.fetch_birdeye_overview(t.token_address, BIRDEYE_API_KEY)
+  - Line 75-80: on 200+parsed: writes t.unique_traders_1h + t.net_inflow_usd; fail counter on error
+  - Line 86: t.birdeye_enriched = True (set regardless of success/fail)
+  - Line 88-97: db.log_birdeye_call() — writes to birdeye_calls table
+
+collector/api.py lines 86-165 — fetch_birdeye_overview():
+  - URL: https://public-api.birdeye.so/defi/token_overview
+  - Headers: X-API-KEY, x-chain: base
+  - Timeout: 5 seconds
+  - Parses: data.uniqueWallet1h → unique_traders_1h
+             data.vBuy1hUSD - data.vSell1hUSD → net_inflow_usd
+
+===== SECTION 1.3 — Birdeye log counts (48h) =====
+
+Total 'birdeye' mentions: 489
+'birdeye.*(error|fail|timeout|exception)' matches: 487
+
+NOTE: The 487 "errors" are FALSE POSITIVES. The pattern matched 'fail=0'
+in every birdeye cycle summary line. Zero actual error messages in the logs.
+Real errors (429, timeouts) are logged at DEBUG level and suppressed.
+
+Sample log lines (showing sampled=0 almost every cycle):
+  2026-05-28 12:52:28 INFO birdeye: cycle done | sampled=1 skipped_solana=16 skipped_sample=0 cap_hit=0 success=1 fail=0
+  [all other cycles show sampled=0]
+
+===== SECTION 1.4 — Coverage SQL =====
+
+Per-chain:
+ chain  | total | enriched |  pct
+--------+-------+----------+-------
+ base   | 10362 |       82 | 0.791
+ solana | 37285 |        0 | 0.000
+
+Time-window breakdown:
+   period   | total | enriched |  pct
+------------+-------+----------+-------
+ 1_last_24h |  3531 |       12 | 0.340
+ 2_last_7d  | 24753 |       70 | 0.283
+ 3_last_30d | 19373 |        0 | 0.000
+
+Days/dates with enriched rows:
+ chain | days_with_enriched | first_enriched | last_enriched
+-------+--------------------+----------------+---------------
+ base  |                  8 | 2026-05-23     | 2026-05-30
+
+birdeye_calls audit table:
+ http_status |  n | avg_ms
+-------------+----+--------
+ 200         | 82 |    804
+ NULL        |  5 |   5059   (timeouts — 5s limit exceeded)
+ 429         |  4 |    287   (rate-limit hits)
+
+===== SECTION 2.1 — Collector schema =====
+
+ id, scanned_at, token_address, pair_address, symbol, name, chain, dex,
+ pair_created_at, age_minutes, price_usd, liquidity_usd, market_cap,
+ volume_5m, volume_1h, volume_6h, price_ch_5m, price_ch_1h, price_ch_6h,
+ buys_1h, sells_1h, buys_5m, sells_5m, vl_ratio, vol_trend, vol_trend_pct,
+ micro_trend, buy_pct_5m, buy_pct_1h, price_at_5m, outcome_pct,
+ unique_traders_1h, net_inflow_usd, birdeye_enriched
+
+ABSENT: top1_pct, top5_pct, creator_pct, lp_locked, lp_burned,
+        holder_count, buy_tax, sell_tax, insider_count
+
+===== SECTION 2.2 — Scanner token_signals schema =====
+
+ scanned_at, address, pair_address, symbol, chain, dex, rating,
+ age_minutes, price_usd, liquidity_usd, volume_1h, volume_5m,
+ price_ch_5m, price_ch_1h, price_ch_6h, buy_pct_5m, buy_pct_1h,
+ vl_ratio, vol_trend, micro_trend, flags, reasoning, entry_price,
+ target_price, stop_price, price_at_5m, price_at_15m, price_at_30m,
+ price_peak_30m, target_hit, stop_hit, unique_traders_1h, net_inflow_usd
+
+ABSENT: top1_pct, top5_pct, creator_pct, lp_locked, lp_burned,
+        holder_count, buy_tax, sell_tax — flags column is raw text only
+
+===== SECTION 2.3 — Address overlap =====
+
+ collector_unique | scanner_unique | overlap
+------------------+----------------+---------
+             2192 |            568 |       5
+
+===== SECTION 2.4 — Scanner rating distribution =====
+
+   rating    |   n
+-------------+------
+ WATCH       | 1639
+ INTERESTING |  593
+
+Total scanner records: 2,232 (ALL are non-SKIP — 100% survivorship biased)
+
+===== SECTION 3.1 — API keys present =====
+
+BIRDEYE_API_KEY=<present>
+(GOPLUS, RUGCHECK, HONEYPOT not in .env — these APIs use keyless free tiers)
+
+===== SECTION 3.2 — Live API probes =====
+
+GoPlus:
+  code=200 size=2153 time=0.248s
+  No rate-limit headers returned (undocumented free tier)
+
+RugCheck:
+  code=200 size=135 time=0.474s
+  x-rate-limit-limit: 15
+  x-rate-limit-remaining: 14
+
+Honeypot.is:
+  code=200 size=1344 time=0.277s
+  x-ratelimit-limit: 50
+  x-ratelimit-remaining: 50
+  x-ratelimit-reset: 1780114320
+
+Birdeye:
+  code=200 size=8609 time=0.840s
+  x-ratelimit-limit: 300
+  x-ratelimit-remaining: 299
+  x-ratelimit-reset: 1780114324
