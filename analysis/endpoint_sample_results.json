@@ -1,0 +1,5260 @@
+{
+  "started_at": "2026-05-30T05:20:47.062687+00:00",
+  "ended_at": "2026-05-30T06:19:47.602893+00:00",
+  "duration_min": 60,
+  "elapsed_min": 59.0,
+  "summary": {
+    "token_profiles": {
+      "most_common_status": 200,
+      "success_rate_pct": 100.0,
+      "unique_total": 37,
+      "unique_base": 1,
+      "unique_solana": 36,
+      "avg_per_call": 28.6,
+      "hourly_rate": 38.0
+    },
+    "token_profiles_updates": {
+      "most_common_status": 200,
+      "success_rate_pct": 100.0,
+      "unique_total": 172,
+      "unique_base": 160,
+      "unique_solana": 12,
+      "avg_per_call": 9.7,
+      "hourly_rate": 175.0
+    },
+    "token_boosts_latest": {
+      "most_common_status": 200,
+      "success_rate_pct": 100.0,
+      "unique_total": 26,
+      "unique_base": 0,
+      "unique_solana": 26,
+      "avg_per_call": 30.0,
+      "hourly_rate": 26.0
+    },
+    "token_boosts_top": {
+      "most_common_status": 200,
+      "success_rate_pct": 100.0,
+      "unique_total": 32,
+      "unique_base": 1,
+      "unique_solana": 31,
+      "avg_per_call": 30.0,
+      "hourly_rate": 33.0
+    },
+    "search_base": {
+      "most_common_status": 200,
+      "success_rate_pct": 100.0,
+      "unique_total": 7,
+      "unique_base": 6,
+      "unique_solana": 1,
+      "avg_per_call": 20.0,
+      "hourly_rate": 7.0
+    },
+    "search_solana": {
+      "most_common_status": 200,
+      "success_rate_pct": 100.0,
+      "unique_total": 24,
+      "unique_base": 1,
+      "unique_solana": 23,
+      "avg_per_call": 27.0,
+      "hourly_rate": 24.0
+    },
+    "pairs_base": {
+      "most_common_status": 404,
+      "success_rate_pct": 0.0,
+      "unique_total": 0,
+      "unique_base": 0,
+      "unique_solana": 0,
+      "avg_per_call": 0.0,
+      "hourly_rate": 0.0
+    },
+    "pairs_solana": {
+      "most_common_status": 404,
+      "success_rate_pct": 0.0,
+      "unique_total": 0,
+      "unique_base": 0,
+      "unique_solana": 0,
+      "avg_per_call": 0.0,
+      "hourly_rate": 0.0
+    },
+    "metas_trending": {
+      "most_common_status": 200,
+      "success_rate_pct": 100.0,
+      "unique_total": 0,
+      "unique_base": 0,
+      "unique_solana": 0,
+      "avg_per_call": 0.0,
+      "hourly_rate": 0.0
+    },
+    "community_takeovers": {
+      "most_common_status": 200,
+      "success_rate_pct": 100.0,
+      "unique_total": 25,
+      "unique_base": 0,
+      "unique_solana": 25,
+      "avg_per_call": 25.0,
+      "hourly_rate": 25.0
+    }
+  },
+  "by_minute": [
+    {
+      "minute": 1,
+      "ts": "2026-05-30T05:20:47.062687+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 29,
+          "new": 29,
+          "cum": 29,
+          "base": 1,
+          "sol": 28
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 11,
+          "new": 11,
+          "cum": 11,
+          "base": 9,
+          "sol": 2
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 25,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 30,
+          "cum": 30,
+          "base": 1,
+          "sol": 29
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 7,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 20,
+          "cum": 20,
+          "base": 1,
+          "sol": 19
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 25,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 2,
+      "ts": "2026-05-30T05:21:47.062906+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 29,
+          "new": 0,
+          "cum": 29,
+          "base": 1,
+          "sol": 28
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 12,
+          "new": 5,
+          "cum": 16,
+          "base": 14,
+          "sol": 2
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 30,
+          "base": 1,
+          "sol": 29
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 3,
+          "cum": 23,
+          "base": 1,
+          "sol": 22
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 3,
+      "ts": "2026-05-30T05:22:47.063060+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 29,
+          "new": 0,
+          "cum": 29,
+          "base": 1,
+          "sol": 28
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 10,
+          "new": 1,
+          "cum": 17,
+          "base": 15,
+          "sol": 2
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 30,
+          "base": 1,
+          "sol": 29
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 23,
+          "base": 1,
+          "sol": 22
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 4,
+      "ts": "2026-05-30T05:23:47.063124+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 29,
+          "new": 1,
+          "cum": 30,
+          "base": 1,
+          "sol": 29
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 10,
+          "new": 4,
+          "cum": 21,
+          "base": 18,
+          "sol": 3
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 30,
+          "base": 1,
+          "sol": 29
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 23,
+          "base": 1,
+          "sol": 22
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 5,
+      "ts": "2026-05-30T05:24:47.063242+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 29,
+          "new": 0,
+          "cum": 30,
+          "base": 1,
+          "sol": 29
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 12,
+          "new": 5,
+          "cum": 26,
+          "base": 23,
+          "sol": 3
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 1,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 23,
+          "base": 1,
+          "sol": 22
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 6,
+      "ts": "2026-05-30T05:25:47.063317+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 29,
+          "new": 0,
+          "cum": 30,
+          "base": 1,
+          "sol": 29
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 11,
+          "new": 4,
+          "cum": 30,
+          "base": 27,
+          "sol": 3
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 23,
+          "base": 1,
+          "sol": 22
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 7,
+      "ts": "2026-05-30T05:26:47.063395+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 29,
+          "new": 0,
+          "cum": 30,
+          "base": 1,
+          "sol": 29
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 9,
+          "new": 0,
+          "cum": 30,
+          "base": 27,
+          "sol": 3
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 23,
+          "base": 1,
+          "sol": 22
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 8,
+      "ts": "2026-05-30T05:27:47.063496+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 29,
+          "new": 0,
+          "cum": 30,
+          "base": 1,
+          "sol": 29
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 8,
+          "new": 2,
+          "cum": 32,
+          "base": 29,
+          "sol": 3
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 23,
+          "base": 1,
+          "sol": 22
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 9,
+      "ts": "2026-05-30T05:28:47.063561+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 29,
+          "new": 0,
+          "cum": 30,
+          "base": 1,
+          "sol": 29
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 8,
+          "new": 2,
+          "cum": 34,
+          "base": 31,
+          "sol": 3
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 1,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 10,
+      "ts": "2026-05-30T05:29:47.063628+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 29,
+          "new": 0,
+          "cum": 30,
+          "base": 1,
+          "sol": 29
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 5,
+          "new": 1,
+          "cum": 35,
+          "base": 32,
+          "sol": 3
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 11,
+      "ts": "2026-05-30T05:30:47.063711+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 29,
+          "new": 0,
+          "cum": 30,
+          "base": 1,
+          "sol": 29
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 9,
+          "new": 7,
+          "cum": 42,
+          "base": 39,
+          "sol": 3
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 12,
+      "ts": "2026-05-30T05:31:47.063849+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 29,
+          "new": 0,
+          "cum": 30,
+          "base": 1,
+          "sol": 29
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 11,
+          "new": 4,
+          "cum": 46,
+          "base": 43,
+          "sol": 3
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 13,
+      "ts": "2026-05-30T05:32:47.063956+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 29,
+          "new": 0,
+          "cum": 30,
+          "base": 1,
+          "sol": 29
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 14,
+          "new": 3,
+          "cum": 49,
+          "base": 46,
+          "sol": 3
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 14,
+      "ts": "2026-05-30T05:33:47.064113+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 29,
+          "new": 0,
+          "cum": 30,
+          "base": 1,
+          "sol": 29
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 12,
+          "new": 2,
+          "cum": 51,
+          "base": 48,
+          "sol": 3
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 15,
+      "ts": "2026-05-30T05:34:47.064196+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 29,
+          "new": 0,
+          "cum": 30,
+          "base": 1,
+          "sol": 29
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 9,
+          "new": 0,
+          "cum": 51,
+          "base": 48,
+          "sol": 3
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 16,
+      "ts": "2026-05-30T05:35:47.064306+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 29,
+          "new": 0,
+          "cum": 30,
+          "base": 1,
+          "sol": 29
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 11,
+          "new": 3,
+          "cum": 54,
+          "base": 51,
+          "sol": 3
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 17,
+      "ts": "2026-05-30T05:36:47.064323+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 29,
+          "new": 0,
+          "cum": 30,
+          "base": 1,
+          "sol": 29
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 8,
+          "new": 0,
+          "cum": 54,
+          "base": 51,
+          "sol": 3
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 18,
+      "ts": "2026-05-30T05:37:47.064405+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 29,
+          "new": 1,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 8,
+          "new": 3,
+          "cum": 57,
+          "base": 53,
+          "sol": 4
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 19,
+      "ts": "2026-05-30T05:38:47.064552+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 29,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 8,
+          "new": 2,
+          "cum": 59,
+          "base": 55,
+          "sol": 4
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 20,
+      "ts": "2026-05-30T05:39:47.064613+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 29,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 8,
+          "new": 2,
+          "cum": 61,
+          "base": 57,
+          "sol": 4
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 21,
+      "ts": "2026-05-30T05:40:47.064678+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 29,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 8,
+          "new": 1,
+          "cum": 62,
+          "base": 58,
+          "sol": 4
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 22,
+      "ts": "2026-05-30T05:41:47.064818+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 29,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 11,
+          "new": 5,
+          "cum": 67,
+          "base": 63,
+          "sol": 4
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 23,
+      "ts": "2026-05-30T05:42:47.064957+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 29,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 11,
+          "new": 2,
+          "cum": 69,
+          "base": 65,
+          "sol": 4
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 24,
+      "ts": "2026-05-30T05:43:47.065107+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 29,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 14,
+          "new": 5,
+          "cum": 74,
+          "base": 70,
+          "sol": 4
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 25,
+      "ts": "2026-05-30T05:44:47.065251+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 29,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 9,
+          "new": 0,
+          "cum": 74,
+          "base": 70,
+          "sol": 4
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 26,
+      "ts": "2026-05-30T05:45:47.065394+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 30,
+          "new": 1,
+          "cum": 32,
+          "base": 1,
+          "sol": 31
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 8,
+          "new": 3,
+          "cum": 77,
+          "base": 73,
+          "sol": 4
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 27,
+      "ts": "2026-05-30T05:46:47.065454+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 32,
+          "base": 1,
+          "sol": 31
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 7,
+          "new": 2,
+          "cum": 79,
+          "base": 74,
+          "sol": 5
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 28,
+      "ts": "2026-05-30T05:47:47.065600+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 32,
+          "base": 1,
+          "sol": 31
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 10,
+          "new": 5,
+          "cum": 84,
+          "base": 78,
+          "sol": 6
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 29,
+      "ts": "2026-05-30T05:48:47.065752+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 32,
+          "base": 1,
+          "sol": 31
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 10,
+          "new": 1,
+          "cum": 85,
+          "base": 79,
+          "sol": 6
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 30,
+      "ts": "2026-05-30T05:49:47.065811+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 28,
+          "new": 0,
+          "cum": 32,
+          "base": 1,
+          "sol": 31
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 11,
+          "new": 4,
+          "cum": 89,
+          "base": 83,
+          "sol": 6
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 31,
+      "ts": "2026-05-30T05:50:47.065916+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 28,
+          "new": 0,
+          "cum": 32,
+          "base": 1,
+          "sol": 31
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 8,
+          "new": 0,
+          "cum": 89,
+          "base": 83,
+          "sol": 6
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 32,
+      "ts": "2026-05-30T05:51:47.066068+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 28,
+          "new": 0,
+          "cum": 32,
+          "base": 1,
+          "sol": 31
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 7,
+          "new": 2,
+          "cum": 91,
+          "base": 85,
+          "sol": 6
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 33,
+      "ts": "2026-05-30T05:52:47.066218+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 28,
+          "new": 0,
+          "cum": 32,
+          "base": 1,
+          "sol": 31
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 5,
+          "new": 3,
+          "cum": 94,
+          "base": 87,
+          "sol": 7
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 34,
+      "ts": "2026-05-30T05:53:47.066368+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 28,
+          "new": 1,
+          "cum": 33,
+          "base": 1,
+          "sol": 32
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 7,
+          "new": 2,
+          "cum": 96,
+          "base": 89,
+          "sol": 7
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 35,
+      "ts": "2026-05-30T05:54:47.066488+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 28,
+          "new": 0,
+          "cum": 33,
+          "base": 1,
+          "sol": 32
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 8,
+          "new": 3,
+          "cum": 99,
+          "base": 91,
+          "sol": 8
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 36,
+      "ts": "2026-05-30T05:55:47.066638+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 28,
+          "new": 0,
+          "cum": 33,
+          "base": 1,
+          "sol": 32
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 9,
+          "new": 3,
+          "cum": 102,
+          "base": 94,
+          "sol": 8
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 37,
+      "ts": "2026-05-30T05:56:47.066786+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 28,
+          "new": 0,
+          "cum": 33,
+          "base": 1,
+          "sol": 32
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 9,
+          "new": 2,
+          "cum": 104,
+          "base": 96,
+          "sol": 8
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 38,
+      "ts": "2026-05-30T05:57:47.066853+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 28,
+          "new": 0,
+          "cum": 33,
+          "base": 1,
+          "sol": 32
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 10,
+          "new": 3,
+          "cum": 107,
+          "base": 99,
+          "sol": 8
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 39,
+      "ts": "2026-05-30T05:58:47.067011+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 28,
+          "new": 0,
+          "cum": 33,
+          "base": 1,
+          "sol": 32
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 11,
+          "new": 2,
+          "cum": 109,
+          "base": 101,
+          "sol": 8
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 40,
+      "ts": "2026-05-30T05:59:47.067154+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 28,
+          "new": 0,
+          "cum": 33,
+          "base": 1,
+          "sol": 32
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 14,
+          "new": 5,
+          "cum": 114,
+          "base": 106,
+          "sol": 8
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 41,
+      "ts": "2026-05-30T06:00:47.067214+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 28,
+          "new": 0,
+          "cum": 33,
+          "base": 1,
+          "sol": 32
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 12,
+          "new": 5,
+          "cum": 119,
+          "base": 111,
+          "sol": 8
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 42,
+      "ts": "2026-05-30T06:01:47.067279+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 28,
+          "new": 0,
+          "cum": 33,
+          "base": 1,
+          "sol": 32
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 11,
+          "new": 1,
+          "cum": 120,
+          "base": 112,
+          "sol": 8
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 43,
+      "ts": "2026-05-30T06:02:47.067326+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 28,
+          "new": 0,
+          "cum": 33,
+          "base": 1,
+          "sol": 32
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 8,
+          "new": 3,
+          "cum": 123,
+          "base": 115,
+          "sol": 8
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 44,
+      "ts": "2026-05-30T06:03:47.067391+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 28,
+          "new": 0,
+          "cum": 33,
+          "base": 1,
+          "sol": 32
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 8,
+          "new": 2,
+          "cum": 125,
+          "base": 117,
+          "sol": 8
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 31,
+          "base": 1,
+          "sol": 30
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 45,
+      "ts": "2026-05-30T06:04:47.067456+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 28,
+          "new": 1,
+          "cum": 34,
+          "base": 1,
+          "sol": 33
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 11,
+          "new": 6,
+          "cum": 131,
+          "base": 122,
+          "sol": 9
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 1,
+          "cum": 26,
+          "base": 0,
+          "sol": 26
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 1,
+          "cum": 32,
+          "base": 1,
+          "sol": 31
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 46,
+      "ts": "2026-05-30T06:05:47.067598+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 28,
+          "new": 0,
+          "cum": 34,
+          "base": 1,
+          "sol": 33
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 8,
+          "new": 2,
+          "cum": 133,
+          "base": 124,
+          "sol": 9
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 26,
+          "base": 0,
+          "sol": 26
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 32,
+          "base": 1,
+          "sol": 31
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 47,
+      "ts": "2026-05-30T06:06:47.067751+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 28,
+          "new": 0,
+          "cum": 34,
+          "base": 1,
+          "sol": 33
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 10,
+          "new": 2,
+          "cum": 135,
+          "base": 126,
+          "sol": 9
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 26,
+          "base": 0,
+          "sol": 26
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 32,
+          "base": 1,
+          "sol": 31
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 48,
+      "ts": "2026-05-30T06:07:47.067811+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 28,
+          "new": 0,
+          "cum": 34,
+          "base": 1,
+          "sol": 33
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 8,
+          "new": 1,
+          "cum": 136,
+          "base": 127,
+          "sol": 9
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 26,
+          "base": 0,
+          "sol": 26
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 32,
+          "base": 1,
+          "sol": 31
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 49,
+      "ts": "2026-05-30T06:08:47.067955+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 28,
+          "new": 0,
+          "cum": 34,
+          "base": 1,
+          "sol": 33
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 7,
+          "new": 2,
+          "cum": 138,
+          "base": 129,
+          "sol": 9
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 26,
+          "base": 0,
+          "sol": 26
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 32,
+          "base": 1,
+          "sol": 31
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 50,
+      "ts": "2026-05-30T06:09:47.068115+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 28,
+          "new": 0,
+          "cum": 34,
+          "base": 1,
+          "sol": 33
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 10,
+          "new": 5,
+          "cum": 143,
+          "base": 134,
+          "sol": 9
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 26,
+          "base": 0,
+          "sol": 26
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 32,
+          "base": 1,
+          "sol": 31
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 51,
+      "ts": "2026-05-30T06:10:47.068257+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 28,
+          "new": 0,
+          "cum": 34,
+          "base": 1,
+          "sol": 33
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 10,
+          "new": 3,
+          "cum": 146,
+          "base": 137,
+          "sol": 9
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 26,
+          "base": 0,
+          "sol": 26
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 32,
+          "base": 1,
+          "sol": 31
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 52,
+      "ts": "2026-05-30T06:11:47.068410+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 28,
+          "new": 0,
+          "cum": 34,
+          "base": 1,
+          "sol": 33
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 13,
+          "new": 5,
+          "cum": 151,
+          "base": 142,
+          "sol": 9
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 26,
+          "base": 0,
+          "sol": 26
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 32,
+          "base": 1,
+          "sol": 31
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 53,
+      "ts": "2026-05-30T06:12:47.068473+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 28,
+          "new": 2,
+          "cum": 36,
+          "base": 1,
+          "sol": 35
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 12,
+          "new": 4,
+          "cum": 155,
+          "base": 144,
+          "sol": 11
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 26,
+          "base": 0,
+          "sol": 26
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 32,
+          "base": 1,
+          "sol": 31
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 54,
+      "ts": "2026-05-30T06:13:47.068550+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 28,
+          "new": 0,
+          "cum": 36,
+          "base": 1,
+          "sol": 35
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 13,
+          "new": 4,
+          "cum": 159,
+          "base": 148,
+          "sol": 11
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 26,
+          "base": 0,
+          "sol": 26
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 32,
+          "base": 1,
+          "sol": 31
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 55,
+      "ts": "2026-05-30T06:14:47.068703+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 28,
+          "new": 0,
+          "cum": 36,
+          "base": 1,
+          "sol": 35
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 12,
+          "new": 1,
+          "cum": 160,
+          "base": 149,
+          "sol": 11
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 26,
+          "base": 0,
+          "sol": 26
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 32,
+          "base": 1,
+          "sol": 31
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 56,
+      "ts": "2026-05-30T06:15:47.068841+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 28,
+          "new": 0,
+          "cum": 36,
+          "base": 1,
+          "sol": 35
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 12,
+          "new": 3,
+          "cum": 163,
+          "base": 152,
+          "sol": 11
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 26,
+          "base": 0,
+          "sol": 26
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 32,
+          "base": 1,
+          "sol": 31
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 57,
+      "ts": "2026-05-30T06:16:47.068905+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 28,
+          "new": 0,
+          "cum": 36,
+          "base": 1,
+          "sol": 35
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 11,
+          "new": 2,
+          "cum": 165,
+          "base": 154,
+          "sol": 11
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 26,
+          "base": 0,
+          "sol": 26
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 32,
+          "base": 1,
+          "sol": 31
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 58,
+      "ts": "2026-05-30T06:17:47.069047+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 28,
+          "new": 0,
+          "cum": 36,
+          "base": 1,
+          "sol": 35
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 10,
+          "new": 2,
+          "cum": 167,
+          "base": 156,
+          "sol": 11
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 26,
+          "base": 0,
+          "sol": 26
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 32,
+          "base": 1,
+          "sol": 31
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 59,
+      "ts": "2026-05-30T06:18:47.069116+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 28,
+          "new": 0,
+          "cum": 36,
+          "base": 1,
+          "sol": 35
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 7,
+          "new": 2,
+          "cum": 169,
+          "base": 158,
+          "sol": 11
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 26,
+          "base": 0,
+          "sol": 26
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 32,
+          "base": 1,
+          "sol": 31
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    },
+    {
+      "minute": 60,
+      "ts": "2026-05-30T06:19:47.069260+00:00",
+      "endpoints": {
+        "token_profiles": {
+          "http": 200,
+          "returned": 28,
+          "new": 1,
+          "cum": 37,
+          "base": 1,
+          "sol": 36
+        },
+        "token_profiles_updates": {
+          "http": 200,
+          "returned": 7,
+          "new": 3,
+          "cum": 172,
+          "base": 160,
+          "sol": 12
+        },
+        "token_boosts_latest": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 26,
+          "base": 0,
+          "sol": 26
+        },
+        "token_boosts_top": {
+          "http": 200,
+          "returned": 30,
+          "new": 0,
+          "cum": 32,
+          "base": 1,
+          "sol": 31
+        },
+        "search_base": {
+          "http": 200,
+          "returned": 20,
+          "new": 0,
+          "cum": 7,
+          "base": 6,
+          "sol": 1
+        },
+        "search_solana": {
+          "http": 200,
+          "returned": 27,
+          "new": 0,
+          "cum": 24,
+          "base": 1,
+          "sol": 23
+        },
+        "pairs_base": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "pairs_solana": {
+          "http": 404,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "metas_trending": {
+          "http": 200,
+          "returned": 0,
+          "new": 0,
+          "cum": 0,
+          "base": 0,
+          "sol": 0
+        },
+        "community_takeovers": {
+          "http": 200,
+          "returned": 25,
+          "new": 0,
+          "cum": 25,
+          "base": 0,
+          "sol": 25
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,929 @@
+=== DexScreener Endpoint Sampler ===
+Start: 2026-05-30T05:18:20.257140+00:00
+Duration: 60 min | Endpoints: 10
+
+ Min  Endpoint                            HTTP   Ret   New    Cum  Base   Sol
+--------------------------------------------------------------------------------
+[01/60]  token_profiles                       200    29    29     29     1    28
+[01/60]  token_profiles_updates               200     6     6      6     6     0
+[01/60]  token_boosts_latest                  200    30    25     25     0    25
+[01/60]  token_boosts_top                     200    30    30     30     1    29
+[01/60]  search_base                          200    20     7      7     6     1
+[01/60]  search_solana                        200    27    20     20     1    19
+[01/60]  pairs_base                           404  NOT FOUND
+[01/60]  pairs_solana                         404  NOT FOUND
+[01/60]  metas_trending                       200     0     0      0     0     0
+[01/60]  community_takeovers                  200    25    25     25     0    25
+
+=== DexScreener Endpoint Sampler ===
+Start: 2026-05-30T05:20:22.858833+00:00
+Duration: 60 min | Endpoints: 10
+
+ Min  Endpoint                            HTTP   Ret   New    Cum  Base   Sol
+--------------------------------------------------------------------------------
+[01/60]  token_profiles                       200    29    29     29     1    28
+[01/60]  token_profiles_updates               200    11    11     11     9     2
+[01/60]  token_boosts_latest                  200    30    25     25     0    25
+[01/60]  token_boosts_top                     200    30    30     30     1    29
+[01/60]  search_base                          200    20     7      7     6     1
+[01/60]  search_solana                        200    27    20     20     1    19
+[01/60]  pairs_base                           404  NOT FOUND
+[01/60]  pairs_solana                         404  NOT FOUND
+[01/60]  metas_trending                       200     0     0      0     0     0
+[01/60]  community_takeovers                  200    25    25     25     0    25
+
+=== DexScreener Endpoint Sampler ===
+Start: 2026-05-30T05:20:47.062665+00:00
+Duration: 60 min | Endpoints: 10
+
+ Min  Endpoint                            HTTP   Ret   New    Cum  Base   Sol
+--------------------------------------------------------------------------------
+[01/60]  token_profiles                       200    29    29     29     1    28
+[01/60]  token_profiles_updates               200    11    11     11     9     2
+[01/60]  token_boosts_latest                  200    30    25     25     0    25
+[01/60]  token_boosts_top                     200    30    30     30     1    29
+[01/60]  search_base                          200    20     7      7     6     1
+[01/60]  search_solana                        200    27    20     20     1    19
+[01/60]  pairs_base                           404  NOT FOUND
+[01/60]  pairs_solana                         404  NOT FOUND
+[01/60]  metas_trending                       200     0     0      0     0     0
+[01/60]  community_takeovers                  200    25    25     25     0    25
+
+[02/60]  token_profiles                       200    29     1     30     1    29
+[02/60]  token_profiles_updates               200    11     3     14    12     2
+[02/60]  token_boosts_latest                  200    30     0     25     0    25
+[02/60]  token_boosts_top                     200    30     0     30     1    29
+[02/60]  search_base                          200    20     0      7     6     1
+[02/60]  search_solana                        200    27     3     23     1    22
+[02/60]  pairs_base                           404  NOT FOUND
+[02/60]  pairs_solana                         404  NOT FOUND
+[02/60]  metas_trending                       200     0     0      0     0     0
+[02/60]  community_takeovers                  200    25     0     25     0    25
+
+[02/60]  token_profiles                       200    29     0     29     1    28
+[02/60]  token_profiles_updates               200    12     5     16    14     2
+[02/60]  token_boosts_latest                  200    30     0     25     0    25
+[02/60]  token_boosts_top                     200    30     0     30     1    29
+[02/60]  search_base                          200    20     0      7     6     1
+[02/60]  search_solana                        200    27     3     23     1    22
+[02/60]  pairs_base                           404  NOT FOUND
+[02/60]  pairs_solana                         404  NOT FOUND
+[02/60]  metas_trending                       200     0     0      0     0     0
+[02/60]  community_takeovers                  200    25     0     25     0    25
+
+[03/60]  token_profiles                       200    29     0     30     1    29
+[03/60]  token_profiles_updates               200    10     3     17    15     2
+[03/60]  token_boosts_latest                  200    30     0     25     0    25
+[03/60]  token_boosts_top                     200    30     0     30     1    29
+[03/60]  search_base                          200    20     0      7     6     1
+[03/60]  search_solana                        200    27     0     23     1    22
+[03/60]  pairs_base                           404  NOT FOUND
+[03/60]  pairs_solana                         404  NOT FOUND
+[03/60]  metas_trending                       200     0     0      0     0     0
+[03/60]  community_takeovers                  200    25     0     25     0    25
+
+[03/60]  token_profiles                       200    29     0     29     1    28
+[03/60]  token_profiles_updates               200    10     1     17    15     2
+[03/60]  token_boosts_latest                  200    30     0     25     0    25
+[03/60]  token_boosts_top                     200    30     0     30     1    29
+[03/60]  search_base                          200    20     0      7     6     1
+[03/60]  search_solana                        200    27     0     23     1    22
+[03/60]  pairs_base                           404  NOT FOUND
+[03/60]  pairs_solana                         404  NOT FOUND
+[03/60]  metas_trending                       200     0     0      0     0     0
+[03/60]  community_takeovers                  200    25     0     25     0    25
+
+[04/60]  token_profiles                       200    29     0     30     1    29
+[04/60]  token_profiles_updates               200     7     1     18    16     2
+[04/60]  token_boosts_latest                  200    30     0     25     0    25
+[04/60]  token_boosts_top                     200    30     0     30     1    29
+[04/60]  search_base                          200    20     0      7     6     1
+[04/60]  search_solana                        200    27     0     23     1    22
+[04/60]  pairs_base                           404  NOT FOUND
+[04/60]  pairs_solana                         404  NOT FOUND
+[04/60]  metas_trending                       200     0     0      0     0     0
+[04/60]  community_takeovers                  200    25     0     25     0    25
+
+[04/60]  token_profiles                       200    29     1     30     1    29
+[04/60]  token_profiles_updates               200    10     4     21    18     3
+[04/60]  token_boosts_latest                  200    30     0     25     0    25
+[04/60]  token_boosts_top                     200    30     0     30     1    29
+[04/60]  search_base                          200    20     0      7     6     1
+[04/60]  search_solana                        200    27     0     23     1    22
+[04/60]  pairs_base                           404  NOT FOUND
+[04/60]  pairs_solana                         404  NOT FOUND
+[04/60]  metas_trending                       200     0     0      0     0     0
+[04/60]  community_takeovers                  200    25     0     25     0    25
+
+[05/60]  token_profiles                       200    29     1     31     1    30
+[05/60]  token_profiles_updates               200    12     7     25    22     3
+[05/60]  token_boosts_latest                  200    30     0     25     0    25
+[05/60]  token_boosts_top                     200    30     0     30     1    29
+[05/60]  search_base                          200    20     0      7     6     1
+[05/60]  search_solana                        200    27     0     23     1    22
+[05/60]  pairs_base                           404  NOT FOUND
+[05/60]  pairs_solana                         404  NOT FOUND
+[05/60]  metas_trending                       200     0     0      0     0     0
+[05/60]  community_takeovers                  200    25     0     25     0    25
+
+[05/60]  token_profiles                       200    29     0     30     1    29
+[05/60]  token_profiles_updates               200    12     5     26    23     3
+[05/60]  token_boosts_latest                  200    30     0     25     0    25
+[05/60]  token_boosts_top                     200    30     1     31     1    30
+[05/60]  search_base                          200    20     0      7     6     1
+[05/60]  search_solana                        200    27     0     23     1    22
+[05/60]  pairs_base                           404  NOT FOUND
+[05/60]  pairs_solana                         404  NOT FOUND
+[05/60]  metas_trending                       200     0     0      0     0     0
+[05/60]  community_takeovers                  200    25     0     25     0    25
+
+[06/60]  token_profiles                       200    29     0     31     1    30
+[06/60]  token_profiles_updates               200    10     3     28    25     3
+[06/60]  token_boosts_latest                  200    30     0     25     0    25
+[06/60]  token_boosts_top                     200    30     1     31     1    30
+[06/60]  search_base                          200    20     0      7     6     1
+[06/60]  search_solana                        200    27     0     23     1    22
+[06/60]  pairs_base                           404  NOT FOUND
+[06/60]  pairs_solana                         404  NOT FOUND
+[06/60]  metas_trending                       200     0     0      0     0     0
+[06/60]  community_takeovers                  200    25     0     25     0    25
+
+[06/60]  token_profiles                       200    29     0     30     1    29
+[06/60]  token_profiles_updates               200    11     4     30    27     3
+[06/60]  token_boosts_latest                  200    30     0     25     0    25
+[06/60]  token_boosts_top                     200    30     0     31     1    30
+[06/60]  search_base                          200    20     0      7     6     1
+[06/60]  search_solana                        200    27     0     23     1    22
+[06/60]  pairs_base                           404  NOT FOUND
+[06/60]  pairs_solana                         404  NOT FOUND
+[06/60]  metas_trending                       200     0     0      0     0     0
+[06/60]  community_takeovers                  200    25     0     25     0    25
+
+[07/60]  token_profiles                       200    29     0     31     1    30
+[07/60]  token_profiles_updates               200    10     3     31    28     3
+[07/60]  token_boosts_latest                  200    30     0     25     0    25
+[07/60]  token_boosts_top                     200    30     0     31     1    30
+[07/60]  search_base                          200    20     0      7     6     1
+[07/60]  search_solana                        200    27     0     23     1    22
+[07/60]  pairs_base                           404  NOT FOUND
+[07/60]  pairs_solana                         404  NOT FOUND
+[07/60]  metas_trending                       200     0     0      0     0     0
+[07/60]  community_takeovers                  200    25     0     25     0    25
+
+[07/60]  token_profiles                       200    29     0     30     1    29
+[07/60]  token_profiles_updates               200     9     0     30    27     3
+[07/60]  token_boosts_latest                  200    30     0     25     0    25
+[07/60]  token_boosts_top                     200    30     0     31     1    30
+[07/60]  search_base                          200    20     0      7     6     1
+[07/60]  search_solana                        200    27     0     23     1    22
+[07/60]  pairs_base                           404  NOT FOUND
+[07/60]  pairs_solana                         404  NOT FOUND
+[07/60]  metas_trending                       200     0     0      0     0     0
+[07/60]  community_takeovers                  200    25     0     25     0    25
+
+[08/60]  token_profiles                       200    29     0     31     1    30
+[08/60]  token_profiles_updates               200     8     1     32    29     3
+[08/60]  token_boosts_latest                  200    30     0     25     0    25
+[08/60]  token_boosts_top                     200    30     0     31     1    30
+[08/60]  search_base                          200    20     0      7     6     1
+[08/60]  search_solana                        200    27     1     24     1    23
+[08/60]  pairs_base                           404  NOT FOUND
+[08/60]  pairs_solana                         404  NOT FOUND
+[08/60]  metas_trending                       200     0     0      0     0     0
+[08/60]  community_takeovers                  200    25     0     25     0    25
+
+[08/60]  token_profiles                       200    29     0     30     1    29
+[08/60]  token_profiles_updates               200     8     2     32    29     3
+[08/60]  token_boosts_latest                  200    30     0     25     0    25
+[08/60]  token_boosts_top                     200    30     0     31     1    30
+[08/60]  search_base                          200    20     0      7     6     1
+[08/60]  search_solana                        200    27     0     23     1    22
+[08/60]  pairs_base                           404  NOT FOUND
+[08/60]  pairs_solana                         404  NOT FOUND
+[08/60]  metas_trending                       200     0     0      0     0     0
+[08/60]  community_takeovers                  200    25     0     25     0    25
+
+[09/60]  token_profiles                       200    29     0     31     1    30
+[09/60]  token_profiles_updates               200     7     2     34    31     3
+[09/60]  token_boosts_latest                  200    30     0     25     0    25
+[09/60]  token_boosts_top                     200    30     0     31     1    30
+[09/60]  search_base                          200    20     0      7     6     1
+[09/60]  search_solana                        200    27     0     24     1    23
+[09/60]  pairs_base                           404  NOT FOUND
+[09/60]  pairs_solana                         404  NOT FOUND
+[09/60]  metas_trending                       200     0     0      0     0     0
+[09/60]  community_takeovers                  200    25     0     25     0    25
+
+[09/60]  token_profiles                       200    29     0     30     1    29
+[09/60]  token_profiles_updates               200     8     2     34    31     3
+[09/60]  token_boosts_latest                  200    30     0     25     0    25
+[09/60]  token_boosts_top                     200    30     0     31     1    30
+[09/60]  search_base                          200    20     0      7     6     1
+[09/60]  search_solana                        200    27     1     24     1    23
+[09/60]  pairs_base                           404  NOT FOUND
+[09/60]  pairs_solana                         404  NOT FOUND
+[09/60]  metas_trending                       200     0     0      0     0     0
+[09/60]  community_takeovers                  200    25     0     25     0    25
+
+[10/60]  token_profiles                       200    29     0     31     1    30
+[10/60]  token_profiles_updates               200     9     2     36    33     3
+[10/60]  token_boosts_latest                  200    30     0     25     0    25
+[10/60]  token_boosts_top                     200    30     0     31     1    30
+[10/60]  search_base                          200    20     0      7     6     1
+[10/60]  search_solana                        200    27     0     24     1    23
+[10/60]  pairs_base                           404  NOT FOUND
+[10/60]  pairs_solana                         404  NOT FOUND
+[10/60]  metas_trending                       200     0     0      0     0     0
+[10/60]  community_takeovers                  200    25     0     25     0    25
+
+[10/60]  token_profiles                       200    29     0     30     1    29
+[10/60]  token_profiles_updates               200     5     1     35    32     3
+[10/60]  token_boosts_latest                  200    30     0     25     0    25
+[10/60]  token_boosts_top                     200    30     0     31     1    30
+[10/60]  search_base                          200    20     0      7     6     1
+[10/60]  search_solana                        200    27     0     24     1    23
+[10/60]  pairs_base                           404  NOT FOUND
+[10/60]  pairs_solana                         404  NOT FOUND
+[10/60]  metas_trending                       200     0     0      0     0     0
+[10/60]  community_takeovers                  200    25     0     25     0    25
+
+[11/60]  token_profiles                       200    29     0     31     1    30
+[11/60]  token_profiles_updates               200     7     2     38    35     3
+[11/60]  token_boosts_latest                  200    30     0     25     0    25
+[11/60]  token_boosts_top                     200    30     0     31     1    30
+[11/60]  search_base                          200    20     0      7     6     1
+[11/60]  search_solana                        200    27     0     24     1    23
+[11/60]  pairs_base                           404  NOT FOUND
+[11/60]  pairs_solana                         404  NOT FOUND
+[11/60]  metas_trending                       200     0     0      0     0     0
+[11/60]  community_takeovers                  200    25     0     25     0    25
+
+[11/60]  token_profiles                       200    29     0     30     1    29
+[11/60]  token_profiles_updates               200     9     7     42    39     3
+[11/60]  token_boosts_latest                  200    30     0     25     0    25
+[11/60]  token_boosts_top                     200    30     0     31     1    30
+[11/60]  search_base                          200    20     0      7     6     1
+[11/60]  search_solana                        200    27     0     24     1    23
+[11/60]  pairs_base                           404  NOT FOUND
+[11/60]  pairs_solana                         404  NOT FOUND
+[11/60]  metas_trending                       200     0     0      0     0     0
+[11/60]  community_takeovers                  200    25     0     25     0    25
+
+[12/60]  token_profiles                       200    29     0     31     1    30
+[12/60]  token_profiles_updates               200     9     6     44    41     3
+[12/60]  token_boosts_latest                  200    30     0     25     0    25
+[12/60]  token_boosts_top                     200    30     0     31     1    30
+[12/60]  search_base                          200    20     0      7     6     1
+[12/60]  search_solana                        200    27     0     24     1    23
+[12/60]  pairs_base                           404  NOT FOUND
+[12/60]  pairs_solana                         404  NOT FOUND
+[12/60]  metas_trending                       200     0     0      0     0     0
+[12/60]  community_takeovers                  200    25     0     25     0    25
+
+[12/60]  token_profiles                       200    29     0     30     1    29
+[12/60]  token_profiles_updates               200    11     4     46    43     3
+[12/60]  token_boosts_latest                  200    30     0     25     0    25
+[12/60]  token_boosts_top                     200    30     0     31     1    30
+[12/60]  search_base                          200    20     0      7     6     1
+[12/60]  search_solana                        200    27     0     24     1    23
+[12/60]  pairs_base                           404  NOT FOUND
+[12/60]  pairs_solana                         404  NOT FOUND
+[12/60]  metas_trending                       200     0     0      0     0     0
+[12/60]  community_takeovers                  200    25     0     25     0    25
+
+[13/60]  token_profiles                       200    29     0     31     1    30
+[13/60]  token_profiles_updates               200    12     4     48    45     3
+[13/60]  token_boosts_latest                  200    30     0     25     0    25
+[13/60]  token_boosts_top                     200    30     0     31     1    30
+[13/60]  search_base                          200    20     0      7     6     1
+[13/60]  search_solana                        200    27     0     24     1    23
+[13/60]  pairs_base                           404  NOT FOUND
+[13/60]  pairs_solana                         404  NOT FOUND
+[13/60]  metas_trending                       200     0     0      0     0     0
+[13/60]  community_takeovers                  200    25     0     25     0    25
+
+[13/60]  token_profiles                       200    29     0     30     1    29
+[13/60]  token_profiles_updates               200    14     3     49    46     3
+[13/60]  token_boosts_latest                  200    30     0     25     0    25
+[13/60]  token_boosts_top                     200    30     0     31     1    30
+[13/60]  search_base                          200    20     0      7     6     1
+[13/60]  search_solana                        200    27     0     24     1    23
+[13/60]  pairs_base                           404  NOT FOUND
+[13/60]  pairs_solana                         404  NOT FOUND
+[13/60]  metas_trending                       200     0     0      0     0     0
+[13/60]  community_takeovers                  200    25     0     25     0    25
+
+[14/60]  token_profiles                       200    29     0     31     1    30
+[14/60]  token_profiles_updates               200    13     3     51    48     3
+[14/60]  token_boosts_latest                  200    30     0     25     0    25
+[14/60]  token_boosts_top                     200    30     0     31     1    30
+[14/60]  search_base                          200    20     0      7     6     1
+[14/60]  search_solana                        200    27     0     24     1    23
+[14/60]  pairs_base                           404  NOT FOUND
+[14/60]  pairs_solana                         404  NOT FOUND
+[14/60]  metas_trending                       200     0     0      0     0     0
+[14/60]  community_takeovers                  200    25     0     25     0    25
+
+[14/60]  token_profiles                       200    29     0     30     1    29
+[14/60]  token_profiles_updates               200    12     2     51    48     3
+[14/60]  token_boosts_latest                  200    30     0     25     0    25
+[14/60]  token_boosts_top                     200    30     0     31     1    30
+[14/60]  search_base                          200    20     0      7     6     1
+[14/60]  search_solana                        200    27     0     24     1    23
+[14/60]  pairs_base                           404  NOT FOUND
+[14/60]  pairs_solana                         404  NOT FOUND
+[14/60]  metas_trending                       200     0     0      0     0     0
+[14/60]  community_takeovers                  200    25     0     25     0    25
+
+[15/60]  token_profiles                       200    29     0     31     1    30
+[15/60]  token_profiles_updates               200    11     1     52    49     3
+[15/60]  token_boosts_latest                  200    30     0     25     0    25
+[15/60]  token_boosts_top                     200    30     0     31     1    30
+[15/60]  search_base                          200    20     0      7     6     1
+[15/60]  search_solana                        200    27     0     24     1    23
+[15/60]  pairs_base                           404  NOT FOUND
+[15/60]  pairs_solana                         404  NOT FOUND
+[15/60]  metas_trending                       200     0     0      0     0     0
+[15/60]  community_takeovers                  200    25     0     25     0    25
+
+[15/60]  token_profiles                       200    29     0     30     1    29
+[15/60]  token_profiles_updates               200     9     0     51    48     3
+[15/60]  token_boosts_latest                  200    30     0     25     0    25
+[15/60]  token_boosts_top                     200    30     0     31     1    30
+[15/60]  search_base                          200    20     0      7     6     1
+[15/60]  search_solana                        200    27     0     24     1    23
+[15/60]  pairs_base                           404  NOT FOUND
+[15/60]  pairs_solana                         404  NOT FOUND
+[15/60]  metas_trending                       200     0     0      0     0     0
+[15/60]  community_takeovers                  200    25     0     25     0    25
+
+[16/60]  token_profiles                       200    29     0     31     1    30
+[16/60]  token_profiles_updates               200     9     1     53    50     3
+[16/60]  token_boosts_latest                  200    30     0     25     0    25
+[16/60]  token_boosts_top                     200    30     0     31     1    30
+[16/60]  search_base                          200    20     0      7     6     1
+[16/60]  search_solana                        200    27     0     24     1    23
+[16/60]  pairs_base                           404  NOT FOUND
+[16/60]  pairs_solana                         404  NOT FOUND
+[16/60]  metas_trending                       200     0     0      0     0     0
+[16/60]  community_takeovers                  200    25     0     25     0    25
+
+[16/60]  token_profiles                       200    29     0     30     1    29
+[16/60]  token_profiles_updates               200    11     3     54    51     3
+[16/60]  token_boosts_latest                  200    30     0     25     0    25
+[16/60]  token_boosts_top                     200    30     0     31     1    30
+[16/60]  search_base                          200    20     0      7     6     1
+[16/60]  search_solana                        200    27     0     24     1    23
+[16/60]  pairs_base                           404  NOT FOUND
+[16/60]  pairs_solana                         404  NOT FOUND
+[16/60]  metas_trending                       200     0     0      0     0     0
+[16/60]  community_takeovers                  200    25     0     25     0    25
+
+[17/60]  token_profiles                       200    29     0     31     1    30
+[17/60]  token_profiles_updates               200    10     2     55    52     3
+[17/60]  token_boosts_latest                  200    30     0     25     0    25
+[17/60]  token_boosts_top                     200    30     0     31     1    30
+[17/60]  search_base                          200    20     0      7     6     1
+[17/60]  search_solana                        200    27     0     24     1    23
+[17/60]  pairs_base                           404  NOT FOUND
+[17/60]  pairs_solana                         404  NOT FOUND
+[17/60]  metas_trending                       200     0     0      0     0     0
+[17/60]  community_takeovers                  200    25     0     25     0    25
+
+[17/60]  token_profiles                       200    29     0     30     1    29
+[17/60]  token_profiles_updates               200     8     0     54    51     3
+[17/60]  token_boosts_latest                  200    30     0     25     0    25
+[17/60]  token_boosts_top                     200    30     0     31     1    30
+[17/60]  search_base                          200    20     0      7     6     1
+[17/60]  search_solana                        200    27     0     24     1    23
+[17/60]  pairs_base                           404  NOT FOUND
+[17/60]  pairs_solana                         404  NOT FOUND
+[17/60]  metas_trending                       200     0     0      0     0     0
+[17/60]  community_takeovers                  200    25     0     25     0    25
+
+[18/60]  token_profiles                       200    29     0     31     1    30
+[18/60]  token_profiles_updates               200     7     0     55    52     3
+[18/60]  token_boosts_latest                  200    30     0     25     0    25
+[18/60]  token_boosts_top                     200    30     0     31     1    30
+[18/60]  search_base                          200    20     0      7     6     1
+[18/60]  search_solana                        200    27     0     24     1    23
+[18/60]  pairs_base                           404  NOT FOUND
+[18/60]  pairs_solana                         404  NOT FOUND
+[18/60]  metas_trending                       200     0     0      0     0     0
+[18/60]  community_takeovers                  200    25     0     25     0    25
+
+[18/60]  token_profiles                       200    29     1     31     1    30
+[18/60]  token_profiles_updates               200     8     3     57    53     4
+[18/60]  token_boosts_latest                  200    30     0     25     0    25
+[18/60]  token_boosts_top                     200    30     0     31     1    30
+[18/60]  search_base                          200    20     0      7     6     1
+[18/60]  search_solana                        200    27     0     24     1    23
+[18/60]  pairs_base                           404  NOT FOUND
+[18/60]  pairs_solana                         404  NOT FOUND
+[18/60]  metas_trending                       200     0     0      0     0     0
+[18/60]  community_takeovers                  200    25     0     25     0    25
+
+[19/60]  token_profiles                       200    29     1     32     1    31
+[19/60]  token_profiles_updates               200     9     5     60    56     4
+[19/60]  token_boosts_latest                  200    30     0     25     0    25
+[19/60]  token_boosts_top                     200    30     0     31     1    30
+[19/60]  search_base                          200    20     0      7     6     1
+[19/60]  search_solana                        200    27     0     24     1    23
+[19/60]  pairs_base                           404  NOT FOUND
+[19/60]  pairs_solana                         404  NOT FOUND
+[19/60]  metas_trending                       200     0     0      0     0     0
+[19/60]  community_takeovers                  200    25     0     25     0    25
+
+[19/60]  token_profiles                       200    29     0     31     1    30
+[19/60]  token_profiles_updates               200     8     2     59    55     4
+[19/60]  token_boosts_latest                  200    30     0     25     0    25
+[19/60]  token_boosts_top                     200    30     0     31     1    30
+[19/60]  search_base                          200    20     0      7     6     1
+[19/60]  search_solana                        200    27     0     24     1    23
+[19/60]  pairs_base                           404  NOT FOUND
+[19/60]  pairs_solana                         404  NOT FOUND
+[19/60]  metas_trending                       200     0     0      0     0     0
+[19/60]  community_takeovers                  200    25     0     25     0    25
+
+[20/60]  token_profiles                       200    29     0     31     1    30
+[20/60]  token_profiles_updates               200     8     2     61    57     4
+[20/60]  token_boosts_latest                  200    30     0     25     0    25
+[20/60]  token_boosts_top                     200    30     0     31     1    30
+[20/60]  search_base                          200    20     0      7     6     1
+[20/60]  search_solana                        200    27     0     24     1    23
+[20/60]  pairs_base                           404  NOT FOUND
+[20/60]  pairs_solana                         404  NOT FOUND
+[20/60]  metas_trending                       200     0     0      0     0     0
+[20/60]  community_takeovers                  200    25     0     25     0    25
+
+[21/60]  token_profiles                       200    29     0     31     1    30
+[21/60]  token_profiles_updates               200     8     1     62    58     4
+[21/60]  token_boosts_latest                  200    30     0     25     0    25
+[21/60]  token_boosts_top                     200    30     0     31     1    30
+[21/60]  search_base                          200    20     0      7     6     1
+[21/60]  search_solana                        200    27     0     24     1    23
+[21/60]  pairs_base                           404  NOT FOUND
+[21/60]  pairs_solana                         404  NOT FOUND
+[21/60]  metas_trending                       200     0     0      0     0     0
+[21/60]  community_takeovers                  200    25     0     25     0    25
+
+[22/60]  token_profiles                       200    29     0     31     1    30
+[22/60]  token_profiles_updates               200    11     5     67    63     4
+[22/60]  token_boosts_latest                  200    30     0     25     0    25
+[22/60]  token_boosts_top                     200    30     0     31     1    30
+[22/60]  search_base                          200    20     0      7     6     1
+[22/60]  search_solana                        200    27     0     24     1    23
+[22/60]  pairs_base                           404  NOT FOUND
+[22/60]  pairs_solana                         404  NOT FOUND
+[22/60]  metas_trending                       200     0     0      0     0     0
+[22/60]  community_takeovers                  200    25     0     25     0    25
+
+[23/60]  token_profiles                       200    29     0     31     1    30
+[23/60]  token_profiles_updates               200    11     2     69    65     4
+[23/60]  token_boosts_latest                  200    30     0     25     0    25
+[23/60]  token_boosts_top                     200    30     0     31     1    30
+[23/60]  search_base                          200    20     0      7     6     1
+[23/60]  search_solana                        200    27     0     24     1    23
+[23/60]  pairs_base                           404  NOT FOUND
+[23/60]  pairs_solana                         404  NOT FOUND
+[23/60]  metas_trending                       200     0     0      0     0     0
+[23/60]  community_takeovers                  200    25     0     25     0    25
+
+[24/60]  token_profiles                       200    29     0     31     1    30
+[24/60]  token_profiles_updates               200    14     5     74    70     4
+[24/60]  token_boosts_latest                  200    30     0     25     0    25
+[24/60]  token_boosts_top                     200    30     0     31     1    30
+[24/60]  search_base                          200    20     0      7     6     1
+[24/60]  search_solana                        200    27     0     24     1    23
+[24/60]  pairs_base                           404  NOT FOUND
+[24/60]  pairs_solana                         404  NOT FOUND
+[24/60]  metas_trending                       200     0     0      0     0     0
+[24/60]  community_takeovers                  200    25     0     25     0    25
+
+[25/60]  token_profiles                       200    29     0     31     1    30
+[25/60]  token_profiles_updates               200     9     0     74    70     4
+[25/60]  token_boosts_latest                  200    30     0     25     0    25
+[25/60]  token_boosts_top                     200    30     0     31     1    30
+[25/60]  search_base                          200    20     0      7     6     1
+[25/60]  search_solana                        200    27     0     24     1    23
+[25/60]  pairs_base                           404  NOT FOUND
+[25/60]  pairs_solana                         404  NOT FOUND
+[25/60]  metas_trending                       200     0     0      0     0     0
+[25/60]  community_takeovers                  200    25     0     25     0    25
+
+[26/60]  token_profiles                       200    30     1     32     1    31
+[26/60]  token_profiles_updates               200     8     3     77    73     4
+[26/60]  token_boosts_latest                  200    30     0     25     0    25
+[26/60]  token_boosts_top                     200    30     0     31     1    30
+[26/60]  search_base                          200    20     0      7     6     1
+[26/60]  search_solana                        200    27     0     24     1    23
+[26/60]  pairs_base                           404  NOT FOUND
+[26/60]  pairs_solana                         404  NOT FOUND
+[26/60]  metas_trending                       200     0     0      0     0     0
+[26/60]  community_takeovers                  200    25     0     25     0    25
+
+[27/60]  token_profiles                       200    30     0     32     1    31
+[27/60]  token_profiles_updates               200     7     2     79    74     5
+[27/60]  token_boosts_latest                  200    30     0     25     0    25
+[27/60]  token_boosts_top                     200    30     0     31     1    30
+[27/60]  search_base                          200    20     0      7     6     1
+[27/60]  search_solana                        200    27     0     24     1    23
+[27/60]  pairs_base                           404  NOT FOUND
+[27/60]  pairs_solana                         404  NOT FOUND
+[27/60]  metas_trending                       200     0     0      0     0     0
+[27/60]  community_takeovers                  200    25     0     25     0    25
+
+[28/60]  token_profiles                       200    30     0     32     1    31
+[28/60]  token_profiles_updates               200    10     5     84    78     6
+[28/60]  token_boosts_latest                  200    30     0     25     0    25
+[28/60]  token_boosts_top                     200    30     0     31     1    30
+[28/60]  search_base                          200    20     0      7     6     1
+[28/60]  search_solana                        200    27     0     24     1    23
+[28/60]  pairs_base                           404  NOT FOUND
+[28/60]  pairs_solana                         404  NOT FOUND
+[28/60]  metas_trending                       200     0     0      0     0     0
+[28/60]  community_takeovers                  200    25     0     25     0    25
+
+[29/60]  token_profiles                       200    30     0     32     1    31
+[29/60]  token_profiles_updates               200    10     1     85    79     6
+[29/60]  token_boosts_latest                  200    30     0     25     0    25
+[29/60]  token_boosts_top                     200    30     0     31     1    30
+[29/60]  search_base                          200    20     0      7     6     1
+[29/60]  search_solana                        200    27     0     24     1    23
+[29/60]  pairs_base                           404  NOT FOUND
+[29/60]  pairs_solana                         404  NOT FOUND
+[29/60]  metas_trending                       200     0     0      0     0     0
+[29/60]  community_takeovers                  200    25     0     25     0    25
+
+[30/60]  token_profiles                       200    28     0     32     1    31
+[30/60]  token_profiles_updates               200    11     4     89    83     6
+[30/60]  token_boosts_latest                  200    30     0     25     0    25
+[30/60]  token_boosts_top                     200    30     0     31     1    30
+[30/60]  search_base                          200    20     0      7     6     1
+[30/60]  search_solana                        200    27     0     24     1    23
+[30/60]  pairs_base                           404  NOT FOUND
+[30/60]  pairs_solana                         404  NOT FOUND
+[30/60]  metas_trending                       200     0     0      0     0     0
+[30/60]  community_takeovers                  200    25     0     25     0    25
+
+[31/60]  token_profiles                       200    28     0     32     1    31
+[31/60]  token_profiles_updates               200     8     0     89    83     6
+[31/60]  token_boosts_latest                  200    30     0     25     0    25
+[31/60]  token_boosts_top                     200    30     0     31     1    30
+[31/60]  search_base                          200    20     0      7     6     1
+[31/60]  search_solana                        200    27     0     24     1    23
+[31/60]  pairs_base                           404  NOT FOUND
+[31/60]  pairs_solana                         404  NOT FOUND
+[31/60]  metas_trending                       200     0     0      0     0     0
+[31/60]  community_takeovers                  200    25     0     25     0    25
+
+[32/60]  token_profiles                       200    28     0     32     1    31
+[32/60]  token_profiles_updates               200     7     2     91    85     6
+[32/60]  token_boosts_latest                  200    30     0     25     0    25
+[32/60]  token_boosts_top                     200    30     0     31     1    30
+[32/60]  search_base                          200    20     0      7     6     1
+[32/60]  search_solana                        200    27     0     24     1    23
+[32/60]  pairs_base                           404  NOT FOUND
+[32/60]  pairs_solana                         404  NOT FOUND
+[32/60]  metas_trending                       200     0     0      0     0     0
+[32/60]  community_takeovers                  200    25     0     25     0    25
+
+[33/60]  token_profiles                       200    28     0     32     1    31
+[33/60]  token_profiles_updates               200     5     3     94    87     7
+[33/60]  token_boosts_latest                  200    30     0     25     0    25
+[33/60]  token_boosts_top                     200    30     0     31     1    30
+[33/60]  search_base                          200    20     0      7     6     1
+[33/60]  search_solana                        200    27     0     24     1    23
+[33/60]  pairs_base                           404  NOT FOUND
+[33/60]  pairs_solana                         404  NOT FOUND
+[33/60]  metas_trending                       200     0     0      0     0     0
+[33/60]  community_takeovers                  200    25     0     25     0    25
+
+[34/60]  token_profiles                       200    28     1     33     1    32
+[34/60]  token_profiles_updates               200     7     2     96    89     7
+[34/60]  token_boosts_latest                  200    30     0     25     0    25
+[34/60]  token_boosts_top                     200    30     0     31     1    30
+[34/60]  search_base                          200    20     0      7     6     1
+[34/60]  search_solana                        200    27     0     24     1    23
+[34/60]  pairs_base                           404  NOT FOUND
+[34/60]  pairs_solana                         404  NOT FOUND
+[34/60]  metas_trending                       200     0     0      0     0     0
+[34/60]  community_takeovers                  200    25     0     25     0    25
+
+[35/60]  token_profiles                       200    28     0     33     1    32
+[35/60]  token_profiles_updates               200     8     3     99    91     8
+[35/60]  token_boosts_latest                  200    30     0     25     0    25
+[35/60]  token_boosts_top                     200    30     0     31     1    30
+[35/60]  search_base                          200    20     0      7     6     1
+[35/60]  search_solana                        200    27     0     24     1    23
+[35/60]  pairs_base                           404  NOT FOUND
+[35/60]  pairs_solana                         404  NOT FOUND
+[35/60]  metas_trending                       200     0     0      0     0     0
+[35/60]  community_takeovers                  200    25     0     25     0    25
+
+[36/60]  token_profiles                       200    28     0     33     1    32
+[36/60]  token_profiles_updates               200     9     3    102    94     8
+[36/60]  token_boosts_latest                  200    30     0     25     0    25
+[36/60]  token_boosts_top                     200    30     0     31     1    30
+[36/60]  search_base                          200    20     0      7     6     1
+[36/60]  search_solana                        200    27     0     24     1    23
+[36/60]  pairs_base                           404  NOT FOUND
+[36/60]  pairs_solana                         404  NOT FOUND
+[36/60]  metas_trending                       200     0     0      0     0     0
+[36/60]  community_takeovers                  200    25     0     25     0    25
+
+[37/60]  token_profiles                       200    28     0     33     1    32
+[37/60]  token_profiles_updates               200     9     2    104    96     8
+[37/60]  token_boosts_latest                  200    30     0     25     0    25
+[37/60]  token_boosts_top                     200    30     0     31     1    30
+[37/60]  search_base                          200    20     0      7     6     1
+[37/60]  search_solana                        200    27     0     24     1    23
+[37/60]  pairs_base                           404  NOT FOUND
+[37/60]  pairs_solana                         404  NOT FOUND
+[37/60]  metas_trending                       200     0     0      0     0     0
+[37/60]  community_takeovers                  200    25     0     25     0    25
+
+[38/60]  token_profiles                       200    28     0     33     1    32
+[38/60]  token_profiles_updates               200    10     3    107    99     8
+[38/60]  token_boosts_latest                  200    30     0     25     0    25
+[38/60]  token_boosts_top                     200    30     0     31     1    30
+[38/60]  search_base                          200    20     0      7     6     1
+[38/60]  search_solana                        200    27     0     24     1    23
+[38/60]  pairs_base                           404  NOT FOUND
+[38/60]  pairs_solana                         404  NOT FOUND
+[38/60]  metas_trending                       200     0     0      0     0     0
+[38/60]  community_takeovers                  200    25     0     25     0    25
+
+[39/60]  token_profiles                       200    28     0     33     1    32
+[39/60]  token_profiles_updates               200    11     2    109   101     8
+[39/60]  token_boosts_latest                  200    30     0     25     0    25
+[39/60]  token_boosts_top                     200    30     0     31     1    30
+[39/60]  search_base                          200    20     0      7     6     1
+[39/60]  search_solana                        200    27     0     24     1    23
+[39/60]  pairs_base                           404  NOT FOUND
+[39/60]  pairs_solana                         404  NOT FOUND
+[39/60]  metas_trending                       200     0     0      0     0     0
+[39/60]  community_takeovers                  200    25     0     25     0    25
+
+[40/60]  token_profiles                       200    28     0     33     1    32
+[40/60]  token_profiles_updates               200    14     5    114   106     8
+[40/60]  token_boosts_latest                  200    30     0     25     0    25
+[40/60]  token_boosts_top                     200    30     0     31     1    30
+[40/60]  search_base                          200    20     0      7     6     1
+[40/60]  search_solana                        200    27     0     24     1    23
+[40/60]  pairs_base                           404  NOT FOUND
+[40/60]  pairs_solana                         404  NOT FOUND
+[40/60]  metas_trending                       200     0     0      0     0     0
+[40/60]  community_takeovers                  200    25     0     25     0    25
+
+[41/60]  token_profiles                       200    28     0     33     1    32
+[41/60]  token_profiles_updates               200    12     5    119   111     8
+[41/60]  token_boosts_latest                  200    30     0     25     0    25
+[41/60]  token_boosts_top                     200    30     0     31     1    30
+[41/60]  search_base                          200    20     0      7     6     1
+[41/60]  search_solana                        200    27     0     24     1    23
+[41/60]  pairs_base                           404  NOT FOUND
+[41/60]  pairs_solana                         404  NOT FOUND
+[41/60]  metas_trending                       200     0     0      0     0     0
+[41/60]  community_takeovers                  200    25     0     25     0    25
+
+[42/60]  token_profiles                       200    28     0     33     1    32
+[42/60]  token_profiles_updates               200    11     1    120   112     8
+[42/60]  token_boosts_latest                  200    30     0     25     0    25
+[42/60]  token_boosts_top                     200    30     0     31     1    30
+[42/60]  search_base                          200    20     0      7     6     1
+[42/60]  search_solana                        200    27     0     24     1    23
+[42/60]  pairs_base                           404  NOT FOUND
+[42/60]  pairs_solana                         404  NOT FOUND
+[42/60]  metas_trending                       200     0     0      0     0     0
+[42/60]  community_takeovers                  200    25     0     25     0    25
+
+[43/60]  token_profiles                       200    28     0     33     1    32
+[43/60]  token_profiles_updates               200     8     3    123   115     8
+[43/60]  token_boosts_latest                  200    30     0     25     0    25
+[43/60]  token_boosts_top                     200    30     0     31     1    30
+[43/60]  search_base                          200    20     0      7     6     1
+[43/60]  search_solana                        200    27     0     24     1    23
+[43/60]  pairs_base                           404  NOT FOUND
+[43/60]  pairs_solana                         404  NOT FOUND
+[43/60]  metas_trending                       200     0     0      0     0     0
+[43/60]  community_takeovers                  200    25     0     25     0    25
+
+[44/60]  token_profiles                       200    28     0     33     1    32
+[44/60]  token_profiles_updates               200     8     2    125   117     8
+[44/60]  token_boosts_latest                  200    30     0     25     0    25
+[44/60]  token_boosts_top                     200    30     0     31     1    30
+[44/60]  search_base                          200    20     0      7     6     1
+[44/60]  search_solana                        200    27     0     24     1    23
+[44/60]  pairs_base                           404  NOT FOUND
+[44/60]  pairs_solana                         404  NOT FOUND
+[44/60]  metas_trending                       200     0     0      0     0     0
+[44/60]  community_takeovers                  200    25     0     25     0    25
+
+[45/60]  token_profiles                       200    28     1     34     1    33
+[45/60]  token_profiles_updates               200    11     6    131   122     9
+[45/60]  token_boosts_latest                  200    30     1     26     0    26
+[45/60]  token_boosts_top                     200    30     1     32     1    31
+[45/60]  search_base                          200    20     0      7     6     1
+[45/60]  search_solana                        200    27     0     24     1    23
+[45/60]  pairs_base                           404  NOT FOUND
+[45/60]  pairs_solana                         404  NOT FOUND
+[45/60]  metas_trending                       200     0     0      0     0     0
+[45/60]  community_takeovers                  200    25     0     25     0    25
+
+[46/60]  token_profiles                       200    28     0     34     1    33
+[46/60]  token_profiles_updates               200     8     2    133   124     9
+[46/60]  token_boosts_latest                  200    30     0     26     0    26
+[46/60]  token_boosts_top                     200    30     0     32     1    31
+[46/60]  search_base                          200    20     0      7     6     1
+[46/60]  search_solana                        200    27     0     24     1    23
+[46/60]  pairs_base                           404  NOT FOUND
+[46/60]  pairs_solana                         404  NOT FOUND
+[46/60]  metas_trending                       200     0     0      0     0     0
+[46/60]  community_takeovers                  200    25     0     25     0    25
+
+[47/60]  token_profiles                       200    28     0     34     1    33
+[47/60]  token_profiles_updates               200    10     2    135   126     9
+[47/60]  token_boosts_latest                  200    30     0     26     0    26
+[47/60]  token_boosts_top                     200    30     0     32     1    31
+[47/60]  search_base                          200    20     0      7     6     1
+[47/60]  search_solana                        200    27     0     24     1    23
+[47/60]  pairs_base                           404  NOT FOUND
+[47/60]  pairs_solana                         404  NOT FOUND
+[47/60]  metas_trending                       200     0     0      0     0     0
+[47/60]  community_takeovers                  200    25     0     25     0    25
+
+[48/60]  token_profiles                       200    28     0     34     1    33
+[48/60]  token_profiles_updates               200     8     1    136   127     9
+[48/60]  token_boosts_latest                  200    30     0     26     0    26
+[48/60]  token_boosts_top                     200    30     0     32     1    31
+[48/60]  search_base                          200    20     0      7     6     1
+[48/60]  search_solana                        200    27     0     24     1    23
+[48/60]  pairs_base                           404  NOT FOUND
+[48/60]  pairs_solana                         404  NOT FOUND
+[48/60]  metas_trending                       200     0     0      0     0     0
+[48/60]  community_takeovers                  200    25     0     25     0    25
+
+[49/60]  token_profiles                       200    28     0     34     1    33
+[49/60]  token_profiles_updates               200     7     2    138   129     9
+[49/60]  token_boosts_latest                  200    30     0     26     0    26
+[49/60]  token_boosts_top                     200    30     0     32     1    31
+[49/60]  search_base                          200    20     0      7     6     1
+[49/60]  search_solana                        200    27     0     24     1    23
+[49/60]  pairs_base                           404  NOT FOUND
+[49/60]  pairs_solana                         404  NOT FOUND
+[49/60]  metas_trending                       200     0     0      0     0     0
+[49/60]  community_takeovers                  200    25     0     25     0    25
+
+[50/60]  token_profiles                       200    28     0     34     1    33
+[50/60]  token_profiles_updates               200    10     5    143   134     9
+[50/60]  token_boosts_latest                  200    30     0     26     0    26
+[50/60]  token_boosts_top                     200    30     0     32     1    31
+[50/60]  search_base                          200    20     0      7     6     1
+[50/60]  search_solana                        200    27     0     24     1    23
+[50/60]  pairs_base                           404  NOT FOUND
+[50/60]  pairs_solana                         404  NOT FOUND
+[50/60]  metas_trending                       200     0     0      0     0     0
+[50/60]  community_takeovers                  200    25     0     25     0    25
+
+[51/60]  token_profiles                       200    28     0     34     1    33
+[51/60]  token_profiles_updates               200    10     3    146   137     9
+[51/60]  token_boosts_latest                  200    30     0     26     0    26
+[51/60]  token_boosts_top                     200    30     0     32     1    31
+[51/60]  search_base                          200    20     0      7     6     1
+[51/60]  search_solana                        200    27     0     24     1    23
+[51/60]  pairs_base                           404  NOT FOUND
+[51/60]  pairs_solana                         404  NOT FOUND
+[51/60]  metas_trending                       200     0     0      0     0     0
+[51/60]  community_takeovers                  200    25     0     25     0    25
+
+[52/60]  token_profiles                       200    28     0     34     1    33
+[52/60]  token_profiles_updates               200    13     5    151   142     9
+[52/60]  token_boosts_latest                  200    30     0     26     0    26
+[52/60]  token_boosts_top                     200    30     0     32     1    31
+[52/60]  search_base                          200    20     0      7     6     1
+[52/60]  search_solana                        200    27     0     24     1    23
+[52/60]  pairs_base                           404  NOT FOUND
+[52/60]  pairs_solana                         404  NOT FOUND
+[52/60]  metas_trending                       200     0     0      0     0     0
+[52/60]  community_takeovers                  200    25     0     25     0    25
+
+[53/60]  token_profiles                       200    28     2     36     1    35
+[53/60]  token_profiles_updates               200    12     4    155   144    11
+[53/60]  token_boosts_latest                  200    30     0     26     0    26
+[53/60]  token_boosts_top                     200    30     0     32     1    31
+[53/60]  search_base                          200    20     0      7     6     1
+[53/60]  search_solana                        200    27     0     24     1    23
+[53/60]  pairs_base                           404  NOT FOUND
+[53/60]  pairs_solana                         404  NOT FOUND
+[53/60]  metas_trending                       200     0     0      0     0     0
+[53/60]  community_takeovers                  200    25     0     25     0    25
+
+[54/60]  token_profiles                       200    28     0     36     1    35
+[54/60]  token_profiles_updates               200    13     4    159   148    11
+[54/60]  token_boosts_latest                  200    30     0     26     0    26
+[54/60]  token_boosts_top                     200    30     0     32     1    31
+[54/60]  search_base                          200    20     0      7     6     1
+[54/60]  search_solana                        200    27     0     24     1    23
+[54/60]  pairs_base                           404  NOT FOUND
+[54/60]  pairs_solana                         404  NOT FOUND
+[54/60]  metas_trending                       200     0     0      0     0     0
+[54/60]  community_takeovers                  200    25     0     25     0    25
+
+[55/60]  token_profiles                       200    28     0     36     1    35
+[55/60]  token_profiles_updates               200    12     1    160   149    11
+[55/60]  token_boosts_latest                  200    30     0     26     0    26
+[55/60]  token_boosts_top                     200    30     0     32     1    31
+[55/60]  search_base                          200    20     0      7     6     1
+[55/60]  search_solana                        200    27     0     24     1    23
+[55/60]  pairs_base                           404  NOT FOUND
+[55/60]  pairs_solana                         404  NOT FOUND
+[55/60]  metas_trending                       200     0     0      0     0     0
+[55/60]  community_takeovers                  200    25     0     25     0    25
+
+[56/60]  token_profiles                       200    28     0     36     1    35
+[56/60]  token_profiles_updates               200    12     3    163   152    11
+[56/60]  token_boosts_latest                  200    30     0     26     0    26
+[56/60]  token_boosts_top                     200    30     0     32     1    31
+[56/60]  search_base                          200    20     0      7     6     1
+[56/60]  search_solana                        200    27     0     24     1    23
+[56/60]  pairs_base                           404  NOT FOUND
+[56/60]  pairs_solana                         404  NOT FOUND
+[56/60]  metas_trending                       200     0     0      0     0     0
+[56/60]  community_takeovers                  200    25     0     25     0    25
+
+[57/60]  token_profiles                       200    28     0     36     1    35
+[57/60]  token_profiles_updates               200    11     2    165   154    11
+[57/60]  token_boosts_latest                  200    30     0     26     0    26
+[57/60]  token_boosts_top                     200    30     0     32     1    31
+[57/60]  search_base                          200    20     0      7     6     1
+[57/60]  search_solana                        200    27     0     24     1    23
+[57/60]  pairs_base                           404  NOT FOUND
+[57/60]  pairs_solana                         404  NOT FOUND
+[57/60]  metas_trending                       200     0     0      0     0     0
+[57/60]  community_takeovers                  200    25     0     25     0    25
+
+[58/60]  token_profiles                       200    28     0     36     1    35
+[58/60]  token_profiles_updates               200    10     2    167   156    11
+[58/60]  token_boosts_latest                  200    30     0     26     0    26
+[58/60]  token_boosts_top                     200    30     0     32     1    31
+[58/60]  search_base                          200    20     0      7     6     1
+[58/60]  search_solana                        200    27     0     24     1    23
+[58/60]  pairs_base                           404  NOT FOUND
+[58/60]  pairs_solana                         404  NOT FOUND
+[58/60]  metas_trending                       200     0     0      0     0     0
+[58/60]  community_takeovers                  200    25     0     25     0    25
+
+[59/60]  token_profiles                       200    28     0     36     1    35
+[59/60]  token_profiles_updates               200     7     2    169   158    11
+[59/60]  token_boosts_latest                  200    30     0     26     0    26
+[59/60]  token_boosts_top                     200    30     0     32     1    31
+[59/60]  search_base                          200    20     0      7     6     1
+[59/60]  search_solana                        200    27     0     24     1    23
+[59/60]  pairs_base                           404  NOT FOUND
+[59/60]  pairs_solana                         404  NOT FOUND
+[59/60]  metas_trending                       200     0     0      0     0     0
+[59/60]  community_takeovers                  200    25     0     25     0    25
+
+[60/60]  token_profiles                       200    28     1     37     1    36
+[60/60]  token_profiles_updates               200     7     3    172   160    12
+[60/60]  token_boosts_latest                  200    30     0     26     0    26
+[60/60]  token_boosts_top                     200    30     0     32     1    31
+[60/60]  search_base                          200    20     0      7     6     1
+[60/60]  search_solana                        200    27     0     24     1    23
+[60/60]  pairs_base                           404  NOT FOUND
+[60/60]  pairs_solana                         404  NOT FOUND
+[60/60]  metas_trending                       200     0     0      0     0     0
+[60/60]  community_takeovers                  200    25     0     25     0    25
+
+
+=== FINAL SUMMARY (59.0 min) ===
+
+Endpoint                            Status   Uniq   Base    Sol  Avg/call
+---------------------------------------------------------------------------
+  token_profiles                         200     37      1     36      28.6
+  token_profiles_updates                 200    172    160     12       9.7
+  token_boosts_latest                    200     26      0     26      30.0
+  token_boosts_top                       200     32      1     31      30.0
+  search_base                            200      7      6      1      20.0
+  search_solana                          200     24      1     23      27.0
+  pairs_base                             404      0      0      0       0.0
+  pairs_solana                           404      0      0      0       0.0
+  metas_trending                         200      0      0      0       0.0
+  community_takeovers                    200     25      0     25      25.0
+
+--- 30-min vs 60-min unique token accumulation ---
+Endpoint                              @30min   @60min   Growth
+-----------------------------------------------------------------
+  token_profiles                            32       37       +5
+  token_profiles_updates                    89      172      +83
+  token_boosts_latest                       25       26       +1
+  token_boosts_top                          31       32       +1
+  search_base                                7        7       +0
+  search_solana                             24       24       +0
+  pairs_base                                 0        0       +0
+  pairs_solana                               0        0       +0
+  metas_trending                             0        0       +0
+  community_takeovers                       25       25       +0
+
+Saved: /space/docker/containers/dex-scanner/analysis/endpoint_sample_results.json

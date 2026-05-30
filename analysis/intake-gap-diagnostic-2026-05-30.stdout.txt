@@ -1,0 +1,238 @@
+========================================================================
+INTAKE GAP DIAGNOSTIC — 2026-05-30
+Raw stdout from three measurement scripts
+========================================================================
+
+=== SECTION 1: DexScreener Endpoint Sampler (60 min) ===
+Script: analysis/endpoint_sampler.py
+Run: 2026-05-30T05:20:47 – 06:19:47 UTC (59 min)
+PID: 3514732
+Output file: analysis/endpoint_sampler.stdout.txt (929 lines total; final summary below)
+
+=== FINAL SUMMARY (59.0 min) ===
+
+Endpoint                            Status   Uniq   Base    Sol  Avg/call
+---------------------------------------------------------------------------
+  token_profiles                         200     37      1     36      28.6
+  token_profiles_updates                 200    172    160     12       9.7
+  token_boosts_latest                    200     26      0     26      30.0
+  token_boosts_top                       200     32      1     31      30.0
+  search_base                            200      7      6      1      20.0
+  search_solana                          200     24      1     23      27.0
+  pairs_base                             404      0      0      0       0.0
+  pairs_solana                           404      0      0      0       0.0
+  metas_trending                         200      0      0      0       0.0
+  community_takeovers                    200     25      0     25      25.0
+
+--- 30-min vs 60-min unique token accumulation ---
+Endpoint                              @30min   @60min   Growth
+-----------------------------------------------------------------
+  token_profiles                            32       37       +5
+  token_profiles_updates                    89      172      +83
+  token_boosts_latest                       25       26       +1
+  token_boosts_top                          31       32       +1
+  search_base                                7        7       +0
+  search_solana                             24       24       +0
+  pairs_base                                 0        0       +0
+  pairs_solana                               0        0       +0
+  metas_trending                             0        0       +0
+  community_takeovers                       25       25       +0
+
+Saved: /space/docker/containers/dex-scanner/analysis/endpoint_sample_results.json
+
+
+Full minute-by-minute log: analysis/endpoint_sampler.stdout.txt
+Full JSON results: analysis/endpoint_sample_results.json
+
+
+=== SECTION 2: Alchemy/Public-RPC Base Factory Query ===
+Script: analysis/alchemy_factory_query.py
+Note: Alchemy free tier limits eth_getLogs to 10-block ranges (HTTP 400 on larger
+ranges). The formal script output below shows these failures. Actual factory event
+data was obtained via separate inline queries using the public Base RPC
+(https://mainnet.base.org) which has no range restrictions.
+
+=== Alchemy Base Factory Event Query ===
+Time: 2026-05-30T05:14:28.783332+00:00
+
+Current block:  46,664,360 (hex: 0x2c80aa8)
+From block:     46,662,560 (hex: 0x2c803a0)
+Block window:   1,800 blocks = 1.00 hours
+From:  2026-05-30T04:14:27+00:00
+To:    2026-05-30T05:14:27+00:00
+
+--- uniswap_v2 (0x8909Dc15e40173Ff4699343b6eB8132c65e18eC6) ---
+    Event: PairCreated
+    ERROR blocks 46,662,560–46,663,059: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+    ERROR blocks 46,663,060–46,663,559: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+    ERROR blocks 46,663,560–46,664,059: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+    ERROR blocks 46,664,060–46,664,360: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+  TOTAL: 0 PairCreated events in last 1.00 hours
+  Rate: 0.0 events/hour
+
+--- uniswap_v3 (0x33128a8fC17869897dcE68Ed026d694621f6FDfD) ---
+    Event: PoolCreated
+    ERROR blocks 46,662,560–46,663,059: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+    ERROR blocks 46,663,060–46,663,559: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+    ERROR blocks 46,663,560–46,664,059: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+    ERROR blocks 46,664,060–46,664,360: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+  TOTAL: 0 PoolCreated events in last 1.00 hours
+  Rate: 0.0 events/hour
+
+--- aerodrome (0x420DD381b31aEf6683db6B902084cB0FFECe40Da) ---
+    Event: PoolCreated
+    ERROR blocks 46,662,560–46,663,059: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+    ERROR blocks 46,663,060–46,663,559: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+    ERROR blocks 46,663,560–46,664,059: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+    ERROR blocks 46,664,060–46,664,360: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+  TOTAL: 0 PoolCreated events in last 1.00 hours
+  Rate: 0.0 events/hour
+
+--- pancakeswap_v3 (0x0BFbCF9fa4f9C56B0F40a671Ad40E0805A091865) ---
+    Event: PoolCreated
+    ERROR blocks 46,662,560–46,663,059: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+    ERROR blocks 46,663,060–46,663,559: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+    ERROR blocks 46,663,560–46,664,059: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+    ERROR blocks 46,664,060–46,664,360: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+  TOTAL: 0 PoolCreated events in last 1.00 hours
+  Rate: 0.0 events/hour
+
+--- baseswap_v2 (0xFDa619b6d20975be80A10332cD39b9a4b0FAa8BB) ---
+    Event: PairCreated
+    ERROR blocks 46,662,560–46,663,059: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+    ERROR blocks 46,663,060–46,663,559: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+    ERROR blocks 46,663,560–46,664,059: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+    ERROR blocks 46,664,060–46,664,360: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+  TOTAL: 0 PairCreated events in last 1.00 hours
+  Rate: 0.0 events/hour
+
+=== SUMMARY ===
+Factory                    Events/hour   Count (1h)
+----------------------------------------------------
+  uniswap_v2                       0.0            0
+  uniswap_v3                       0.0            0
+  aerodrome                        0.0            0
+  pancakeswap_v3                   0.0            0
+  baseswap_v2                      0.0            0
+  TOTAL (3 specified)              0.0            0
+  TOTAL (all 5)                    0.0            0
+
+Note: This covers 5 factories. Base also has
+      Alien Base, SwapBased, SushiSwap, and others not counted.
+      These numbers are a lower bound on actual Base pair launches.
+
+Saved: /space/docker/containers/dex-scanner/analysis/alchemy_factory_results.json
+
+--- Supplemental: Public Base RPC queries (inline, 2026-05-30T05:XX UTC) ---
+
+Query 1: All V2-style PairCreated events, 1-hour window (blocks 46,662,593-46,664,393)
+Topic0: 0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9
+
+  Total V2 PairCreated events: 33
+  From 2 factory contracts:
+    0x8909dc15e40173ff4699343b6eb8132c65e18ec6  (Uniswap V2):       26 pairs  (79%)
+    0x488db0978b34c6fd901760b9024b565c1117c7c8  (unknown V2 fork):   7 pairs  (21%)
+
+Query 2: V3-style PoolCreated events, same window
+Topic0: 0x783cca1c0412dd0d695e784568c96da2e9c22ff989357a2e8b1d9b2b4e6b7118
+
+  Total V3 PoolCreated events: 7
+  From 1 factory: 0x1d470e77e9980aa342646434c800f439ed3489c1
+
+Grand total Base new pairs/hr (V2 + V3 known factories): 40
+
+Query 3: 24-hour Uniswap V2 analysis (blocks 46,621,216-46,664,416, chunked 5000 blocks)
+
+  Total PairCreated events: 530  (22.1/hr)
+  Pairs with WETH/USDC/stablecoins (new-token launches): 409  (77%)
+  Pairs between two unknown tokens: 121  (23%)
+  Implied new-token-launch rate: 17.0/hr, 409/day (Uniswap V2 alone)
+
+Query 4: Additional factory checks (all 0 events in 1-hour window)
+  alienbase_v2   0x3E84D913803b02A4a7f027165E8cA42C14C0FdE7  :  0 events
+  sushiswap_v2   0x71524B4f93c58fcbF659783284E38825f0622859  :  0 events
+  swapbased_v2   0x04C9f118d21e8B767D2e50C946f0cC9F6C367300  :  0 events
+  rocketswap_v2  0x1b8128c3A1B7D20053D10763ff02466ca7FF5a3B  :  0 events
+  dackieswap_v2  0x3DC39e2F14a034BD4A4d516FeAbB25e34adc7cce  :  0 events
+
+
+=== SECTION 3: Birdeye New-Listing Endpoint Test ===
+Script: analysis/birdeye_newlisting_test.py
+Run: 2026-05-30T05:18:20 UTC (5 rounds × 60s)
+
+=== Birdeye New-Listing Endpoint Test ===
+Start: 2026-05-30T05:18:20.265452+00:00
+Rounds: 5 | Interval: 60s
+
+--- Round 1/5 @ 05:18:20 UTC ---
+  new_listing_base               count=  20  new=  20  cum=   20  newest=N/A  oldest=N/A  ms= 770
+    keys: ['address', 'symbol', 'name', 'decimals', 'liquidityAddedAt', 'logoURI', 'liquidity']
+  new_listing_solana             count=  20  new=  20  cum=   19  newest=N/A  oldest=N/A  ms= 265
+    keys: ['address', 'symbol', 'name', 'decimals', 'source', 'liquidityAddedAt', 'logoURI', 'liquidity']
+  token_list_base                404 NOT FOUND
+  token_list_solana              404 NOT FOUND
+
+--- Round 2/5 @ 05:19:30 UTC ---
+  new_listing_base               count=  20  new=   5  cum=   25  newest=N/A  oldest=N/A  ms= 273
+  new_listing_solana             count=  20  new=   1  cum=   20  newest=N/A  oldest=N/A  ms= 252
+  token_list_base                404 NOT FOUND
+  token_list_solana              404 NOT FOUND
+
+--- Round 3/5 @ 05:20:40 UTC ---
+  new_listing_base               count=  20  new=   7  cum=   32  newest=N/A  oldest=N/A  ms= 794
+  new_listing_solana             count=  20  new=   2  cum=   22  newest=N/A  oldest=N/A  ms= 248
+  token_list_base                404 NOT FOUND
+  token_list_solana              404 NOT FOUND
+
+--- Round 4/5 @ 05:21:51 UTC ---
+  new_listing_base               HTTP-1  HTTPSConnectionPool(host='public-api.birdeye.so', port=443): Read timed out. (re
+  new_listing_solana             count=  20  new=   5  cum=   27  newest=N/A  oldest=N/A  ms= 257
+  token_list_base                404 NOT FOUND
+  token_list_solana              404 NOT FOUND
+
+--- Round 5/5 @ 05:23:16 UTC ---
+  new_listing_base               count=  20  new=   8  cum=   40  newest=N/A  oldest=N/A  ms= 746
+  new_listing_solana             count=  20  new=   3  cum=   30  newest=N/A  oldest=N/A  ms= 255
+  token_list_base                404 NOT FOUND
+  token_list_solana              404 NOT FOUND
+
+=== SUMMARY ===
+Endpoint                        Chain Status  Unique   Est/hr
+--------------------------------------------------------------
+  new_listing_base                 base    200      40      480
+  new_listing_solana             solana    200      30      360
+  token_list_base                  base    404       0        0
+  token_list_solana              solana    404       0        0
+
+(window = 5.0 min, unique addrs surfaced in that window extrapolated to hourly)
+
+Saved: /space/docker/containers/dex-scanner/analysis/birdeye_newlisting_results.json
+
+--- Supplemental: Token freshness check (inline spot check) ---
+
+Base new_listing samples (liquidity distribution, 20 tokens):
+  With DEX liquidity (> $0): 6/20 (30%)
+  Zero liquidity:            14/20 (70%)
+  Sample token ages: all within 30-60 seconds of query time
+
+  Sample: CROWNS  liq=$0     liquidityAddedAt: 2026-05-30T05:24:03
+  Sample: DICKBUTT liq=$0    liquidityAddedAt: 2026-05-30T05:23:59
+  Sample: KGOOD22 liq=$0     liquidityAddedAt: 2026-05-30T05:23:53
+
+Solana new_listing samples (liquidity distribution, 20 tokens):
+  With DEX liquidity (> $0): 18/20 (90%)
+  Zero liquidity:             2/20 (10%)
+
+  Sample: PACKS  liq=$904    source: meteora_dynamic_bonding_curve
+  Sample: BUBO   liq=$18,466 source: meteora_damm_v2
+  Sample: Jewels liq=$14,022 source: meteora_damm_v2
+
+--- Pump.fun Solana volume (public Solana RPC) ---
+
+  Program: 6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P
+  1,000 txns in 0.08 minutes = 72,000 txns/hr (all interaction types)
+  Note: includes buys/sells/creates; only ~1-10% are token launches
+  Pump.fun website: HTTP 530 (Cloudflare blocked)
+  Helius: no API key in .env
+
+=== END OF STDOUT ===
