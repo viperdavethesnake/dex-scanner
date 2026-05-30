@@ -43,11 +43,23 @@ CREATE INDEX IF NOT EXISTS idx_rs_token_time  ON raw_signals (token_address, sca
 CREATE INDEX IF NOT EXISTS idx_rs_pending     ON raw_signals (scanned_at DESC) WHERE price_at_5m IS NULL;
 CREATE UNIQUE INDEX IF NOT EXISTS idx_rs_dedup ON raw_signals (token_address, pair_address, scanned_at);
 
--- Birdeye enrichment columns (added 2026-05-23)
+-- Birdeye enrichment columns (added 2026-05-23; expanded 2026-05-30)
 -- Migration also runs at collector startup via db.migrate() — these are idempotent.
-ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS unique_traders_1h  INT;
-ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS net_inflow_usd     NUMERIC(14,2);
-ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS birdeye_enriched   BOOLEAN DEFAULT FALSE;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS unique_traders_1h   INT;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS net_inflow_usd      NUMERIC(14,2);
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS birdeye_enriched    BOOLEAN DEFAULT FALSE;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS unique_traders_30m  INT;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS unique_traders_24h  INT;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS buy_volume_1h_usd   NUMERIC(20,4);
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS sell_volume_1h_usd  NUMERIC(20,4);
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS volume_24h_usd      NUMERIC(20,4);
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS buy_volume_24h_usd  NUMERIC(20,4);
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS sell_volume_24h_usd NUMERIC(20,4);
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS trade_count_1h      INT;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS trade_count_24h     INT;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS holder_count_birdeye INT;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS market_count        INT;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS last_trade_unix_ts  BIGINT;
 
 -- Audit log for every Birdeye API call (success or failure)
 CREATE TABLE IF NOT EXISTS birdeye_calls (

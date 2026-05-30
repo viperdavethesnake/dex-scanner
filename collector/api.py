@@ -83,32 +83,41 @@ def fetch_current_price(chain, pair_address):
     return float(price) if price else None
 
 
-def fetch_birdeye_overview(address: str, api_key: str, timeout: int = 5) -> dict:
+def fetch_birdeye_overview(address: str, chain: str, api_key: str, timeout: int = 5) -> dict:
     """
-    Call Birdeye /defi/token_overview for a Base token.
+    Call Birdeye /defi/token_overview for a Base or Solana token.
 
     Returns a result dict with all fields needed for log_birdeye_call() and
     Token enrichment. Never raises — all errors are captured in error_message.
-
-    Keys:
-        address, http_status, cu_consumed, response_ms,
-        unique_traders_1h, net_inflow_usd, error_message
+    All data fields default to None; missing/unparseable values stay None.
     """
     result = {
-        "address":           address,
-        "http_status":       None,
-        "cu_consumed":       None,
-        "response_ms":       None,
-        "unique_traders_1h": None,
-        "net_inflow_usd":    None,
-        "error_message":     None,
+        "address":              address,
+        "http_status":          None,
+        "cu_consumed":          None,
+        "response_ms":          None,
+        "unique_traders_1h":    None,
+        "unique_traders_30m":   None,
+        "unique_traders_24h":   None,
+        "buy_volume_1h_usd":    None,
+        "sell_volume_1h_usd":   None,
+        "net_inflow_usd":       None,
+        "volume_24h_usd":       None,
+        "buy_volume_24h_usd":   None,
+        "sell_volume_24h_usd":  None,
+        "trade_count_1h":       None,
+        "trade_count_24h":      None,
+        "holder_count_birdeye": None,
+        "market_count":         None,
+        "last_trade_unix_ts":   None,
+        "error_message":        None,
     }
     t0 = time.monotonic()
     try:
         r = requests.get(
             BIRDEYE_OVERVIEW_URL,
             params={"address": address},
-            headers={"X-API-KEY": api_key, "x-chain": "base"},
+            headers={"X-API-KEY": api_key, "x-chain": chain},
             timeout=timeout,
         )
         result["response_ms"] = int((time.monotonic() - t0) * 1000)
@@ -132,21 +141,39 @@ def fetch_birdeye_overview(address: str, api_key: str, timeout: int = 5) -> dict
                 return result
 
             data = body.get("data") or {}
-            raw_traders = data.get("uniqueWallet1h")
-            raw_buy     = data.get("vBuy1hUSD")
-            raw_sell    = data.get("vSell1hUSD")
 
-            if raw_traders is not None:
+            def _int(key):
+                v = data.get(key)
                 try:
-                    result["unique_traders_1h"] = int(raw_traders)
+                    return int(v) if v is not None else None
                 except (TypeError, ValueError):
-                    pass
+                    return None
 
-            if raw_buy is not None and raw_sell is not None:
+            def _float(key):
+                v = data.get(key)
                 try:
-                    result["net_inflow_usd"] = round(float(raw_buy) - float(raw_sell), 2)
+                    return round(float(v), 2) if v is not None else None
                 except (TypeError, ValueError):
-                    pass
+                    return None
+
+            result["unique_traders_1h"]    = _int("uniqueWallet1h")
+            result["unique_traders_30m"]   = _int("uniqueWallet30m")
+            result["unique_traders_24h"]   = _int("uniqueWallet24h")
+            result["buy_volume_1h_usd"]    = _float("vBuy1hUSD")
+            result["sell_volume_1h_usd"]   = _float("vSell1hUSD")
+            result["volume_24h_usd"]       = _float("v24hUSD")
+            result["buy_volume_24h_usd"]   = _float("vBuy24hUSD")
+            result["sell_volume_24h_usd"]  = _float("vSell24hUSD")
+            result["trade_count_1h"]       = _int("trade1h")
+            result["trade_count_24h"]      = _int("trade24h")
+            result["holder_count_birdeye"] = _int("holder")
+            result["market_count"]         = _int("numberMarkets")
+            result["last_trade_unix_ts"]   = _int("lastTradeUnixTime")
+
+            b = result["buy_volume_1h_usd"]
+            s = result["sell_volume_1h_usd"]
+            if b is not None and s is not None:
+                result["net_inflow_usd"] = round(b - s, 2)
 
         else:
             try:

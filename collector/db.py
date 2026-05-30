@@ -20,7 +20,12 @@ INSERT INTO raw_signals (
     price_ch_5m, price_ch_1h, price_ch_6h,
     buys_1h, sells_1h, buys_5m, sells_5m,
     vl_ratio, vol_trend, vol_trend_pct, micro_trend, buy_pct_5m, buy_pct_1h,
-    unique_traders_1h, net_inflow_usd, birdeye_enriched
+    unique_traders_1h, net_inflow_usd, birdeye_enriched,
+    unique_traders_30m, unique_traders_24h,
+    buy_volume_1h_usd, sell_volume_1h_usd,
+    volume_24h_usd, buy_volume_24h_usd, sell_volume_24h_usd,
+    trade_count_1h, trade_count_24h,
+    holder_count_birdeye, market_count, last_trade_unix_ts
 ) VALUES %s
 ON CONFLICT (token_address, pair_address, scanned_at) DO NOTHING
 """
@@ -47,6 +52,19 @@ _MIGRATE_STMTS = [
         error_message  TEXT
     )""",
     "SELECT create_hypertable('birdeye_calls', 'called_at', if_not_exists => TRUE)",
+    # Birdeye Phase 1 expansion (2026-05-30) — both chains, full token_overview
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS unique_traders_30m INT",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS unique_traders_24h INT",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS buy_volume_1h_usd NUMERIC(20,4)",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS sell_volume_1h_usd NUMERIC(20,4)",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS volume_24h_usd NUMERIC(20,4)",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS buy_volume_24h_usd NUMERIC(20,4)",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS sell_volume_24h_usd NUMERIC(20,4)",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS trade_count_1h INT",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS trade_count_24h INT",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS holder_count_birdeye INT",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS market_count INT",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS last_trade_unix_ts BIGINT",
 ]
 
 PENDING_SQL = """
@@ -136,6 +154,11 @@ def bulk_insert(conn, tokens: List[Token], scanned_at: datetime) -> int:
             t.vl_ratio, t.vol_trend, t.vol_trend_pct, t.micro_trend,
             t.buy_pct_5m, t.buy_pct_1h,
             t.unique_traders_1h, t.net_inflow_usd, t.birdeye_enriched,
+            t.unique_traders_30m, t.unique_traders_24h,
+            t.buy_volume_1h_usd, t.sell_volume_1h_usd,
+            t.volume_24h_usd, t.buy_volume_24h_usd, t.sell_volume_24h_usd,
+            t.trade_count_1h, t.trade_count_24h,
+            t.holder_count_birdeye, t.market_count, t.last_trade_unix_ts,
         ))
     with conn.cursor() as cur:
         psycopg2.extras.execute_values(cur, INSERT_SQL, rows)

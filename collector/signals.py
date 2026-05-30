@@ -40,10 +40,22 @@ class Token:
     buy_pct_5m: Optional[float] = None
     buy_pct_1h: Optional[float] = None
 
-    # Birdeye enrichment (Base-only, optional)
-    unique_traders_1h: Optional[int] = None
-    net_inflow_usd: Optional[float] = None
-    birdeye_enriched: bool = False
+    # Birdeye enrichment — both chains (Phase 1, 2026-05-30)
+    unique_traders_1h:    Optional[int]   = None
+    unique_traders_30m:   Optional[int]   = None
+    unique_traders_24h:   Optional[int]   = None
+    buy_volume_1h_usd:    Optional[float] = None
+    sell_volume_1h_usd:   Optional[float] = None
+    net_inflow_usd:       Optional[float] = None
+    volume_24h_usd:       Optional[float] = None
+    buy_volume_24h_usd:   Optional[float] = None
+    sell_volume_24h_usd:  Optional[float] = None
+    trade_count_1h:       Optional[int]   = None
+    trade_count_24h:      Optional[int]   = None
+    holder_count_birdeye: Optional[int]   = None
+    market_count:         Optional[int]   = None
+    last_trade_unix_ts:   Optional[int]   = None
+    birdeye_enriched:     bool            = False
 
 
 def _safe_float(v, default=0.0):
