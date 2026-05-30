@@ -1,0 +1,70 @@
+=== Alchemy Base Factory Event Query ===
+Time: 2026-05-30T05:14:28.783332+00:00
+
+Current block:  46,664,360 (hex: 0x2c80aa8)
+From block:     46,662,560 (hex: 0x2c803a0)
+Block window:   1,800 blocks = 1.00 hours
+From:  2026-05-30T04:14:27+00:00
+To:    2026-05-30T05:14:27+00:00
+
+--- uniswap_v2 (0x8909Dc15e40173Ff4699343b6eB8132c65e18eC6) ---
+    Event: PairCreated
+    ERROR blocks 46,662,560–46,663,059: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+    ERROR blocks 46,663,060–46,663,559: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+    ERROR blocks 46,663,560–46,664,059: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+    ERROR blocks 46,664,060–46,664,360: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+  TOTAL: 0 PairCreated events in last 1.00 hours
+  Rate: 0.0 events/hour
+
+--- uniswap_v3 (0x33128a8fC17869897dcE68Ed026d694621f6FDfD) ---
+    Event: PoolCreated
+    ERROR blocks 46,662,560–46,663,059: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+    ERROR blocks 46,663,060–46,663,559: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+    ERROR blocks 46,663,560–46,664,059: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+    ERROR blocks 46,664,060–46,664,360: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+  TOTAL: 0 PoolCreated events in last 1.00 hours
+  Rate: 0.0 events/hour
+
+--- aerodrome (0x420DD381b31aEf6683db6B902084cB0FFECe40Da) ---
+    Event: PoolCreated
+    ERROR blocks 46,662,560–46,663,059: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+    ERROR blocks 46,663,060–46,663,559: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+    ERROR blocks 46,663,560–46,664,059: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+    ERROR blocks 46,664,060–46,664,360: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+  TOTAL: 0 PoolCreated events in last 1.00 hours
+  Rate: 0.0 events/hour
+
+--- pancakeswap_v3 (0x0BFbCF9fa4f9C56B0F40a671Ad40E0805A091865) ---
+    Event: PoolCreated
+    ERROR blocks 46,662,560–46,663,059: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+    ERROR blocks 46,663,060–46,663,559: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+    ERROR blocks 46,663,560–46,664,059: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+    ERROR blocks 46,664,060–46,664,360: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+  TOTAL: 0 PoolCreated events in last 1.00 hours
+  Rate: 0.0 events/hour
+
+--- baseswap_v2 (0xFDa619b6d20975be80A10332cD39b9a4b0FAa8BB) ---
+    Event: PairCreated
+    ERROR blocks 46,662,560–46,663,059: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+    ERROR blocks 46,663,060–46,663,559: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+    ERROR blocks 46,663,560–46,664,059: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+    ERROR blocks 46,664,060–46,664,360: 400 Client Error: Bad Request for url: https://base-mainnet.g.alchemy.com/v2/hQSlaH_EtR67x09rZXqdB
+  TOTAL: 0 PairCreated events in last 1.00 hours
+  Rate: 0.0 events/hour
+
+=== SUMMARY ===
+Factory                    Events/hour   Count (1h)
+----------------------------------------------------
+  uniswap_v2                       0.0            0
+  uniswap_v3                       0.0            0
+  aerodrome                        0.0            0
+  pancakeswap_v3                   0.0            0
+  baseswap_v2                      0.0            0
+  TOTAL (3 specified)              0.0            0
+  TOTAL (all 5)                    0.0            0
+
+Note: This covers 5 factories. Base also has
+      Alien Base, SwapBased, SushiSwap, and others not counted.
+      These numbers are a lower bound on actual Base pair launches.
+
+Saved: /space/docker/containers/dex-scanner/analysis/alchemy_factory_results.json

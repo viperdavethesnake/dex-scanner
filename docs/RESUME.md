@@ -1,6 +1,6 @@
 # DEX Scanner — Resume
 
-**Last updated:** 2026-05-28 (session 7 close — health checks + idle-in-transaction deadlock fix)
+**Last updated:** 2026-05-30 (session 8 — intake-gap diagnostic; report pending at ~06:20 UTC)
 
 ---
 
@@ -43,9 +43,9 @@ docker compose stop dex-collector dex-collector-db
 
 | Service | Status | Notes |
 |---------|--------|-------|
-| `dex-llamacpp` | **running** | GPU active (RTX 8000) |
+| `dex-llamacpp` | **stopped** | GPU free |
 | `dex-timescale` | **running** | |
-| `dex-n8n` | **running** | auto-scanner resumes on start — stop if not wanted |
+| `dex-n8n` | **stopped** | |
 | `dex-collector-db` | **running** | port 5434 |
 | `dex-collector` | **running** | polling every 5 min |
 | `dex-trader-db` | **running** | port 5435 |
@@ -367,12 +367,13 @@ All 7 services running and healthy. GPU active.
 | `dex-trader-db` | **running** | port 5435 |
 | `dex-trader` | **running** | shadow mode, drift gate v2 |
 
-### Shadow trader health (session 6 close, 2026-05-28)
+### Shadow trader health (2026-05-30 session 8)
 
 - `kill_switch = false`, `shadow_mode = true`
-- `trades` table: 63 rows total at session 6. Trades 1–62 under old gate (ignore id=1, dirty fill). Trade 63+ under drift gate v2.
+- `trades` table: **120 total** (38 exited at **-8.52% avg net**, 82 skipped). Legacy trades 1–62 under old gate. v2 gate epoch: id=63+.
 - **Drift gate v2** live since restart 14:53 UTC 2026-05-27.
-- v2 snapshot at session 6 close: 13 exits, 38.5% win rate, avg net -7.18%. Two rugs (PIRATES -89%, SPECULATE -57%) dominate losses. No stop-loss exists.
+- Still well below ≥200 exit target before drawing P&L conclusions.
+- No stop-loss exists — two rugs dominate losses. Top pending improvement.
 
 Health endpoint: `docker exec dex-trader curl -s http://localhost:8090/health`
 
@@ -434,18 +435,26 @@ FROM trades;
 
 ### Pending work
 
+**Intake gap — action required (session 8 finding, 2026-05-30):**
+- DexScreener `/token-profiles` captures only ~6% of Base on-chain launches. Training corpus has severe survivorship bias.
+- Full diagnostic: `analysis/intake-gap-diagnostic-2026-05-30.md` (written at session 8 close)
+- Decision doc: `docs/decisions/INTAKE-GAP-2026-05-30.md`
+- **Immediate free win:** add `token_profiles_updates/recent-updates/v1` to collector poller union — 28 Base tokens/7 min vs 1 from `token_profiles`. Zero cost, ~1 day work.
+- **Medium-term:** add Birdeye `/defi/v2/tokens/new_listing` — Base 144/hr with liquidity, Solana 324/hr. Requires new collector feed (~3-5 days).
+- Do NOT use `search?q=base` for discovery — it is a name search, not a chain filter.
+
+**Stop-loss for shadow trader (highest-value, blocked on data):**
+- No stop-loss exists. Two rugs dominate losses. Implement -15% to -20% intra-hold check once ≥200 exits accumulated.
+
 **Shadow trader — let it accumulate under drift gate v2:**
 - Gate v2 epoch starts at id=63 (restart 14:53 UTC 2026-05-27). Trades 1–62 are legacy (old gate).
 - Ignore trade id=1 (dirty fill_price=0).
-- Target ≥200 exited trades under v2 before drawing P&L conclusions.
-- Projected fill rate under v2 much higher than v1 — most previously-rejected tokens (drift 0–15%) now fill.
-- Key things to watch: `drift_too_high` rate (should be rare; if >10% of scored candidates, document it); `momentum_failed` rate (if >20%, consider loosening -1.5% floor to -3%); win rate should trend toward model's 56.5% precision.
-- Tag `v0.3.1` once 24h of v2-era trades accumulated.
+- At 38 exits, target ≥200. At -8.52% avg net.
+- Key things to watch: `drift_too_high` rate; `momentum_failed` rate; win rate should trend toward model's 56.5% precision.
 
 **Data accumulation — just let it run:**
-- Collector Birdeye enrichment accumulating `unique_traders_1h` + `net_inflow_usd` on Base tokens.
+- Collector Birdeye enrichment at 100% Base sample rate, GoPlus both chains 100%.
 - Phase 9 filters need more outcomes (target: 500+ post-Phase-9 Solana signals with 5m).
-- Check bds.birdeye.so dashboard for actual monthly CU. If scanner enricher actual is <8,000 CU, bump `COLLECTOR_BIRDEYE_SAMPLE_RATE` to 0.03.
 
 **Solana reset test — automatic:**
 - Cron fires 2026-06-24 09:00 UTC → `analysis/SOLANA-RESET-TEST-20260624.md`.
@@ -488,8 +497,8 @@ FROM trades;
 `unique_traders_1h` and `net_inflow_usd` collected at insert time for Base tokens.
 
 **Current state: ENABLED** (`COLLECTOR_BIRDEYE_ENRICHMENT=true` in `.env`)  
-**Sample rate:** 2% (`COLLECTOR_BIRDEYE_SAMPLE_RATE=0.02`)  
-**CU budget:** ~11,700 collector + ~9,175 scanner enricher ≈ 20,875/month vs 30,000 limit.
+**Sample rate:** 100% (`COLLECTOR_BIRDEYE_SAMPLE_RATE=1.0`, raised from 0.02 in session 8 — GoPlus+Birdeye both at 100%, capped at 30 calls/cycle each)  
+**CU budget:** check bds.birdeye.so dashboard — raised from 2% to 100% changes monthly estimate significantly.
 
 ### First-hour validation results (2026-05-23 ~13:00–17:00 UTC)
 

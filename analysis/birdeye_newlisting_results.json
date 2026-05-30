@@ -1,0 +1,472 @@
+{
+  "queried_at": "2026-05-30T05:23:26.450147+00:00",
+  "rounds": 5,
+  "round_interval_s": 60,
+  "summary": {
+    "new_listing_base": {
+      "chain": "base",
+      "unique_in_window": 40,
+      "est_per_hour": 480.0
+    },
+    "new_listing_solana": {
+      "chain": "solana",
+      "unique_in_window": 30,
+      "est_per_hour": 360.0
+    },
+    "token_list_base": {
+      "chain": "base",
+      "unique_in_window": 0,
+      "est_per_hour": 0.0
+    },
+    "token_list_solana": {
+      "chain": "solana",
+      "unique_in_window": 0,
+      "est_per_hour": 0.0
+    }
+  },
+  "rounds_data": [
+    {
+      "round": 1,
+      "ts": "2026-05-30T05:18:30.726577+00:00",
+      "data": {
+        "new_listing_base": {
+          "status": 200,
+          "count": 20,
+          "ms": 770,
+          "oldest_ts": null,
+          "newest_ts": null,
+          "top_keys": [
+            "address",
+            "symbol",
+            "name",
+            "decimals",
+            "liquidityAddedAt",
+            "logoURI",
+            "liquidity"
+          ],
+          "items": [
+            "0x70747368337AbC5b6b0c5823df55765F69b922B1",
+            "0x9A3425A4B7233A00AeFDB0C6916F10f23E7753a2",
+            "0xF05bD18aB519956427d16d0b671034503d28cCf7",
+            "0x17869DbF5B835b0F0C959AEF4E375cd739559b07",
+            "0x2600af7F36f874EBAC2412bbd6639a722897Bba3",
+            "0x464AE14658EE8d0f3B7a6Ce7541796c73d52376d",
+            "0x5a462f2367fdEd1fd20085D07b03bD8ad1EA3A0C",
+            "0x7288c4bda98B96eda63B58C9AB7FD92bA3513ba3",
+            "0x38bfE18D422B0d1EE7ec2410157e5fFf527c30DE",
+            "0x1ab61F339a8ee150933FCb47B6Ad869E681216e4",
+            "0xf4770A6a2179Bfe793515e31901c31D718515B07",
+            "0xE2FFA511ADBE72f719824AB2d332B50C04e7abA3",
+            "0x1baE356cdb4CaBe9bB361eC8519Fdfa4209e7352",
+            "0xA75F14045eD5E9B575361405F7a0cE6bCFa50773",
+            "0xD4eeA7baed95aAD0741815BEaA694Ee4FCc41Ba3",
+            "0x393bAab348f232c7c00F304a99dB97Cc0bCadc39",
+            "0x19bF57450db0b01D1768b9f3Ee3c88202A162BA3",
+            "0x9BF8Eb0572D90F956bDeA88f90A6087E2f93eb20",
+            "0xc989Bdc79B40b8496e74Df4A8a2cdF02bd42E69a",
+            "0x8d590c14e4Ba8EE89355C634203980cA7cE7277e"
+          ]
+        },
+        "new_listing_solana": {
+          "status": 200,
+          "count": 20,
+          "ms": 265,
+          "oldest_ts": null,
+          "newest_ts": null,
+          "top_keys": [
+            "address",
+            "symbol",
+            "name",
+            "decimals",
+            "source",
+            "liquidityAddedAt",
+            "logoURI",
+            "liquidity"
+          ],
+          "items": [
+            "4cZfoWzjKNhs6wFijHyEDTucP3QgSdDsA6U1RhJumAzh",
+            "7SgQ847YyYAqtSsS9y2rDXvF92ZZAoCPhxpQU5JA3SFv",
+            "E7cdiqqnjgfEaytKjEQ9SqkACn4ZyMtsLbGUvAP59X66",
+            "5evoiRXtmdb1D8GVH392m8XuC1bzgTgStJdqETkdnJvS",
+            "7g5UF4PA4s4oi3LLyK33fsJJzehWtcezrkZks6q2PX12",
+            "6ZKQbsFeqBUkKxyKzdx3GnLfTQCowKRzYjEKx7PtEAp3",
+            "6ZKQbsFeqBUkKxyKzdx3GnLfTQCowKRzYjEKx7PtEAp3",
+            "5GAVYBtcbK4eNcf187gpmZLpmuM3tCGmuknNn4f1Ed59",
+            "7mTYSmbHDLNq3pEc51oekQcavvf94CadKbgrVPvzpump",
+            "9N7p1onYVuGaQqdVRseJCtBYp9bjHTbwVmksED6o8EBN",
+            "E4JbTAkbnvPg741dtGjKRH1mBGu9QANZu5g5Xb9fgNCt",
+            "7r1gRZjVCH24qhjkA52PoUxUt2PVGjGvPjssrrMzNdBH",
+            "BeMTDyZdFEYLDkWmaiRQTLxPzkXhruG1nuqT8U7oA41H",
+            "2SfzZDGaJTehzvNgejVEHPT6iTWhXLFxquRVYDShpump",
+            "3fxcWWcru3eY9K2Ez8y7brQX4zTY4WAEoVqaaxk5MQyG",
+            "CdobmvyMUd5E3W89vZeH4YJ95Jt2syrCPEwqDxq5jiXG",
+            "E7X33itFuHA15gMGAAxPxNdsTrcCXNRE6M8Fiv8CWoFH",
+            "BTFEbe71Ftfrm7YGL4NqBoSg7nfUFeW29zCfFt1x4jpB",
+            "3FBnSaYVQFYg4EeKnZEuHK9jz7F8nQTgN1tkehUAJkxK",
+            "5zaU8efsSPqMnX4WqRkrEMKTbnwuXory3C79mWNRCora"
+          ]
+        },
+        "token_list_base": {
+          "status": 404,
+          "error": "{\"success\":false,\"message\":\"Not found\"}",
+          "ms": 217,
+          "items": []
+        },
+        "token_list_solana": {
+          "status": 404,
+          "error": "{\"success\":false,\"message\":\"Not found\"}",
+          "ms": 206,
+          "items": []
+        }
+      }
+    },
+    {
+      "round": 2,
+      "ts": "2026-05-30T05:19:40.752379+00:00",
+      "data": {
+        "new_listing_base": {
+          "status": 200,
+          "count": 20,
+          "ms": 273,
+          "oldest_ts": null,
+          "newest_ts": null,
+          "top_keys": [
+            "address",
+            "symbol",
+            "name",
+            "decimals",
+            "liquidityAddedAt",
+            "logoURI",
+            "liquidity"
+          ],
+          "items": [
+            "0x4268D12476a0503B10196f32Fc3dC312Ce2aFba3",
+            "0x1e4081b2369F001246907115E2275d5a71e2634A",
+            "0xd9D9fFc46A7AA410409FCb417AAfaB261dC34B07",
+            "0x524A470f702B76B33Ca56b151104993d1465C9F7",
+            "0xb8C8dB9430C64d2995F8a1079e7624c3d6DbDABb",
+            "0x70747368337AbC5b6b0c5823df55765F69b922B1",
+            "0x9A3425A4B7233A00AeFDB0C6916F10f23E7753a2",
+            "0xF05bD18aB519956427d16d0b671034503d28cCf7",
+            "0x17869DbF5B835b0F0C959AEF4E375cd739559b07",
+            "0x2600af7F36f874EBAC2412bbd6639a722897Bba3",
+            "0x464AE14658EE8d0f3B7a6Ce7541796c73d52376d",
+            "0x5a462f2367fdEd1fd20085D07b03bD8ad1EA3A0C",
+            "0x7288c4bda98B96eda63B58C9AB7FD92bA3513ba3",
+            "0x38bfE18D422B0d1EE7ec2410157e5fFf527c30DE",
+            "0x1ab61F339a8ee150933FCb47B6Ad869E681216e4",
+            "0xf4770A6a2179Bfe793515e31901c31D718515B07",
+            "0xE2FFA511ADBE72f719824AB2d332B50C04e7abA3",
+            "0x1baE356cdb4CaBe9bB361eC8519Fdfa4209e7352",
+            "0xA75F14045eD5E9B575361405F7a0cE6bCFa50773",
+            "0xD4eeA7baed95aAD0741815BEaA694Ee4FCc41Ba3"
+          ]
+        },
+        "new_listing_solana": {
+          "status": 200,
+          "count": 20,
+          "ms": 252,
+          "oldest_ts": null,
+          "newest_ts": null,
+          "top_keys": [
+            "address",
+            "symbol",
+            "name",
+            "decimals",
+            "source",
+            "liquidityAddedAt",
+            "logoURI",
+            "liquidity"
+          ],
+          "items": [
+            "9xvuuhyStr6JGJqwfLLduYyBf1txaZktYbSAFicgpFzi",
+            "4cZfoWzjKNhs6wFijHyEDTucP3QgSdDsA6U1RhJumAzh",
+            "7SgQ847YyYAqtSsS9y2rDXvF92ZZAoCPhxpQU5JA3SFv",
+            "E7cdiqqnjgfEaytKjEQ9SqkACn4ZyMtsLbGUvAP59X66",
+            "5evoiRXtmdb1D8GVH392m8XuC1bzgTgStJdqETkdnJvS",
+            "7g5UF4PA4s4oi3LLyK33fsJJzehWtcezrkZks6q2PX12",
+            "6ZKQbsFeqBUkKxyKzdx3GnLfTQCowKRzYjEKx7PtEAp3",
+            "6ZKQbsFeqBUkKxyKzdx3GnLfTQCowKRzYjEKx7PtEAp3",
+            "5GAVYBtcbK4eNcf187gpmZLpmuM3tCGmuknNn4f1Ed59",
+            "7mTYSmbHDLNq3pEc51oekQcavvf94CadKbgrVPvzpump",
+            "9N7p1onYVuGaQqdVRseJCtBYp9bjHTbwVmksED6o8EBN",
+            "E4JbTAkbnvPg741dtGjKRH1mBGu9QANZu5g5Xb9fgNCt",
+            "7r1gRZjVCH24qhjkA52PoUxUt2PVGjGvPjssrrMzNdBH",
+            "BeMTDyZdFEYLDkWmaiRQTLxPzkXhruG1nuqT8U7oA41H",
+            "2SfzZDGaJTehzvNgejVEHPT6iTWhXLFxquRVYDShpump",
+            "3fxcWWcru3eY9K2Ez8y7brQX4zTY4WAEoVqaaxk5MQyG",
+            "CdobmvyMUd5E3W89vZeH4YJ95Jt2syrCPEwqDxq5jiXG",
+            "E7X33itFuHA15gMGAAxPxNdsTrcCXNRE6M8Fiv8CWoFH",
+            "BTFEbe71Ftfrm7YGL4NqBoSg7nfUFeW29zCfFt1x4jpB",
+            "3FBnSaYVQFYg4EeKnZEuHK9jz7F8nQTgN1tkehUAJkxK"
+          ]
+        },
+        "token_list_base": {
+          "status": 404,
+          "error": "{\"success\":false,\"message\":\"Not found\"}",
+          "ms": 216,
+          "items": []
+        },
+        "token_list_solana": {
+          "status": 404,
+          "error": "{\"success\":false,\"message\":\"Not found\"}",
+          "ms": 280,
+          "items": []
+        }
+      }
+    },
+    {
+      "round": 3,
+      "ts": "2026-05-30T05:20:51.223967+00:00",
+      "data": {
+        "new_listing_base": {
+          "status": 200,
+          "count": 20,
+          "ms": 794,
+          "oldest_ts": null,
+          "newest_ts": null,
+          "top_keys": [
+            "address",
+            "symbol",
+            "name",
+            "decimals",
+            "liquidityAddedAt",
+            "logoURI",
+            "liquidity"
+          ],
+          "items": [
+            "0xDEBeA7F93d577D88f3c4eC9E432216320E78b773",
+            "0x4beCB65f4EbCe2CC2603EAC942535cc985Ca686e",
+            "0x5704AB7ac9EcC9882D6B88cA78844dbc10677d1e",
+            "0xF522C6cf582dB5B92cF9d6229DD2efd3e0C934bC",
+            "0xCc632E62b6DF84510f44ADB6d52a2B4Ee2A852bc",
+            "0x15252c594C6D2a739733EB82Ddd2BFe3AFC57b07",
+            "0x4268D12476a0503B10196f32Fc3dC312Ce2aFba3",
+            "0x1207e23d855639ee4F06aBc57438C8733B5ad90D",
+            "0x1e4081b2369F001246907115E2275d5a71e2634A",
+            "0xd9D9fFc46A7AA410409FCb417AAfaB261dC34B07",
+            "0x524A470f702B76B33Ca56b151104993d1465C9F7",
+            "0xb8C8dB9430C64d2995F8a1079e7624c3d6DbDABb",
+            "0x70747368337AbC5b6b0c5823df55765F69b922B1",
+            "0x9A3425A4B7233A00AeFDB0C6916F10f23E7753a2",
+            "0xF05bD18aB519956427d16d0b671034503d28cCf7",
+            "0x17869DbF5B835b0F0C959AEF4E375cd739559b07",
+            "0x2600af7F36f874EBAC2412bbd6639a722897Bba3",
+            "0x464AE14658EE8d0f3B7a6Ce7541796c73d52376d",
+            "0x5a462f2367fdEd1fd20085D07b03bD8ad1EA3A0C",
+            "0x7288c4bda98B96eda63B58C9AB7FD92bA3513ba3"
+          ]
+        },
+        "new_listing_solana": {
+          "status": 200,
+          "count": 20,
+          "ms": 248,
+          "oldest_ts": null,
+          "newest_ts": null,
+          "top_keys": [
+            "address",
+            "symbol",
+            "name",
+            "decimals",
+            "source",
+            "liquidityAddedAt",
+            "logoURI",
+            "liquidity"
+          ],
+          "items": [
+            "97RdHMJaUTGYM9ayqi1XNhxTuqACbhzMXNfDWeJXLztS",
+            "9UT6smnsmFwK1qkRdF8d3EsKWxTUGmYrnU4gyPC8emKt",
+            "9xvuuhyStr6JGJqwfLLduYyBf1txaZktYbSAFicgpFzi",
+            "4cZfoWzjKNhs6wFijHyEDTucP3QgSdDsA6U1RhJumAzh",
+            "7SgQ847YyYAqtSsS9y2rDXvF92ZZAoCPhxpQU5JA3SFv",
+            "E7cdiqqnjgfEaytKjEQ9SqkACn4ZyMtsLbGUvAP59X66",
+            "5evoiRXtmdb1D8GVH392m8XuC1bzgTgStJdqETkdnJvS",
+            "7g5UF4PA4s4oi3LLyK33fsJJzehWtcezrkZks6q2PX12",
+            "6ZKQbsFeqBUkKxyKzdx3GnLfTQCowKRzYjEKx7PtEAp3",
+            "6ZKQbsFeqBUkKxyKzdx3GnLfTQCowKRzYjEKx7PtEAp3",
+            "5GAVYBtcbK4eNcf187gpmZLpmuM3tCGmuknNn4f1Ed59",
+            "7mTYSmbHDLNq3pEc51oekQcavvf94CadKbgrVPvzpump",
+            "9N7p1onYVuGaQqdVRseJCtBYp9bjHTbwVmksED6o8EBN",
+            "E4JbTAkbnvPg741dtGjKRH1mBGu9QANZu5g5Xb9fgNCt",
+            "7r1gRZjVCH24qhjkA52PoUxUt2PVGjGvPjssrrMzNdBH",
+            "BeMTDyZdFEYLDkWmaiRQTLxPzkXhruG1nuqT8U7oA41H",
+            "2SfzZDGaJTehzvNgejVEHPT6iTWhXLFxquRVYDShpump",
+            "3fxcWWcru3eY9K2Ez8y7brQX4zTY4WAEoVqaaxk5MQyG",
+            "CdobmvyMUd5E3W89vZeH4YJ95Jt2syrCPEwqDxq5jiXG",
+            "E7X33itFuHA15gMGAAxPxNdsTrcCXNRE6M8Fiv8CWoFH"
+          ]
+        },
+        "token_list_base": {
+          "status": 404,
+          "error": "{\"success\":false,\"message\":\"Not found\"}",
+          "ms": 207,
+          "items": []
+        },
+        "token_list_solana": {
+          "status": 404,
+          "error": "{\"success\":false,\"message\":\"Not found\"}",
+          "ms": 217,
+          "items": []
+        }
+      }
+    },
+    {
+      "round": 4,
+      "ts": "2026-05-30T05:22:16.000627+00:00",
+      "data": {
+        "new_listing_base": {
+          "status": -1,
+          "error": "HTTPSConnectionPool(host='public-api.birdeye.so', port=443): Read timed out. (re",
+          "ms": 15066,
+          "items": []
+        },
+        "new_listing_solana": {
+          "status": 200,
+          "count": 20,
+          "ms": 257,
+          "oldest_ts": null,
+          "newest_ts": null,
+          "top_keys": [
+            "address",
+            "symbol",
+            "name",
+            "decimals",
+            "source",
+            "liquidityAddedAt",
+            "logoURI",
+            "liquidity"
+          ],
+          "items": [
+            "DSHw84XB6mCwGZWnsjfDwipjxkJwUeF1K3KKFvj6nTZg",
+            "EhoyfUWXkUkmYa6mUMmueVMdZm2Uy1LZ61MZRzQK2Nft",
+            "49j9y2fWPkpB7fMfC7eeD5drNHqqV1jDchxm3ve3ECZo",
+            "BYphcYos3ALEa2NAN7ErDAbPNsqd96SyK4waD8a7tent",
+            "45BSoQQ83XSnE8AszJqoR1SXMLc2izisgsdULmoDMuTR",
+            "97RdHMJaUTGYM9ayqi1XNhxTuqACbhzMXNfDWeJXLztS",
+            "9UT6smnsmFwK1qkRdF8d3EsKWxTUGmYrnU4gyPC8emKt",
+            "9xvuuhyStr6JGJqwfLLduYyBf1txaZktYbSAFicgpFzi",
+            "4cZfoWzjKNhs6wFijHyEDTucP3QgSdDsA6U1RhJumAzh",
+            "7SgQ847YyYAqtSsS9y2rDXvF92ZZAoCPhxpQU5JA3SFv",
+            "E7cdiqqnjgfEaytKjEQ9SqkACn4ZyMtsLbGUvAP59X66",
+            "5evoiRXtmdb1D8GVH392m8XuC1bzgTgStJdqETkdnJvS",
+            "7g5UF4PA4s4oi3LLyK33fsJJzehWtcezrkZks6q2PX12",
+            "6ZKQbsFeqBUkKxyKzdx3GnLfTQCowKRzYjEKx7PtEAp3",
+            "6ZKQbsFeqBUkKxyKzdx3GnLfTQCowKRzYjEKx7PtEAp3",
+            "5GAVYBtcbK4eNcf187gpmZLpmuM3tCGmuknNn4f1Ed59",
+            "7mTYSmbHDLNq3pEc51oekQcavvf94CadKbgrVPvzpump",
+            "9N7p1onYVuGaQqdVRseJCtBYp9bjHTbwVmksED6o8EBN",
+            "E4JbTAkbnvPg741dtGjKRH1mBGu9QANZu5g5Xb9fgNCt",
+            "7r1gRZjVCH24qhjkA52PoUxUt2PVGjGvPjssrrMzNdBH"
+          ]
+        },
+        "token_list_base": {
+          "status": 404,
+          "error": "{\"success\":false,\"message\":\"Not found\"}",
+          "ms": 209,
+          "items": []
+        },
+        "token_list_solana": {
+          "status": 404,
+          "error": "{\"success\":false,\"message\":\"Not found\"}",
+          "ms": 240,
+          "items": []
+        }
+      }
+    },
+    {
+      "round": 5,
+      "ts": "2026-05-30T05:23:26.450091+00:00",
+      "data": {
+        "new_listing_base": {
+          "status": 200,
+          "count": 20,
+          "ms": 746,
+          "oldest_ts": null,
+          "newest_ts": null,
+          "top_keys": [
+            "address",
+            "symbol",
+            "name",
+            "decimals",
+            "liquidityAddedAt",
+            "logoURI",
+            "liquidity"
+          ],
+          "items": [
+            "0xFe00D550cc5aBFD074657852f0464C143cD0188B",
+            "0x5066d42FcFA05D28D4cFD2165f24d9f5204827cB",
+            "0x10A30Ad964cabe87A4c162FD419946b122288AD7",
+            "0x5E3543FcF800e7335B9A4Fc1540990624C4c9913",
+            "0x14c9d9A966Fe5A75164C0A6Ac2251C4bc3067Faf",
+            "0x9426Dc26a40Ab7a729302e6F16161D4e8Ffb7883",
+            "0x0e9A46290e15eF4671e22AeE6EE9479b9Fa70B07",
+            "0xDb185474DE1054cdC5e1d473ae2Ee6B08e066281",
+            "0xDEBeA7F93d577D88f3c4eC9E432216320E78b773",
+            "0x4beCB65f4EbCe2CC2603EAC942535cc985Ca686e",
+            "0x5704AB7ac9EcC9882D6B88cA78844dbc10677d1e",
+            "0xF522C6cf582dB5B92cF9d6229DD2efd3e0C934bC",
+            "0xCc632E62b6DF84510f44ADB6d52a2B4Ee2A852bc",
+            "0x15252c594C6D2a739733EB82Ddd2BFe3AFC57b07",
+            "0x4268D12476a0503B10196f32Fc3dC312Ce2aFba3",
+            "0x1207e23d855639ee4F06aBc57438C8733B5ad90D",
+            "0x1e4081b2369F001246907115E2275d5a71e2634A",
+            "0xd9D9fFc46A7AA410409FCb417AAfaB261dC34B07",
+            "0x524A470f702B76B33Ca56b151104993d1465C9F7",
+            "0xb8C8dB9430C64d2995F8a1079e7624c3d6DbDABb"
+          ]
+        },
+        "new_listing_solana": {
+          "status": 200,
+          "count": 20,
+          "ms": 255,
+          "oldest_ts": null,
+          "newest_ts": null,
+          "top_keys": [
+            "address",
+            "symbol",
+            "name",
+            "decimals",
+            "source",
+            "liquidityAddedAt",
+            "logoURI",
+            "liquidity"
+          ],
+          "items": [
+            "CusSpG4jriyS3EEkNCyTqUh9gYZzMA4P7Un7McNDGQpz",
+            "BFLCgQyGPY5X3ZutscYsN2NX4mL4JiaVav2Bdttn4UpG",
+            "F6ra9orBcQ5MsYzGaRFnbSmeSZ6B6GXnFxZifC2Rurny",
+            "DSHw84XB6mCwGZWnsjfDwipjxkJwUeF1K3KKFvj6nTZg",
+            "EhoyfUWXkUkmYa6mUMmueVMdZm2Uy1LZ61MZRzQK2Nft",
+            "49j9y2fWPkpB7fMfC7eeD5drNHqqV1jDchxm3ve3ECZo",
+            "BYphcYos3ALEa2NAN7ErDAbPNsqd96SyK4waD8a7tent",
+            "45BSoQQ83XSnE8AszJqoR1SXMLc2izisgsdULmoDMuTR",
+            "97RdHMJaUTGYM9ayqi1XNhxTuqACbhzMXNfDWeJXLztS",
+            "9UT6smnsmFwK1qkRdF8d3EsKWxTUGmYrnU4gyPC8emKt",
+            "9xvuuhyStr6JGJqwfLLduYyBf1txaZktYbSAFicgpFzi",
+            "4cZfoWzjKNhs6wFijHyEDTucP3QgSdDsA6U1RhJumAzh",
+            "7SgQ847YyYAqtSsS9y2rDXvF92ZZAoCPhxpQU5JA3SFv",
+            "E7cdiqqnjgfEaytKjEQ9SqkACn4ZyMtsLbGUvAP59X66",
+            "5evoiRXtmdb1D8GVH392m8XuC1bzgTgStJdqETkdnJvS",
+            "7g5UF4PA4s4oi3LLyK33fsJJzehWtcezrkZks6q2PX12",
+            "6ZKQbsFeqBUkKxyKzdx3GnLfTQCowKRzYjEKx7PtEAp3",
+            "6ZKQbsFeqBUkKxyKzdx3GnLfTQCowKRzYjEKx7PtEAp3",
+            "5GAVYBtcbK4eNcf187gpmZLpmuM3tCGmuknNn4f1Ed59",
+            "7mTYSmbHDLNq3pEc51oekQcavvf94CadKbgrVPvzpump"
+          ]
+        },
+        "token_list_base": {
+          "status": 404,
+          "error": "{\"success\":false,\"message\":\"Not found\"}",
+          "ms": 213,
+          "items": []
+        },
+        "token_list_solana": {
+          "status": 404,
+          "error": "{\"success\":false,\"message\":\"Not found\"}",
+          "ms": 231,
+          "items": []
+        }
+      }
+    }
+  ]
+}

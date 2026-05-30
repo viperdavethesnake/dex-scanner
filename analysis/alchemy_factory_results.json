@@ -1,0 +1,39 @@
+{
+  "queried_at": "2026-05-30T05:14:31.400548+00:00",
+  "from_block": 46662560,
+  "to_block": 46664360,
+  "window_hours": 1.0,
+  "results": {
+    "uniswap_v2": {
+      "address": "0x8909Dc15e40173Ff4699343b6eB8132c65e18eC6",
+      "event": "PairCreated",
+      "count_1h": 0,
+      "rate_per_hour": 0.0
+    },
+    "uniswap_v3": {
+      "address": "0x33128a8fC17869897dcE68Ed026d694621f6FDfD",
+      "event": "PoolCreated",
+      "count_1h": 0,
+      "rate_per_hour": 0.0
+    },
+    "aerodrome": {
+      "address": "0x420DD381b31aEf6683db6B902084cB0FFECe40Da",
+      "event": "PoolCreated",
+      "count_1h": 0,
+      "rate_per_hour": 0.0
+    },
+    "pancakeswap_v3": {
+      "address": "0x0BFbCF9fa4f9C56B0F40a671Ad40E0805A091865",
+      "event": "PoolCreated",
+      "count_1h": 0,
+      "rate_per_hour": 0.0
+    },
+    "baseswap_v2": {
+      "address": "0xFDa619b6d20975be80A10332cD39b9a4b0FAa8BB",
+      "event": "PairCreated",
+      "count_1h": 0,
+      "rate_per_hour": 0.0
+    }
+  },
+  "total_known_factories_1h": 0
+}

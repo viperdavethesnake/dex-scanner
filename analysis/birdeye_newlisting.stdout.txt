@@ -1,0 +1,47 @@
+=== Birdeye New-Listing Endpoint Test ===
+Start: 2026-05-30T05:18:20.265452+00:00
+Rounds: 5 | Interval: 60s
+
+--- Round 1/5 @ 05:18:20 UTC ---
+  new_listing_base               count=  20  new=  20  cum=   20  newest=N/A  oldest=N/A  ms= 770
+    keys: ['address', 'symbol', 'name', 'decimals', 'liquidityAddedAt', 'logoURI', 'liquidity']
+  new_listing_solana             count=  20  new=  20  cum=   19  newest=N/A  oldest=N/A  ms= 265
+    keys: ['address', 'symbol', 'name', 'decimals', 'source', 'liquidityAddedAt', 'logoURI', 'liquidity']
+  token_list_base                404 NOT FOUND
+  token_list_solana              404 NOT FOUND
+
+--- Round 2/5 @ 05:19:30 UTC ---
+  new_listing_base               count=  20  new=   5  cum=   25  newest=N/A  oldest=N/A  ms= 273
+  new_listing_solana             count=  20  new=   1  cum=   20  newest=N/A  oldest=N/A  ms= 252
+  token_list_base                404 NOT FOUND
+  token_list_solana              404 NOT FOUND
+
+--- Round 3/5 @ 05:20:40 UTC ---
+  new_listing_base               count=  20  new=   7  cum=   32  newest=N/A  oldest=N/A  ms= 794
+  new_listing_solana             count=  20  new=   2  cum=   22  newest=N/A  oldest=N/A  ms= 248
+  token_list_base                404 NOT FOUND
+  token_list_solana              404 NOT FOUND
+
+--- Round 4/5 @ 05:21:51 UTC ---
+  new_listing_base               HTTP-1  HTTPSConnectionPool(host='public-api.birdeye.so', port=443): Read timed out. (re
+  new_listing_solana             count=  20  new=   5  cum=   27  newest=N/A  oldest=N/A  ms= 257
+  token_list_base                404 NOT FOUND
+  token_list_solana              404 NOT FOUND
+
+--- Round 5/5 @ 05:23:16 UTC ---
+  new_listing_base               count=  20  new=   8  cum=   40  newest=N/A  oldest=N/A  ms= 746
+  new_listing_solana             count=  20  new=   3  cum=   30  newest=N/A  oldest=N/A  ms= 255
+  token_list_base                404 NOT FOUND
+  token_list_solana              404 NOT FOUND
+
+=== SUMMARY ===
+Endpoint                        Chain Status  Unique   Est/hr
+--------------------------------------------------------------
+  new_listing_base                 base    200      40      480
+  new_listing_solana             solana    200      30      360
+  token_list_base                  base    404       0        0
+  token_list_solana              solana    404       0        0
+
+(window = 5.0 min, unique addrs surfaced in that window extrapolated to hourly)
+
+Saved: /space/docker/containers/dex-scanner/analysis/birdeye_newlisting_results.json

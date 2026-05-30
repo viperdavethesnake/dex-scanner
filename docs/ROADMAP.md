@@ -12,7 +12,8 @@ The goal: automated 5-minute scalp trades on new DEX token launches, Base and So
 | LLM scanner (manual sessions) | ✅ Live |
 | Data collector (continuous, GPU-free) | ✅ Running 24/7 |
 | ML model (LightGBM, Base 0.67 / Solana 0.57 AUC) | ✅ Built, pending deployment via shadow trader |
-| Birdeye enrichment in collector | ✅ Live (2026-05-23, Base only, sample rate 0.02) |
+| Birdeye enrichment in collector | ✅ Live (2026-05-30, Base only, 100% sample rate, 25 fields) |
+| GoPlus enrichment in collector | ✅ Live (2026-05-30, both chains, 100% sample rate, 25 fields) |
 | Shadow trader design | ✅ Approved 2026-05-25, see `docs/decisions/SHADOW-TRADER-DESIGN.md` |
 | Execution layer | 🛠️ In progress (shadow mode first) |
 | Wallet integration | 🛠️ In progress (shadow mode — no real keys in use) |
@@ -149,8 +150,10 @@ The trader group is fully independent of the scanner and LLM. It runs continuous
 
 Resolved questions are recorded in `docs/decisions/`. Active open questions:
 
-1. **Birdeye tier upgrade timing.** Currently Standard (free), 0.02 sample rate. Lite ($39/mo) unlocks Solana enrichment if reset test (2026-06-24) confirms tier-gating. Decision deferred until Base shadow proves profitable execution.
+1. **Intake feed coverage (NEW — 2026-05-30).** The DexScreener `/token-profiles` endpoint captures only ~6% of Base on-chain launches and ~4% of Solana tradeable new tokens. The training corpus has severe survivorship bias — immediate rugs never appear. Options: (A) add `token_profiles_updates/recent-updates/v1` to poller (free, 1 day), (B) add Birdeye `/defi/v2/tokens/new_listing` (26-240x more coverage, moderate work). Decision pending diagnostic report — see `docs/decisions/INTAKE-GAP-2026-05-30.md` once written.
 
-2. **Solana wallet integration.** Solana is deferred until Base live is stable. When activated: keypair file via `solders` + `solana-py`, Jupiter aggregator. Design stub exists at `dex-trader/aggregators/jupiter.py`.
+2. **Birdeye tier upgrade timing.** Currently Standard (free), 100% Base sample rate (raised from 2% in session 8). Lite ($39/mo) unlocks Solana enrichment if reset test (2026-06-24) confirms tier-gating. Decision deferred until Base shadow proves profitable execution.
 
-3. **MEV / sandwich protection.** Shadow mode does not measure MEV cost. Live mode on Base will need either a private RPC (e.g., Flashbots Protect) or accept the MEV tax. Decision deferred until shadow-vs-live cost gap is measured.
+3. **Solana wallet integration.** Solana is deferred until Base live is stable. When activated: keypair file via `solders` + `solana-py`, Jupiter aggregator. Design stub exists at `dex-trader/aggregators/jupiter.py`.
+
+4. **MEV / sandwich protection.** Shadow mode does not measure MEV cost. Live mode on Base will need either a private RPC (e.g., Flashbots Protect) or accept the MEV tax. Decision deferred until shadow-vs-live cost gap is measured.
