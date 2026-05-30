@@ -48,6 +48,45 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_rs_dedup ON raw_signals (token_address, pa
 ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS unique_traders_1h   INT;
 ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS net_inflow_usd      NUMERIC(14,2);
 ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS birdeye_enriched    BOOLEAN DEFAULT FALSE;
+-- GoPlus enrichment columns (added 2026-05-30)
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS goplus_enriched            BOOLEAN DEFAULT FALSE;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS goplus_found_in_db         BOOLEAN;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS top1_pct                   REAL;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS top5_pct                   REAL;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS top10_pct                  REAL;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS holder_count_gp            INT;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS creator_pct                REAL;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS creator_balance            NUMERIC(20,4);
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS lp_holder_count            INT;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS lp_locked_pct              REAL;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS buy_tax                    REAL;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS sell_tax                   REAL;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS is_honeypot_gp             SMALLINT;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS is_blacklisted             SMALLINT;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS is_mintable                SMALLINT;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS hidden_owner               SMALLINT;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS can_take_back_ownership    SMALLINT;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS owner_change_balance       SMALLINT;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS honeypot_with_same_creator SMALLINT;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS is_proxy                   SMALLINT;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS is_open_source             SMALLINT;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS transfer_pausable          SMALLINT;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS trading_cooldown           SMALLINT;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS anti_whale_modifiable      SMALLINT;
+ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS slippage_modifiable        SMALLINT;
+
+CREATE TABLE IF NOT EXISTS goplus_calls (
+    called_at      TIMESTAMPTZ NOT NULL,
+    chain          TEXT        NOT NULL,
+    address        TEXT,
+    http_status    INT,
+    found_in_db    BOOLEAN,
+    response_ms    INT,
+    error_message  TEXT
+);
+SELECT create_hypertable('goplus_calls', 'called_at', if_not_exists => TRUE);
+
+-- Birdeye Phase 1 expansion columns (added 2026-05-30)
 ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS unique_traders_30m  INT;
 ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS unique_traders_24h  INT;
 ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS buy_volume_1h_usd   NUMERIC(20,4);

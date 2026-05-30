@@ -16,6 +16,7 @@ from pathlib import Path
 
 import api
 import db
+import goplus
 import signals
 
 logging.basicConfig(
@@ -26,6 +27,12 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 POLL_INTERVAL = int(os.environ.get("POLL_INTERVAL", 300))
+
+# GoPlus enrichment — both chains, 100% sample (free, no key required)
+GOPLUS_API_KEY       = os.environ.get("GOPLUS_API_KEY", "")
+GOPLUS_ENRICHMENT    = os.environ.get("COLLECTOR_GOPLUS_ENRICHMENT", "false").lower() == "true"
+GOPLUS_SAMPLE_RATE   = float(os.environ.get("COLLECTOR_GOPLUS_SAMPLE_RATE", "1.0"))
+GOPLUS_MAX_PER_CYCLE = int(os.environ.get("COLLECTOR_GOPLUS_MAX_PER_CYCLE", "30"))
 
 # Birdeye enrichment — per-chain sample rates
 # Solana defaults to 0: /defi/token_overview returns CU-limit-exceeded on the
@@ -49,6 +56,69 @@ def _should_sample(token_address: str, scanned_at: datetime, rate: float) -> boo
     key = f"{token_address}:{window.isoformat()}"
     h = int(hashlib.md5(key.encode()).hexdigest(), 16)
     return (h % 10000) < int(rate * 10000)
+
+
+def goplus_enrich(t, conn, cycle_state: dict, scanned_at: datetime) -> None:
+    """Enrich a Token with GoPlus holder/security data in-place. Never raises."""
+    if not GOPLUS_ENRICHMENT:
+        return
+
+    if not _should_sample(t.token_address, scanned_at, GOPLUS_SAMPLE_RATE):
+        cycle_state["gp_skipped_sample"] += 1
+        return
+
+    if cycle_state["gp_count"] >= GOPLUS_MAX_PER_CYCLE:
+        cycle_state["gp_cap_hit"] += 1
+        return
+
+    cycle_state["gp_count"] += 1
+    result = goplus.fetch_goplus_security(t.token_address, t.chain, GOPLUS_API_KEY)
+
+    if result["http_status"] == 200 and result["error_message"] is None:
+        t.goplus_found_in_db         = result["found_in_db"]
+        t.top1_pct                   = result["top1_pct"]
+        t.top5_pct                   = result["top5_pct"]
+        t.top10_pct                  = result["top10_pct"]
+        t.holder_count_gp            = result["holder_count"]
+        t.creator_pct                = result["creator_pct"]
+        t.creator_balance            = result["creator_balance"]
+        t.lp_holder_count            = result["lp_holder_count"]
+        t.lp_locked_pct              = result["lp_locked_pct"]
+        t.buy_tax                    = result["buy_tax"]
+        t.sell_tax                   = result["sell_tax"]
+        t.is_honeypot_gp             = result["is_honeypot"]
+        t.is_blacklisted             = result["is_blacklisted"]
+        t.is_mintable                = result["is_mintable"]
+        t.hidden_owner               = result["hidden_owner"]
+        t.can_take_back_ownership    = result["can_take_back_ownership"]
+        t.owner_change_balance       = result["owner_change_balance"]
+        t.honeypot_with_same_creator = result["honeypot_with_same_creator"]
+        t.is_proxy                   = result["is_proxy"]
+        t.is_open_source             = result["is_open_source"]
+        t.transfer_pausable          = result["transfer_pausable"]
+        t.trading_cooldown           = result["trading_cooldown"]
+        t.anti_whale_modifiable      = result["anti_whale_modifiable"]
+        t.slippage_modifiable        = result["slippage_modifiable"]
+        cycle_state["gp_success"] += 1
+    else:
+        cycle_state["gp_fail"] += 1
+        log.debug(
+            "goplus: %s http=%s err=%s",
+            t.token_address[:8], result["http_status"], result["error_message"],
+        )
+
+    t.goplus_enriched = True
+
+    db.log_goplus_call(
+        conn,
+        called_at     = scanned_at,
+        chain         = t.chain,
+        address       = t.token_address,
+        http_status   = result["http_status"],
+        found_in_db   = result["found_in_db"],
+        response_ms   = result["response_ms"],
+        error_message = result["error_message"],
+    )
 
 
 def birdeye_enrich(t, conn, cycle_state: dict, scanned_at: datetime) -> None:
@@ -108,11 +178,16 @@ def birdeye_enrich(t, conn, cycle_state: dict, scanned_at: datetime) -> None:
 def poll(conn):
     scanned_at = datetime.now(tz=timezone.utc)
     cycle_state = {
-        "count":          0,   # Birdeye calls attempted
-        "cap_hit":        0,   # skipped: per-cycle cap reached
-        "success":        0,   # HTTP 200 + parsed OK
-        "fail":           0,   # non-200 or parse error
-        "skipped_sample": 0,   # not sampled this cycle
+        "count":            0,   # Birdeye calls attempted
+        "cap_hit":          0,   # skipped: per-cycle cap reached
+        "success":          0,   # HTTP 200 + parsed OK
+        "fail":             0,   # non-200 or parse error
+        "skipped_sample":   0,   # not sampled this cycle
+        "gp_count":         0,
+        "gp_skipped_sample": 0,
+        "gp_cap_hit":       0,
+        "gp_success":       0,
+        "gp_fail":          0,
     }
 
     profiles = api.fetch_profiles()
@@ -141,6 +216,7 @@ def poll(conn):
         t = signals.from_pair(pair, chain_id)
         signals.compute_signals(t)
         birdeye_enrich(t, conn, cycle_state, scanned_at)
+        goplus_enrich(t, conn, cycle_state, scanned_at)
         tokens.append(t)
 
     inserted = db.bulk_insert(conn, tokens, scanned_at)
@@ -155,6 +231,15 @@ def poll(conn):
             cycle_state["cap_hit"],
             cycle_state["success"],
             cycle_state["fail"],
+        )
+    if GOPLUS_ENRICHMENT:
+        log.info(
+            "goplus: cycle done | sampled=%d skipped=%d cap_hit=%d success=%d fail=%d",
+            cycle_state["gp_count"],
+            cycle_state["gp_skipped_sample"],
+            cycle_state["gp_cap_hit"],
+            cycle_state["gp_success"],
+            cycle_state["gp_fail"],
         )
 
 
@@ -185,6 +270,13 @@ def main():
         )
     else:
         log.info("birdeye enrichment: disabled (COLLECTOR_BIRDEYE_ENRICHMENT=false)")
+    if GOPLUS_ENRICHMENT:
+        log.info(
+            "goplus enrichment: ENABLED | sample_rate=%.3f max_per_cycle=%d",
+            GOPLUS_SAMPLE_RATE, GOPLUS_MAX_PER_CYCLE,
+        )
+    else:
+        log.info("goplus enrichment: disabled (COLLECTOR_GOPLUS_ENRICHMENT=false)")
     conn = db.connect()
     db.migrate(conn)
 

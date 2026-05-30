@@ -40,6 +40,33 @@ class Token:
     buy_pct_5m: Optional[float] = None
     buy_pct_1h: Optional[float] = None
 
+    # GoPlus enrichment — both chains (Phase 2, 2026-05-30)
+    goplus_enriched:             bool            = False
+    goplus_found_in_db:          Optional[bool]  = None
+    top1_pct:                    Optional[float] = None
+    top5_pct:                    Optional[float] = None
+    top10_pct:                   Optional[float] = None
+    holder_count_gp:             Optional[int]   = None
+    creator_pct:                 Optional[float] = None
+    creator_balance:             Optional[float] = None
+    lp_holder_count:             Optional[int]   = None
+    lp_locked_pct:               Optional[float] = None
+    buy_tax:                     Optional[float] = None
+    sell_tax:                    Optional[float] = None
+    is_honeypot_gp:              Optional[int]   = None
+    is_blacklisted:              Optional[int]   = None
+    is_mintable:                 Optional[int]   = None
+    hidden_owner:                Optional[int]   = None
+    can_take_back_ownership:     Optional[int]   = None
+    owner_change_balance:        Optional[int]   = None
+    honeypot_with_same_creator:  Optional[int]   = None
+    is_proxy:                    Optional[int]   = None
+    is_open_source:              Optional[int]   = None
+    transfer_pausable:           Optional[int]   = None
+    trading_cooldown:            Optional[int]   = None
+    anti_whale_modifiable:       Optional[int]   = None
+    slippage_modifiable:         Optional[int]   = None
+
     # Birdeye enrichment — both chains (Phase 1, 2026-05-30)
     unique_traders_1h:    Optional[int]   = None
     unique_traders_30m:   Optional[int]   = None

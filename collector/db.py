@@ -25,9 +25,23 @@ INSERT INTO raw_signals (
     buy_volume_1h_usd, sell_volume_1h_usd,
     volume_24h_usd, buy_volume_24h_usd, sell_volume_24h_usd,
     trade_count_1h, trade_count_24h,
-    holder_count_birdeye, market_count, last_trade_unix_ts
+    holder_count_birdeye, market_count, last_trade_unix_ts,
+    goplus_enriched, goplus_found_in_db,
+    top1_pct, top5_pct, top10_pct, holder_count_gp,
+    creator_pct, creator_balance, lp_holder_count, lp_locked_pct,
+    buy_tax, sell_tax,
+    is_honeypot_gp, is_blacklisted, is_mintable, hidden_owner,
+    can_take_back_ownership, owner_change_balance, honeypot_with_same_creator,
+    is_proxy, is_open_source, transfer_pausable, trading_cooldown,
+    anti_whale_modifiable, slippage_modifiable
 ) VALUES %s
 ON CONFLICT (token_address, pair_address, scanned_at) DO NOTHING
+"""
+
+LOG_GOPLUS_SQL = """
+INSERT INTO goplus_calls
+    (called_at, chain, address, http_status, found_in_db, response_ms, error_message)
+VALUES (%s, %s, %s, %s, %s, %s, %s)
 """
 
 LOG_BIRDEYE_SQL = """
@@ -52,6 +66,42 @@ _MIGRATE_STMTS = [
         error_message  TEXT
     )""",
     "SELECT create_hypertable('birdeye_calls', 'called_at', if_not_exists => TRUE)",
+    # GoPlus Phase 2 (2026-05-30) — holder concentration + security flags
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS goplus_enriched BOOLEAN DEFAULT FALSE",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS goplus_found_in_db BOOLEAN",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS top1_pct REAL",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS top5_pct REAL",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS top10_pct REAL",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS holder_count_gp INT",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS creator_pct REAL",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS creator_balance NUMERIC(20,4)",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS lp_holder_count INT",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS lp_locked_pct REAL",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS buy_tax REAL",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS sell_tax REAL",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS is_honeypot_gp SMALLINT",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS is_blacklisted SMALLINT",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS is_mintable SMALLINT",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS hidden_owner SMALLINT",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS can_take_back_ownership SMALLINT",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS owner_change_balance SMALLINT",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS honeypot_with_same_creator SMALLINT",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS is_proxy SMALLINT",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS is_open_source SMALLINT",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS transfer_pausable SMALLINT",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS trading_cooldown SMALLINT",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS anti_whale_modifiable SMALLINT",
+    "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS slippage_modifiable SMALLINT",
+    """CREATE TABLE IF NOT EXISTS goplus_calls (
+        called_at      TIMESTAMPTZ NOT NULL,
+        chain          TEXT        NOT NULL,
+        address        TEXT,
+        http_status    INT,
+        found_in_db    BOOLEAN,
+        response_ms    INT,
+        error_message  TEXT
+    )""",
+    "SELECT create_hypertable('goplus_calls', 'called_at', if_not_exists => TRUE)",
     # Birdeye Phase 1 expansion (2026-05-30) — both chains, full token_overview
     "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS unique_traders_30m INT",
     "ALTER TABLE raw_signals ADD COLUMN IF NOT EXISTS unique_traders_24h INT",
@@ -91,6 +141,24 @@ def migrate(conn) -> None:
             cur.execute(stmt)
     conn.commit()
     log.info("migrate: schema up to date")
+
+
+def log_goplus_call(conn, called_at, chain: str, address: str,
+                    http_status, found_in_db, response_ms, error_message) -> None:
+    """Insert one row into goplus_calls. Never raises."""
+    try:
+        with conn.cursor() as cur:
+            cur.execute(LOG_GOPLUS_SQL, (
+                called_at, chain, address,
+                http_status, found_in_db, response_ms, error_message,
+            ))
+        conn.commit()
+    except Exception as e:
+        log.warning("goplus: failed to log call for %s: %s", address[:8] if address else "?", e)
+        try:
+            conn.rollback()
+        except Exception:
+            pass
 
 
 def log_birdeye_call(conn, called_at, chain: str, address: str,
@@ -159,6 +227,14 @@ def bulk_insert(conn, tokens: List[Token], scanned_at: datetime) -> int:
             t.volume_24h_usd, t.buy_volume_24h_usd, t.sell_volume_24h_usd,
             t.trade_count_1h, t.trade_count_24h,
             t.holder_count_birdeye, t.market_count, t.last_trade_unix_ts,
+            t.goplus_enriched, t.goplus_found_in_db,
+            t.top1_pct, t.top5_pct, t.top10_pct, t.holder_count_gp,
+            t.creator_pct, t.creator_balance, t.lp_holder_count, t.lp_locked_pct,
+            t.buy_tax, t.sell_tax,
+            t.is_honeypot_gp, t.is_blacklisted, t.is_mintable, t.hidden_owner,
+            t.can_take_back_ownership, t.owner_change_balance, t.honeypot_with_same_creator,
+            t.is_proxy, t.is_open_source, t.transfer_pausable, t.trading_cooldown,
+            t.anti_whale_modifiable, t.slippage_modifiable,
         ))
     with conn.cursor() as cur:
         psycopg2.extras.execute_values(cur, INSERT_SQL, rows)
