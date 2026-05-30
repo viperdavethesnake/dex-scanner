@@ -92,6 +92,8 @@ def _check_honeypot(address: str) -> Tuple[bool, str]:
         params={"address": address},
         timeout=SECURITY_TIMEOUT,
     )
+    if resp.status_code == 404:
+        return True, ""   # token not yet indexed — not a known honeypot
     resp.raise_for_status()
     if resp.json().get("IsHoneypot"):
         return False, "honeypot"
