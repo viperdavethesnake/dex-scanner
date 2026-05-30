@@ -1,6 +1,6 @@
 # ML & Data Findings
 
-*Last updated: 2026-05-23. Based on 19,700+ collector signals (May 17–23) and 2,228 scanner signals (May 3–17).*
+*Last updated: 2026-05-30. Based on 19,700+ collector signals (May 17–23) and 2,228 scanner signals (May 3–17). Note: intake-gap diagnostic (2026-05-30) revised the survivorship-bias assessment — see below.*
 
 ---
 
@@ -17,7 +17,9 @@
 | Chains | Base (27%), Solana (73%) |
 | Scanner window rows (15–90m) | 10,070 |
 
-The collector records every token DexScreener returns, regardless of whether it passes filters. This is the unbiased training set — no survivorship bias.
+The collector records every token DexScreener returns, regardless of whether it passes filters. This is unbiased **within DexScreener's view** — but DexScreener itself is curated.
+
+**⚠ Survivorship bias (revised 2026-05-30):** DexScreener `/token-profiles/latest/v1` only surfaces tokens that had a profile explicitly submitted — meaning tokens that survived long enough for someone to file one. Tokens that rug in under ~30 minutes never appear. Intake-gap diagnostic (2026-05-30) found we capture only **~6% of Base on-chain launches** and ~4% of Solana tradeable new tokens. The rug class we most want to detect is systematically underrepresented. See `docs/decisions/INTAKE-GAP-2026-05-30.md` for the full analysis and remediation plan.
 
 ### Scanner DB (scanner survivors only)
 
