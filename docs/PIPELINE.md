@@ -81,6 +81,15 @@ return ageMin >= 15 && ageMin <= 90 && microPass && vlPass;
 
 **Phase 9 note (2026-05-23):** An earlier version (May 17) re-admitted Solana 6–8× V/L based on scanner data showing 62.7% win rate in that bucket. Unbiased collector data (19,700 signals) showed this was survivorship bias — the 6–8× bucket is actually −1.42% avg, 43.9% win rate. Filter reverted to flat ≤4× ceiling. Solana `flat` micro-trend was also added as a hard exclusion (n=662 filter-pass tokens, −1.47% avg, 27.5% win rate).
 
+**Phase 10 note (2026-05-31 — ML tuning):** LightGBM analysis on 25,887 scanner-window rows across 14 days identified `recovering + rising vol_trend` on Solana as a valid sub-group excluded by the aggregate `recovering` block. That specific combination shows 29.9% moonshot rate and 2.33x lift (n=67). The filter now allows Solana `recovering` tokens through when `vol_trend = rising`. All other `recovering` cases remain blocked. Decision record: `docs/decisions/ml-tuning-2026-05-31.md`.
+
+```javascript
+// Solana micro-trend gate (Phase 10 — recovering exception for rising vol)
+const microPass = chain === 'solana'
+  ? ((micro !== 'recovering' || item.json.volTrend === 'rising') && micro !== 'down' && micro !== 'flat')
+  : (micro !== 'recovering' && micro !== 'down');
+```
+
 ### Signal warnings (Build Prompt — shown to LLM as advisory context)
 
 Tokens that pass the hard pre-filter but miss these checks are flagged in the LLM prompt as `SIGNAL WARNINGS`. The LLM uses them to calibrate conviction sizing, not as pass/fail gates.
@@ -237,6 +246,15 @@ N. SYMBOL — SKIP/WATCH/INTERESTING — [conviction: $X] — one sentence
 Conviction amounts: `$0` (pass), `$25`, `$50`, `$100`, `$500`, `$1000`. Calibrated to risk — INTERESTING ≠ automatically high conviction.
 
 The LLM receives full meme coin context: Pump.Fun graduation mechanics, LP burn status, insider/cabal detection (RugCheck graph), holder velocity, creator wallet behavior. It does not re-calculate signals the filters already cover.
+
+**Phase 10 additions (2026-05-31 — ML tuning):** Two new derived signals are now computed and passed to the LLM per token:
+
+| Signal | Formula | Why |
+|--------|---------|-----|
+| `Liq/MCap` | `liquidity_usd / market_cap` | Top-5 feature on both chains for moonshot prediction. Low (<0.3) = explosive potential. |
+| `Momentum score` | `price_ch_5m × min(vol5m×12/vol1h, 10)` | Combines price velocity + volume acceleration. Top-10 on both chains. |
+
+The system prompt also includes a ML-calibrated signals paragraph briefing the LLM on what empirically matters per chain (buys_5m dominates on Base; volume_5m dominates on Solana).
 
 ---
 
@@ -426,9 +444,18 @@ Birdeye's wallet and net-flow enrichment returns N/A on free tier (endpoints gat
 
 ---
 
-## Empirical observations (updated 2026-05-23)
+## Empirical observations (updated 2026-05-31)
 
-Based on 19,700+ unbiased collector signals (2026-05-17 to present) plus 2,228 scanner signals (2026-05-03 to 2026-05-17). Collector data is unbiased — all tokens seen, not just filter survivors. See `ML-FINDINGS.md` for full analysis.
+Based on 56,676 unbiased collector signals (2026-05-17 to present). Collector data is unbiased — all tokens seen, not just filter survivors. Full ML analysis: `docs/ml-findings-2026-05-31.md`. Decision record for Phase 10 filter changes: `docs/decisions/ml-tuning-2026-05-31.md`.
+
+**Phase 10 ML model results (scanner window, 15–90 min, 25,887 rows):**
+
+| Chain | Moonshot base rate | Model AUC | Best threshold | Precision | Lift |
+|-------|-------------------|-----------|----------------|-----------|------|
+| Base | 17.2% | 0.741 | 0.65 | 50% | 3.1x |
+| Solana | 12.8% | 0.709 | 0.70 | 61.5% | 4.6x |
+
+Top predictive features: `buys_5m` + `liq_mcap_ratio` on Base; `volume_5m` + `liq_mcap_ratio` on Solana. See findings doc for full feature rankings and pattern tables.
 
 ### Chain performance
 
