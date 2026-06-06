@@ -205,7 +205,7 @@ services:
       - FEATURES_PATH=/models/feature_list.json
       - METADATA_PATH=/models/metadata.json
       - POLL_INTERVAL=5
-      - TRADE_SIZE_USD=10.0
+      - TRADE_SIZE_USD=50
       - MAX_POSITIONS=3
       - DAILY_LOSS_CAP_USD=50.0
       - MAX_TRADES_PER_HOUR=20

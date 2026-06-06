@@ -526,7 +526,21 @@ def _manage_open_positions(trader_conn, w3) -> None:
             drawdown_pct = (current_dex - fill_price) / fill_price * 100
             _maybe_update_low(trader_conn, trade_id, current_dex, drawdown_pct, now)
 
-        # 3. Stop-loss check (fires before timer if threshold crossed)
+        # 3a. Rug/delist guard: no price after grace period → stop-loss exit
+        if current_dex is None:
+            if fill_ts.tzinfo is None:
+                fill_ts = fill_ts.replace(tzinfo=utc)
+            hold_seconds = (now - fill_ts).total_seconds()
+            if hold_seconds > 60:
+                log.warning("STOP-LOSS (rug/delist) trade_id=%d %s | no price after %.0fs",
+                            trade_id, trade.get("token_address", "?")[:12], hold_seconds)
+                _finalize_exit(trader_conn, w3, trade_id, trade,
+                               fill_price, fill_size, sig_price,
+                               chain, pair_addr, fill_price * 0.5,
+                               trigger="stop_loss_rug")
+                continue
+
+        # 3b. Stop-loss check (fires before timer if threshold crossed)
         if (STOP_LOSS_ENABLED and drawdown_pct is not None
                 and drawdown_pct <= -STOP_LOSS_PCT):
             log.warning("STOP-LOSS trade_id=%d %s | drawdown=%.2f%% (threshold=-%.1f%%)",
